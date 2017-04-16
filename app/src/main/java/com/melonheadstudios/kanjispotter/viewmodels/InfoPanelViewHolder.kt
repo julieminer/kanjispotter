@@ -7,6 +7,8 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.widget.ImageButton
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -80,7 +82,15 @@ class InfoPanelViewHolder(context: Context, parent: View) {
 
     fun makeInvisibile() {
         clearPanel()
-        container.visibility = View.GONE
+        container.alpha = 1f
+        container.scaleX = 1f
+        container.scaleY = 1f
+        container.animate()
+                .alpha(0f)
+                .scaleX(0f)
+                .scaleY(0f)
+                .setDuration(300)
+                .start()
     }
 
     fun clearPanel() {
@@ -93,8 +103,16 @@ class InfoPanelViewHolder(context: Context, parent: View) {
     private fun makeVisible() {
         val prefs = container.context.getSharedPreferences(QuickTileService.PREFERENCES_KEY, Context.MODE_PRIVATE)
         val isActive = prefs.getBoolean(QuickTileService.SERVICE_STATUS_FLAG, false)
-        container.visibility = if (isActive) View.VISIBLE else View.GONE
-
+        container.visibility = if (isActive) VISIBLE else GONE
+        container.alpha = 0f
+        container.scaleX = 0f
+        container.scaleY = 0f
+        container.animate()
+                .alpha(1f)
+                .scaleX(1f)
+                .scaleY(1f)
+                .setDuration(300)
+                .start()
     }
 
     private fun parseJsonString(string: String, selectedWord: String) {
