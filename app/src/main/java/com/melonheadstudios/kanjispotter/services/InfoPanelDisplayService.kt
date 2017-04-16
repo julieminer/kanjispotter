@@ -149,6 +149,8 @@ class InfoPanelDisplayService: AccessibilityService() {
             selections.forEach {
                 headerItems.add(KanjiSelectionListModel(it))
             }
+            headerItems = ArrayList(LinkedHashSet(headerItems))
+            headerItems.sortBy { it.selectedWord }
             headerItemAdapter.set(headerItems)
         }
 
