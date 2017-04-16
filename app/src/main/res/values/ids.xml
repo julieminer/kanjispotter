@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item name="KANJI_LIST_MODEL" type="id">101</item>
+    <item name="KANJI_LIST_SELECTION_MODEL" type="id">102</item>
 </resources>

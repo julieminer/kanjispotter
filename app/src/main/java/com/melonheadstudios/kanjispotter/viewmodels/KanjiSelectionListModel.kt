@@ -1,0 +1,78 @@
+package com.melonheadstudios.kanjispotter.viewmodels
+
+import android.support.v7.widget.RecyclerView
+import android.view.View
+import android.widget.RadioButton
+import android.widget.TextView
+import com.melonheadstudios.kanjispotter.R
+import com.mikepenz.fastadapter.FastAdapter
+import com.mikepenz.fastadapter.items.AbstractItem
+import com.mikepenz.fastadapter.listeners.ClickEventHook
+import com.mikepenz.fastadapter.utils.ViewHolderFactory
+
+/**
+ * kanjispotter
+ * Created by jake on 2017-04-15, 9:48 PM
+ */
+class KanjiSelectionListModel(val selectedWord: String): AbstractItem<KanjiSelectionListModel, KanjiSelectionListModel.ViewHolder>() {
+    override fun getType(): Int {
+        return R.id.KANJI_LIST_MODEL
+    }
+
+    override fun getLayoutRes(): Int {
+        return R.layout.list_selection_item
+    }
+
+    override fun bindView(holder: ViewHolder, payloads: List<Any>?) {
+        super.bindView(holder, payloads)
+        holder.selectedText.text = selectedWord
+        holder.radiobutton.isChecked = isSelected;
+    }
+
+    override fun getFactory(): ViewHolderFactory<out ViewHolder> {
+        return FACTORY
+    }
+
+    private class ItemFactory : ViewHolderFactory<ViewHolder> {
+        override fun create(v: View): ViewHolder {
+            return ViewHolder(v)
+        }
+    }
+
+    companion object {
+        private val FACTORY = ItemFactory()
+    }
+
+    override fun equals(other: Any?): Boolean {
+        val rhs = other as? KanjiSelectionListModel ?: return false
+        return rhs.selectedWord == selectedWord
+    }
+
+    override fun hashCode(): Int {
+        return selectedWord.hashCode()
+    }
+    class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
+        var selectedText: TextView = view.findViewById(R.id.selected_word) as TextView
+        var radiobutton: RadioButton = view.findViewById(R.id.radiobutton) as RadioButton
+    }
+
+    class RadioButtonClickEvent: ClickEventHook<KanjiSelectionListModel>() {
+        override fun onBind(viewHolder: RecyclerView.ViewHolder): View? {
+            val v = viewHolder as? KanjiSelectionListModel.ViewHolder ?: return null
+            return v.radiobutton
+        }
+
+        override fun onClick(v: View?, position: Int, fastAdapter: FastAdapter<KanjiSelectionListModel>?, item: KanjiSelectionListModel?) {
+            item ?: return
+            if (!item.isSelected) {
+                val selections = fastAdapter?.selections ?: return
+                if (!selections.isEmpty()) {
+                    val selectedPosition = selections.iterator().next() ?: return
+                    fastAdapter.deselect()
+                    fastAdapter.notifyItemChanged(selectedPosition)
+                }
+                fastAdapter.select(position)
+            }
+        }
+    }
+}

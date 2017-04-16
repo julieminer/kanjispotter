@@ -7,3 +7,4 @@ package com.melonheadstudios.kanjispotter.models
 
 class InfoPanelEvent(val chosenWord: String, val json: String)
 class InfoPanelClearEvent
+class InfoPanelSelectionsEvent(val selections: List<String>)

@@ -17,7 +17,6 @@ import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
 import android.widget.Button
 import android.widget.FrameLayout
-import android.widget.TextView
 import com.eightbitlab.rxbus.Bus
 import com.eightbitlab.rxbus.registerInBus
 import com.fasterxml.jackson.databind.DeserializationFeature
@@ -26,11 +25,15 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.melonheadstudios.kanjispotter.R
 import com.melonheadstudios.kanjispotter.models.InfoPanelClearEvent
 import com.melonheadstudios.kanjispotter.models.InfoPanelEvent
+import com.melonheadstudios.kanjispotter.models.InfoPanelSelectionsEvent
 import com.melonheadstudios.kanjispotter.models.JishoResponse
 import com.melonheadstudios.kanjispotter.viewmodels.KanjiListModel
+import com.melonheadstudios.kanjispotter.viewmodels.KanjiSelectionListModel
 import com.mikepenz.fastadapter.FastAdapter
-import com.mikepenz.fastadapter.adapters.HeaderAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
+import com.melonheadstudios.kanjispotter.viewmodels.KanjiSelectionListModel.RadioButtonClickEvent
+
+
 
 /**
  * GlobalActionBarService
@@ -67,6 +70,10 @@ class InfoPanelDisplayService: AccessibilityService() {
         Bus.observe<InfoPanelEvent>()
                 .subscribe { handleString(it.chosenWord, it.json) }
                 .registerInBus(this) //registers your subscription to unsubscribe it properly later
+
+        Bus.observe<InfoPanelSelectionsEvent>()
+                .subscribe { handleSelections(it.selections) }
+                .registerInBus(this)
     }
 
     override fun onInterrupt() {
@@ -80,6 +87,11 @@ class InfoPanelDisplayService: AccessibilityService() {
         viewHolder?.updateView(chosenWord, string)
     }
 
+    private fun handleSelections(selections: List<String>) {
+        Log.d(TAG, "handleSelections: $selections")
+        viewHolder?.updateSelections(selections)
+    }
+
     private fun clearPanel() {
         Log.d(TAG, "clearPanel")
         viewHolder?.clearPanel()
@@ -88,13 +100,16 @@ class InfoPanelDisplayService: AccessibilityService() {
     class ViewHolder(context: Context, parent: View) {
         val container: ConstraintLayout = parent.findViewById(R.id.info_panel) as ConstraintLayout
         val list: RecyclerView = parent.findViewById(R.id.info) as RecyclerView
-        val chosenWord: TextView = parent.findViewById(R.id.info_word) as TextView
         val button: Button = parent.findViewById(R.id.info_button) as Button
-//        val headerList: RecyclerView = parent.findViewById(R.id.info) as RecyclerView
+        val headerList: RecyclerView = parent.findViewById(R.id.info_word) as RecyclerView
 
         val fastAdapter = FastAdapter<KanjiListModel>()
         val itemAdapter = ItemAdapter<KanjiListModel>()
         var items = ArrayList<KanjiListModel>()
+
+        val headerFastAdapter = FastAdapter<KanjiSelectionListModel>()
+        val headerItemAdapter = ItemAdapter<KanjiSelectionListModel>()
+        var headerItems = ArrayList<KanjiSelectionListModel>()
 
         init {
             button.setOnClickListener {
@@ -106,6 +121,13 @@ class InfoPanelDisplayService: AccessibilityService() {
             list.itemAnimator = DefaultItemAnimator()
             list.adapter = itemAdapter.wrap(fastAdapter)
 
+            headerList.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+            headerList.layoutManager.isAutoMeasureEnabled = true
+            headerList.itemAnimator = DefaultItemAnimator()
+            headerList.adapter = headerItemAdapter.wrap(headerFastAdapter)
+
+            headerFastAdapter.withItemEvent(KanjiSelectionListModel.RadioButtonClickEvent())
+
 //            itemAdapter.set(cachedSamples.getObject())
 //            list.setAdapter(stickyHeaderAdapter.wrap(itemAdapter.wrap(headerAdapter.wrap(fastAdapter))))
 //            list.setAdapter(itemAdapter.wrap(fastAdapter))
@@ -113,9 +135,16 @@ class InfoPanelDisplayService: AccessibilityService() {
         }
 
         fun updateView(word: String, string: String) {
-            chosenWord.text =  word
+//            chosenWord.text =  word
             parseJsonString(string, word)
             makeVisible()
+        }
+
+        fun updateSelections(selections: List<String>) {
+            selections.forEach {
+                headerItems.add(KanjiSelectionListModel(it))
+            }
+            headerItemAdapter.set(headerItems)
         }
 
         fun makeInvisibile() {
@@ -124,8 +153,10 @@ class InfoPanelDisplayService: AccessibilityService() {
         }
 
         fun clearPanel() {
-            itemAdapter.clear()
-            chosenWord.text = ""
+            items.clear()
+            itemAdapter.set(items)
+            headerItems.clear()
+            headerItemAdapter.set(headerItems)
         }
 
         private fun makeVisible() {

@@ -27,7 +27,7 @@ class AndroidModule(private val application: Application) {
     @Provides
     @Singleton
     fun providesTextManager(): TextManager {
-        return TextManager(application)
+        return TextManager()
     }
 
 //    @Provides
