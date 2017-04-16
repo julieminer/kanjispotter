@@ -6,7 +6,7 @@ import com.melonheadstudios.kanjispotter.injection.ApplicationComponent
 import com.melonheadstudios.kanjispotter.injection.DaggerApplicationComponent
 
 /**
- * GlobalActionBarService
+ * MainApplication
  * Created by jake on 2017-04-15, 9:40 AM
  */
 class MainApplication: Application() {

@@ -3,7 +3,7 @@ package com.melonheadstudios.kanjispotter.utils
 import java.lang.Character.UnicodeBlock.*
 
 /**
- * GlobalActionBarService
+ * JapaneseCharMatcher
  * Created by jake on 2017-04-14, 11:21 PM
  */
 

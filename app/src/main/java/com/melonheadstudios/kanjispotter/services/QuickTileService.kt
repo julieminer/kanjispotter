@@ -12,7 +12,6 @@ import com.melonheadstudios.kanjispotter.R
 import com.melonheadstudios.kanjispotter.models.InfoPanelDisabledEvent
 import java.util.*
 
-
 /**
  * kanjispotter
  * Created by jake on 2017-04-16, 12:22 AM
