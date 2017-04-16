@@ -18,6 +18,7 @@ import android.view.View.VISIBLE
 import android.view.WindowManager
 import android.widget.Button
 import android.widget.FrameLayout
+import android.widget.ImageButton
 import com.eightbitlab.rxbus.Bus
 import com.eightbitlab.rxbus.registerInBus
 import com.fasterxml.jackson.databind.DeserializationFeature
@@ -124,7 +125,7 @@ class InfoPanelDisplayService: Service() {
 
         val container: ConstraintLayout = parent.findViewById(R.id.info_panel) as ConstraintLayout
         val list: RecyclerView = parent.findViewById(R.id.info) as RecyclerView
-        val button: Button = parent.findViewById(R.id.info_button) as Button
+        val button: ImageButton = parent.findViewById(R.id.info_button) as ImageButton
         val headerList: RecyclerView = parent.findViewById(R.id.info_word) as RecyclerView
 
         val fastAdapter = FastAdapter<KanjiListModel>()
