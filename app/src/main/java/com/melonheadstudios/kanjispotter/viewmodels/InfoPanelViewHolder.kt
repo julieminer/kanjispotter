@@ -80,19 +80,6 @@ class InfoPanelViewHolder(context: Context, parent: View) {
         })
     }
 
-    fun makeInvisibile() {
-        clearPanel()
-        container.alpha = 1f
-        container.scaleX = 1f
-        container.scaleY = 1f
-        container.animate()
-                .alpha(0f)
-                .scaleX(0f)
-                .scaleY(0f)
-                .setDuration(300)
-                .start()
-    }
-
     fun clearPanel() {
         items.clear()
         itemAdapter.set(items)
@@ -104,13 +91,22 @@ class InfoPanelViewHolder(context: Context, parent: View) {
         val prefs = container.context.getSharedPreferences(QuickTileService.PREFERENCES_KEY, Context.MODE_PRIVATE)
         val isActive = prefs.getBoolean(QuickTileService.SERVICE_STATUS_FLAG, false)
         container.visibility = if (isActive) VISIBLE else GONE
-        container.alpha = 0f
-        container.scaleX = 0f
-        container.scaleY = 0f
+        animateVisibility(from = 0f, to = 1f)
+    }
+
+    fun makeInvisibile() {
+        clearPanel()
+        animateVisibility(from = 1f, to = 0f)
+    }
+
+    private fun animateVisibility(from: Float, to: Float) {
+        container.alpha = from
+        container.scaleX = from
+        container.scaleY = from
         container.animate()
-                .alpha(1f)
-                .scaleX(1f)
-                .scaleY(1f)
+                .alpha(to)
+                .scaleX(to)
+                .scaleY(to)
                 .setDuration(300)
                 .start()
     }
