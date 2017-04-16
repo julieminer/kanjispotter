@@ -1,8 +1,10 @@
 package com.melonheadstudios.kanjispotter.services
 
-import android.accessibilityservice.AccessibilityService
+import android.app.Service
 import android.content.Context
+import android.content.Intent
 import android.graphics.PixelFormat
+import android.os.IBinder
 import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.LinearLayoutManager
@@ -14,7 +16,6 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.WindowManager
-import android.view.accessibility.AccessibilityEvent
 import android.widget.Button
 import android.widget.FrameLayout
 import com.eightbitlab.rxbus.Bus
@@ -30,34 +31,43 @@ import com.melonheadstudios.kanjispotter.viewmodels.KanjiSelectionListModel
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 
-
 /**
  * GlobalActionBarService
  * Created by jake on 2017-04-15, 9:17 AM
  */
-class InfoPanelDisplayService: AccessibilityService() {
+class InfoPanelDisplayService: Service() {
     val TAG = "InfoPanelDisplay"
+
     var mLayout: FrameLayout? = null
     var viewHolder: ViewHolder? = null
+    var windowManager: WindowManager? = null
+    override fun onCreate() {
+        super.onCreate()
 
-    override fun onServiceConnected() {
-        super.onServiceConnected()
-
-        Log.d(TAG, "Service connected")
+        Log.d(TAG, "Service created")
         // Create an overlay and display the action bar
-        val wm = getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
         mLayout = FrameLayout(this)
-        val lp = WindowManager.LayoutParams()
-        lp.type = WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY
-        lp.format = PixelFormat.TRANSLUCENT
-        lp.flags = lp.flags or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-        lp.width = WindowManager.LayoutParams.MATCH_PARENT
-        lp.height = WindowManager.LayoutParams.WRAP_CONTENT
-        lp.gravity = Gravity.TOP
+
+        val params = WindowManager.LayoutParams(
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.TYPE_PHONE,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                PixelFormat.TRANSLUCENT)
+
+        params.gravity = Gravity.TOP or Gravity.START
+        params.x = 0
+        params.y = 100
+
         val inflater = LayoutInflater.from(this)
         val parent = inflater.inflate(R.layout.action_bar, mLayout)
         viewHolder = ViewHolder(applicationContext, parent)
-        wm.addView(mLayout, lp)
+        try {
+            windowManager?.addView(mLayout, params)
+        } catch (e: Exception) {
+            Log.e(TAG, "", e)
+        }
 
         Bus.observe<InfoPanelClearEvent>()
                 .subscribe { clearPanel() }
@@ -80,10 +90,13 @@ class InfoPanelDisplayService: AccessibilityService() {
                 .registerInBus(this)
     }
 
-    override fun onInterrupt() {
+    override fun onBind(intent: Intent?): IBinder? {
+        return null
     }
 
-    override fun onAccessibilityEvent(event: AccessibilityEvent?) {
+    override fun onDestroy() {
+        super.onDestroy()
+        if (mLayout != null) windowManager?.removeView(mLayout)
     }
 
     private fun handleString(chosenWord: String, string: String) {

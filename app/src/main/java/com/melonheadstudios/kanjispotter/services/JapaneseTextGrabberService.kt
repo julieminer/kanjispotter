@@ -23,6 +23,9 @@ import com.melonheadstudios.kanjispotter.injection.AndroidModule
 import com.melonheadstudios.kanjispotter.injection.DaggerApplicationComponent
 import com.melonheadstudios.kanjispotter.managers.TextManager
 import javax.inject.Inject
+import android.app.ActivityManager
+import android.content.Context
+import android.content.Intent
 
 
 class JapaneseTextGrabberService : AccessibilityService() {
@@ -44,6 +47,12 @@ class JapaneseTextGrabberService : AccessibilityService() {
         info.eventTypes = AccessibilityEvent.TYPES_ALL_MASK
         info.feedbackType = AccessibilityServiceInfo.FEEDBACK_GENERIC
         serviceInfo = info
+
+        val service = Intent(applicationContext, InfoPanelDisplayService::class.java)
+        if (isMyServiceRunning(InfoPanelDisplayService::class.java)) {
+            stopService(service)
+        }
+        startService(service)
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent) {
@@ -52,4 +61,10 @@ class JapaneseTextGrabberService : AccessibilityService() {
 
     override fun onInterrupt() {
     }
+
+    private fun isMyServiceRunning(serviceClass: Class<*>): Boolean {
+        val manager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        return manager.getRunningServices(Integer.MAX_VALUE).any { serviceClass.name == it.service.className }
+    }
+
 }
