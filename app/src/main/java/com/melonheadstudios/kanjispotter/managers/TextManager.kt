@@ -76,6 +76,7 @@ class TextManager {
             Bus.send(InfoPanelSelectionsEvent(components))
             components.forEach {
                 it.getReadings { readings ->
+                    if (readings.isEmpty()) return@getReadings
                     Bus.send(InfoPanelEvent(chosenWord = it, json = readings))
                 }
             }
