@@ -16,7 +16,7 @@ import javax.inject.Singleton
  * Created by jake on 2017-04-15, 10:57 AM
  */
 @Singleton
-class TextManager() {
+class TextManager {
     private fun getEventType(event: AccessibilityEvent): Boolean {
         when (event.eventType) {
             AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED -> return false
