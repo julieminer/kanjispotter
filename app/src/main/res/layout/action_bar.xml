@@ -23,8 +23,8 @@
     android:layout_gravity="center"
     android:layout_margin="16dp"
     android:visibility="gone"
-    card_view:cardCornerRadius="4dp"
     app:cardElevation="8dp"
+    card_view:cardCornerRadius="4dp"
     tools:visibility="visible">
 
     <android.support.constraint.ConstraintLayout
@@ -63,10 +63,20 @@
             android:layout_height="124dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/ad_spot"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/info_button"
             tools:listitem="@layout/list_item" />
+
+        <FrameLayout
+            android:id="@+id/ad_spot"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/info"
+            tools:layout_height="48dp"/>
     </android.support.constraint.ConstraintLayout>
 </android.support.v7.widget.CardView>
