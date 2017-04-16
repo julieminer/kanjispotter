@@ -7,9 +7,9 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
+import android.view.View.*
 import android.widget.ImageButton
+import android.widget.ProgressBar
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -31,6 +31,7 @@ class InfoPanelViewHolder(context: Context, parent: View) {
     val list: RecyclerView = parent.findViewById(R.id.info) as RecyclerView
     val button: ImageButton = parent.findViewById(R.id.info_button) as ImageButton
     val headerList: RecyclerView = parent.findViewById(R.id.info_word) as RecyclerView
+    val progressBar: ProgressBar = parent.findViewById(R.id.progress_bar) as ProgressBar
 
     val fastAdapter = FastAdapter<KanjiListModel>()
     val itemAdapter = ItemAdapter<KanjiListModel>()
@@ -59,8 +60,8 @@ class InfoPanelViewHolder(context: Context, parent: View) {
     }
 
     fun updateView(word: String, string: String) {
+        hideProgress()
         parseJsonString(string, word)
-        makeVisible()
     }
 
     fun updateSelections(selections: List<String>) {
@@ -81,10 +82,24 @@ class InfoPanelViewHolder(context: Context, parent: View) {
     }
 
     fun clearPanel() {
+        showProgress()
+        makeVisible()
         items.clear()
         itemAdapter.set(items)
         headerItems.clear()
         headerItemAdapter.set(headerItems)
+    }
+
+    private fun showProgress() {
+        progressBar.visibility = VISIBLE
+        headerList.visibility = INVISIBLE
+        list.visibility = INVISIBLE
+    }
+
+    private fun hideProgress() {
+        progressBar.visibility = GONE
+        headerList.visibility = VISIBLE
+        list.visibility = VISIBLE
     }
 
     private fun makeVisible() {

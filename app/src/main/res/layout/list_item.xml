@@ -10,13 +10,13 @@
         android:id="@+id/kanji_text"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:gravity="center_vertical"
         android:layout_weight="0.3"
         android:textStyle="bold"
         android:textColor="@android:color/black"
         tools:text="Hello" />
 
     <LinearLayout
+        android:id="@+id/furigana_container"
         android:layout_width="0dp"
         android:layout_weight="0.7"
         android:orientation="vertical"
@@ -27,7 +27,6 @@
             android:id="@+id/furigana_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:textColor="@android:color/black"
             tools:text="world" />
 

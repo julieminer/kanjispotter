@@ -70,17 +70,13 @@ class TextManager {
         if (text.isEmpty()) return
 
         Bus.send(InfoPanelClearEvent())
-
-        Handler().postDelayed({
-            val components = text.split(" ")
-            Bus.send(InfoPanelSelectionsEvent(components))
-            components.forEach {
-                it.getReadings { readings ->
-                    if (readings.isEmpty()) return@getReadings
-                    Bus.send(InfoPanelEvent(chosenWord = it, json = readings))
-                }
+        val components = text.split(" ")
+        Bus.send(InfoPanelSelectionsEvent(components))
+        components.forEach {
+            it.getReadings { readings ->
+                if (readings.isEmpty()) return@getReadings
+                Bus.send(InfoPanelEvent(chosenWord = it, json = readings))
             }
-        }, 250)
-
+        }
     }
 }

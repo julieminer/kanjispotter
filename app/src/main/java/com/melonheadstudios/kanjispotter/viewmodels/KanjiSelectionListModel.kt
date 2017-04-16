@@ -1,8 +1,5 @@
 package com.melonheadstudios.kanjispotter.viewmodels
 
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.View.GONE
@@ -10,9 +7,9 @@ import android.view.View.VISIBLE
 import android.widget.LinearLayout
 import android.widget.RadioButton
 import android.widget.TextView
-import android.widget.Toast
 import com.eightbitlab.rxbus.Bus
 import com.melonheadstudios.kanjispotter.R
+import com.melonheadstudios.kanjispotter.extensions.saveToClipboard
 import com.melonheadstudios.kanjispotter.models.InfoPanelSelectedWordEvent
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.items.AbstractItem
@@ -38,14 +35,7 @@ class KanjiSelectionListModel(val selectedWord: String): AbstractItem<KanjiSelec
         holder.selectedText.text = selectedWord
         holder.radiobutton.isChecked = isSelected
         holder.selectionBackground.setOnClickListener { holder.radiobutton.performClick() }
-        holder.selectionBackground.setOnLongClickListener { v ->
-            val context = v.context
-            val clipboard: ClipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            val clip = ClipData.newPlainText("KanjiSpotter", holder.selectedText.text)
-            clipboard.primaryClip = clip
-            Toast.makeText(context, "Copied ${holder.selectedText.text} to clipboard", Toast.LENGTH_SHORT).show()
-            true
-        }
+        holder.selectionBackground.saveToClipboard(text = holder.selectedText.text as String)
     }
 
     override fun getFactory(): ViewHolderFactory<out ViewHolder> {

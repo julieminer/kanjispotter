@@ -4,8 +4,10 @@ import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import android.widget.LinearLayout
 import android.widget.TextView
 import com.melonheadstudios.kanjispotter.R
+import com.melonheadstudios.kanjispotter.extensions.saveToClipboard
 import com.mikepenz.fastadapter.items.AbstractItem
 import com.mikepenz.fastadapter.utils.ViewHolderFactory
 
@@ -28,6 +30,8 @@ class KanjiListModel(val kanjiText: String, private val readingText: String, val
         holder.furiganaText.text = readingText
         holder.englishText.visibility = if (english.isNullOrEmpty()) GONE else VISIBLE
         holder.englishText.text = english ?: ""
+        holder.kanjiText.saveToClipboard(text = holder.kanjiText.text as String)
+        holder.furiganaContainer.saveToClipboard(text = holder.furiganaText.text as String)
     }
 
     override fun getFactory(): ViewHolderFactory<out ViewHolder> {
@@ -44,6 +48,7 @@ class KanjiListModel(val kanjiText: String, private val readingText: String, val
         var kanjiText: TextView = view.findViewById(R.id.kanji_text) as TextView
         var furiganaText: TextView = view.findViewById(R.id.furigana_text) as TextView
         var englishText: TextView = view.findViewById(R.id.english_text) as TextView
+        var furiganaContainer: LinearLayout = view.findViewById(R.id.furigana_container) as LinearLayout
     }
 
     companion object {
