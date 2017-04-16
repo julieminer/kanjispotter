@@ -24,6 +24,7 @@
     android:layout_margin="16dp"
     android:visibility="gone"
     card_view:cardCornerRadius="4dp"
+    app:cardElevation="8dp"
     tools:visibility="visible">
 
     <android.support.constraint.ConstraintLayout
