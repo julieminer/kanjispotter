@@ -10,10 +10,13 @@ import android.view.View
 import android.view.View.*
 import android.widget.ImageButton
 import android.widget.ProgressBar
+import android.widget.TextView
+import com.eightbitlab.rxbus.Bus
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.melonheadstudios.kanjispotter.R
+import com.melonheadstudios.kanjispotter.models.InfoPanelErrorEvent
 import com.melonheadstudios.kanjispotter.models.JishoResponse
 import com.melonheadstudios.kanjispotter.services.QuickTileService
 import com.mikepenz.fastadapter.FastAdapter
@@ -32,6 +35,7 @@ class InfoPanelViewHolder(context: Context, parent: View) {
     val button: ImageButton = parent.findViewById(R.id.info_button) as ImageButton
     val headerList: RecyclerView = parent.findViewById(R.id.info_word) as RecyclerView
     val progressBar: ProgressBar = parent.findViewById(R.id.progress_bar) as ProgressBar
+    val errorText: TextView = parent.findViewById(R.id.error_text) as TextView
 
     val fastAdapter = FastAdapter<KanjiListModel>()
     val itemAdapter = ItemAdapter<KanjiListModel>()
@@ -60,8 +64,17 @@ class InfoPanelViewHolder(context: Context, parent: View) {
     }
 
     fun updateView(word: String, string: String) {
+        clearError()
         hideProgress()
         parseJsonString(string, word)
+    }
+
+    fun handleError(error: String, showHeader: Boolean) {
+        headerList.visibility = if (showHeader) VISIBLE else INVISIBLE
+        list.visibility = INVISIBLE
+        progressBar.visibility = GONE
+        errorText.visibility = VISIBLE
+        errorText.text = error
     }
 
     fun updateSelections(selections: List<String>) {
@@ -88,6 +101,11 @@ class InfoPanelViewHolder(context: Context, parent: View) {
         itemAdapter.set(items)
         headerItems.clear()
         headerItemAdapter.set(headerItems)
+    }
+
+    private fun clearError() {
+        errorText.visibility = GONE
+        errorText.text = ""
     }
 
     private fun showProgress() {
@@ -158,6 +176,10 @@ class InfoPanelViewHolder(context: Context, parent: View) {
         items = ArrayList(LinkedHashSet(items))
         items.sortBy { it.kanjiText }
         itemAdapter.set(items)
+
+        if (items.isEmpty()) {
+            Bus.send(InfoPanelErrorEvent(errorText = "No data for this selection", showHeaders = true))
+        }
 
         if (headerItems.size > 0) {
             headerFastAdapter.select(0)

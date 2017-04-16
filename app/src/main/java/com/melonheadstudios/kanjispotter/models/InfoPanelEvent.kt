@@ -10,3 +10,4 @@ class InfoPanelClearEvent
 class InfoPanelSelectionsEvent(val selections: List<String>)
 class InfoPanelSelectedWordEvent(val position: Int)
 class InfoPanelDisabledEvent
+class InfoPanelErrorEvent(val errorText: String, val showHeaders: Boolean = false)

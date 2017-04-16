@@ -64,7 +64,11 @@ class InfoPanelDisplayService: Service() {
 
         Bus.observe<InfoPanelEvent>()
                 .subscribe { handleString(it.chosenWord, it.json) }
-                .registerInBus(this) //registers your subscription to unsubscribe it properly later
+                .registerInBus(this)
+
+        Bus.observe<InfoPanelErrorEvent>()
+                .subscribe { handleError(it.errorText, it.showHeaders) }
+                .registerInBus(this)
 
         Bus.observe<InfoPanelSelectionsEvent>()
                 .subscribe { handleSelections(it.selections) }
@@ -87,6 +91,11 @@ class InfoPanelDisplayService: Service() {
     private fun handleString(chosenWord: String, string: String) {
         Log.d(TAG, "handleString: $chosenWord = $string")
         viewHolder?.updateView(chosenWord, string)
+    }
+
+    private fun handleError(errorString: String, showHeaders: Boolean) {
+        Log.d(TAG, "handleError: $errorString")
+        viewHolder?.handleError(errorString, showHeaders)
     }
 
     private fun handleSelections(selections: List<String>) {

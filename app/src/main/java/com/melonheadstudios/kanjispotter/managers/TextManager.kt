@@ -6,6 +6,7 @@ import com.eightbitlab.rxbus.Bus
 import com.melonheadstudios.kanjispotter.extensions.getReadings
 import com.melonheadstudios.kanjispotter.extensions.stringify
 import com.melonheadstudios.kanjispotter.models.InfoPanelClearEvent
+import com.melonheadstudios.kanjispotter.models.InfoPanelErrorEvent
 import com.melonheadstudios.kanjispotter.models.InfoPanelEvent
 import com.melonheadstudios.kanjispotter.models.InfoPanelSelectionsEvent
 import com.melonheadstudios.kanjispotter.utils.JapaneseCharMatcher
@@ -74,7 +75,10 @@ class TextManager {
         Bus.send(InfoPanelSelectionsEvent(components))
         components.forEach {
             it.getReadings { readings ->
-                if (readings.isEmpty()) return@getReadings
+                if (readings.isEmpty()) {
+                    Bus.send(InfoPanelErrorEvent("No data to display. Are you connected to the internet?"))
+                    return@getReadings
+                }
                 Bus.send(InfoPanelEvent(chosenWord = it, json = readings))
             }
         }
