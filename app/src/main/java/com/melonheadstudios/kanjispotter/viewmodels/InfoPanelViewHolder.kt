@@ -100,6 +100,8 @@ class InfoPanelViewHolder(context: Context, parent: View) {
     }
 
     private fun animateVisibility(from: Float, to: Float) {
+        if (container.alpha == to) return
+
         container.alpha = from
         container.scaleX = from
         container.scaleY = from
@@ -118,17 +120,23 @@ class InfoPanelViewHolder(context: Context, parent: View) {
         val jishoResponse = mapper.readValue<JishoResponse>(string)
 
         val dataArray = jishoResponse.data ?: return
-        for ((_, japanese) in dataArray) {
+        for ((_, japanese, senses) in dataArray) {
+
             val japaneseData = japanese ?: continue
-            for ((reading1, word) in japaneseData) {
-                val reading = reading1 ?: ""
-                val wordData = word ?: ""
+            val sensesData = senses ?: continue
 
-                if (wordData.isEmpty() || reading.isEmpty()) {
-                    continue
+            for ((english_definitions) in sensesData) {
+                val definition = english_definitions?.joinToString(", ")
+                for ((reading1, word) in japaneseData) {
+                    val reading = reading1 ?: ""
+                    val wordData = word ?: ""
+
+                    if (wordData.isEmpty() || reading.isEmpty()) {
+                        continue
+                    }
+
+                    items.add(KanjiListModel(wordData, reading, selectedWord, definition))
                 }
-
-                items.add(KanjiListModel(wordData, reading, selectedWord))
             }
         }
 

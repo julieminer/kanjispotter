@@ -2,6 +2,8 @@ package com.melonheadstudios.kanjispotter.viewmodels
 
 import android.support.v7.widget.RecyclerView
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.widget.TextView
 import com.melonheadstudios.kanjispotter.R
 import com.mikepenz.fastadapter.items.AbstractItem
@@ -11,7 +13,7 @@ import com.mikepenz.fastadapter.utils.ViewHolderFactory
  * kanjispotter
  * Created by jake on 2017-04-15, 9:48 PM
  */
-class KanjiListModel(val kanjiText: String, private val readingText: String, val selectedWord: String): AbstractItem<KanjiListModel, KanjiListModel.ViewHolder>() {
+class KanjiListModel(val kanjiText: String, private val readingText: String, val selectedWord: String, val english: String?): AbstractItem<KanjiListModel, KanjiListModel.ViewHolder>() {
     override fun getType(): Int {
         return R.id.KANJI_LIST_MODEL
     }
@@ -24,6 +26,8 @@ class KanjiListModel(val kanjiText: String, private val readingText: String, val
         super.bindView(holder, payloads)
         holder.kanjiText.text = kanjiText
         holder.furiganaText.text = readingText
+        holder.englishText.visibility = if (english.isNullOrEmpty()) GONE else VISIBLE
+        holder.englishText.text = english ?: ""
     }
 
     override fun getFactory(): ViewHolderFactory<out ViewHolder> {
@@ -39,6 +43,7 @@ class KanjiListModel(val kanjiText: String, private val readingText: String, val
     class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
         var kanjiText: TextView = view.findViewById(R.id.kanji_text) as TextView
         var furiganaText: TextView = view.findViewById(R.id.furigana_text) as TextView
+        var englishText: TextView = view.findViewById(R.id.english_text) as TextView
     }
 
     companion object {
