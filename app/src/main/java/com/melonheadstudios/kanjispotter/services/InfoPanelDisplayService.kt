@@ -35,7 +35,7 @@ import com.mikepenz.fastadapter.adapters.ItemAdapter
  * Created by jake on 2017-04-15, 9:17 AM
  */
 class InfoPanelDisplayService: AccessibilityService() {
-    private val TAG = "InfoPanelDisplay"
+    val TAG = "InfoPanelDisplay"
     var mLayout: FrameLayout? = null
     var viewHolder: ViewHolder? = null
 
@@ -102,6 +102,8 @@ class InfoPanelDisplayService: AccessibilityService() {
     }
 
     class ViewHolder(context: Context, parent: View) {
+        private val TAG = "InfoPanelDisplay"
+
         val container: ConstraintLayout = parent.findViewById(R.id.info_panel) as ConstraintLayout
         val list: RecyclerView = parent.findViewById(R.id.info) as RecyclerView
         val button: Button = parent.findViewById(R.id.info_button) as Button
@@ -120,10 +122,6 @@ class InfoPanelDisplayService: AccessibilityService() {
                 makeInvisibile()
             }
 
-            itemAdapter.withFilterPredicate { item, constraint ->
-                val temp = constraint.toString()
-                item.selectedWord != temp
-            }
             list.layoutManager = LinearLayoutManager(context)
             list.layoutManager.isAutoMeasureEnabled = true
             list.itemAnimator = DefaultItemAnimator()
@@ -147,15 +145,14 @@ class InfoPanelDisplayService: AccessibilityService() {
                 headerItems.add(KanjiSelectionListModel(it))
             }
             headerItemAdapter.set(headerItems)
-            if (headerItems.size > 0) {
-                headerFastAdapter.select(0)
-                selectedPosition(0)
-            }
         }
 
         fun selectedPosition(position: Int) {
             val header = headerFastAdapter.getItem(position)
-            itemAdapter.filter(header.selectedWord)
+            itemAdapter.set(items.filter {
+                Log.d(TAG, "Filtering word ${it.selectedWord} w/ ${header.selectedWord}")
+                it.selectedWord == header.selectedWord
+            })
         }
 
         fun makeInvisibile() {
@@ -194,9 +191,14 @@ class InfoPanelDisplayService: AccessibilityService() {
                 }
             }
 
-            items = ArrayList(LinkedHashSet(items));
+            items = ArrayList(LinkedHashSet(items))
             items.sortBy { it.kanjiText }
             itemAdapter.set(items)
+
+            if (headerItems.size > 0) {
+                headerFastAdapter.select(0)
+                selectedPosition(0)
+            }
         }
     }
 }

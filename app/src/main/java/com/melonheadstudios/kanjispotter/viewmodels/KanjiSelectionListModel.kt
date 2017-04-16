@@ -2,6 +2,7 @@ package com.melonheadstudios.kanjispotter.viewmodels
 
 import android.support.v7.widget.RecyclerView
 import android.view.View
+import android.widget.LinearLayout
 import android.widget.RadioButton
 import android.widget.TextView
 import com.eightbitlab.rxbus.Bus
@@ -27,8 +28,11 @@ class KanjiSelectionListModel(val selectedWord: String): AbstractItem<KanjiSelec
 
     override fun bindView(holder: ViewHolder, payloads: List<Any>?) {
         super.bindView(holder, payloads)
+        val resId = if (isSelected) R.drawable.selected_item else R.drawable.unselected_item_background
         holder.selectedText.text = selectedWord
         holder.radiobutton.isChecked = isSelected;
+        holder.selectionBackground.setBackgroundResource(resId)
+        holder.selectionBackground.setOnClickListener { holder.radiobutton.performClick() }
     }
 
     override fun getFactory(): ViewHolderFactory<out ViewHolder> {
@@ -56,6 +60,7 @@ class KanjiSelectionListModel(val selectedWord: String): AbstractItem<KanjiSelec
     class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
         var selectedText: TextView = view.findViewById(R.id.selected_word) as TextView
         var radiobutton: RadioButton = view.findViewById(R.id.radiobutton) as RadioButton
+        var selectionBackground: LinearLayout = view.findViewById(R.id.selection_background) as LinearLayout
     }
 
     class RadioButtonClickEvent: ClickEventHook<KanjiSelectionListModel>() {
