@@ -40,7 +40,10 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+
     compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.android.support:recyclerview-v7:25.3.1'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 
@@ -49,11 +52,17 @@ dependencies {
     kapt 'com.google.dagger:dagger-compiler:2.4'
     provided 'org.glassfish:javax.annotation:10.0-b28'
 
+    // http
     compile 'com.github.kittinunf.fuel:fuel-android:1.5.0' //for Android
     compile 'com.eightbitlab:rxbus:1.0.2'
-    compile 'com.android.support.constraint:constraint-layout:1.0.2'
-
     compile "com.fasterxml.jackson.module:jackson-module-kotlin:2.8.7"
+
+    // recycler
+    compile 'com.timehop.stickyheadersrecyclerview:library:0.4.3@aar'
+    compile('com.mikepenz:fastadapter:2.1.5@aar') {
+        transitive = true
+    }
+    compile 'com.mikepenz:fastadapter-commons:2.1.0@aar'
 }
 
 repositories {
