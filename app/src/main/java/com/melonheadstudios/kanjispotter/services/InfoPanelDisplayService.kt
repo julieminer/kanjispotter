@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.PixelFormat
 import android.os.IBinder
-import android.support.constraint.ConstraintLayout
+import android.support.v7.widget.CardView
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -16,7 +16,6 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.WindowManager
-import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.ImageButton
 import com.eightbitlab.rxbus.Bus
@@ -123,7 +122,7 @@ class InfoPanelDisplayService: Service() {
     class ViewHolder(context: Context, parent: View) {
         private val TAG = "InfoPanelDisplay"
 
-        val container: ConstraintLayout = parent.findViewById(R.id.info_panel) as ConstraintLayout
+        val container: CardView = parent.findViewById(R.id.info_panel) as CardView
         val list: RecyclerView = parent.findViewById(R.id.info) as RecyclerView
         val button: ImageButton = parent.findViewById(R.id.info_button) as ImageButton
         val headerList: RecyclerView = parent.findViewById(R.id.info_word) as RecyclerView
