@@ -5,6 +5,8 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.widget.LinearLayout
 import android.widget.RadioButton
 import android.widget.TextView
@@ -32,10 +34,9 @@ class KanjiSelectionListModel(val selectedWord: String): AbstractItem<KanjiSelec
 
     override fun bindView(holder: ViewHolder, payloads: List<Any>?) {
         super.bindView(holder, payloads)
-        val resId = if (isSelected) R.drawable.selected_item else R.drawable.unselected_item_background
+        holder.underline.visibility = if (isSelected) VISIBLE else GONE
         holder.selectedText.text = selectedWord
         holder.radiobutton.isChecked = isSelected
-        holder.selectionBackground.setBackgroundResource(resId)
         holder.selectionBackground.setOnClickListener { holder.radiobutton.performClick() }
         holder.selectionBackground.setOnLongClickListener { v ->
             val context = v.context
@@ -69,10 +70,12 @@ class KanjiSelectionListModel(val selectedWord: String): AbstractItem<KanjiSelec
     override fun hashCode(): Int {
         return selectedWord.hashCode()
     }
+
     class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
         var selectedText: TextView = view.findViewById(R.id.selected_word) as TextView
         var radiobutton: RadioButton = view.findViewById(R.id.radiobutton) as RadioButton
         var selectionBackground: LinearLayout = view.findViewById(R.id.selection_background) as LinearLayout
+        var underline: LinearLayout = view.findViewById(R.id.selected_underline) as LinearLayout
     }
 
     class RadioButtonClickEvent: ClickEventHook<KanjiSelectionListModel>() {
