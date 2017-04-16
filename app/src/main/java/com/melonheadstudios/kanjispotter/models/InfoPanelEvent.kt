@@ -9,3 +9,4 @@ class InfoPanelEvent(val chosenWord: String, val json: String)
 class InfoPanelClearEvent
 class InfoPanelSelectionsEvent(val selections: List<String>)
 class InfoPanelSelectedWordEvent(val position: Int)
+class InfoPanelDisabledEvent()

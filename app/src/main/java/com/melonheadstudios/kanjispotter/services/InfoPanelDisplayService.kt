@@ -24,6 +24,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.melonheadstudios.kanjispotter.R
 import com.melonheadstudios.kanjispotter.models.*
+import com.melonheadstudios.kanjispotter.services.QuickTileService.Companion.SERVICE_STATUS_FLAG
 import com.melonheadstudios.kanjispotter.viewmodels.KanjiListModel
 import com.melonheadstudios.kanjispotter.viewmodels.KanjiSelectionListModel
 import com.mikepenz.fastadapter.FastAdapter
@@ -72,6 +73,10 @@ class InfoPanelDisplayService: AccessibilityService() {
 
         Bus.observe<InfoPanelSelectedWordEvent>()
                 .subscribe { selectedPosition(it.position) }
+                .registerInBus(this)
+
+        Bus.observe<InfoPanelDisabledEvent>()
+                .subscribe { viewHolder?.makeInvisibile() }
                 .registerInBus(this)
     }
 
@@ -168,7 +173,10 @@ class InfoPanelDisplayService: AccessibilityService() {
         }
 
         private fun makeVisible() {
-            container.visibility = VISIBLE
+            val prefs = container.context.getSharedPreferences(QuickTileService.PREFERENCES_KEY, Context.MODE_PRIVATE)
+            val isActive = prefs.getBoolean(SERVICE_STATUS_FLAG, false)
+            container.visibility = if (isActive) VISIBLE else GONE
+
         }
 
         private fun parseJsonString(string: String, selectedWord: String) {

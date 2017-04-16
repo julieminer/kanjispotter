@@ -19,4 +19,6 @@
     <string name="app_name">Kanji Spotter</string>
     <string name="app_name_info">Kanji Spotter Info Panel</string>
     <string name="power">P</string>
+    <string name="service_active">Active</string>
+    <string name="service_inactive">Inactive</string>
 </resources>
