@@ -23,16 +23,11 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.melonheadstudios.kanjispotter.R
-import com.melonheadstudios.kanjispotter.models.InfoPanelClearEvent
-import com.melonheadstudios.kanjispotter.models.InfoPanelEvent
-import com.melonheadstudios.kanjispotter.models.InfoPanelSelectionsEvent
-import com.melonheadstudios.kanjispotter.models.JishoResponse
+import com.melonheadstudios.kanjispotter.models.*
 import com.melonheadstudios.kanjispotter.viewmodels.KanjiListModel
 import com.melonheadstudios.kanjispotter.viewmodels.KanjiSelectionListModel
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
-import com.melonheadstudios.kanjispotter.viewmodels.KanjiSelectionListModel.RadioButtonClickEvent
-
 
 
 /**
@@ -74,6 +69,10 @@ class InfoPanelDisplayService: AccessibilityService() {
         Bus.observe<InfoPanelSelectionsEvent>()
                 .subscribe { handleSelections(it.selections) }
                 .registerInBus(this)
+
+        Bus.observe<InfoPanelSelectedWordEvent>()
+                .subscribe { selectedPosition(it.position) }
+                .registerInBus(this)
     }
 
     override fun onInterrupt() {
@@ -97,6 +96,11 @@ class InfoPanelDisplayService: AccessibilityService() {
         viewHolder?.clearPanel()
     }
 
+    private fun selectedPosition(position: Int) {
+        Log.d(TAG, "selected position $position")
+        viewHolder?.selectedPosition(position)
+    }
+
     class ViewHolder(context: Context, parent: View) {
         val container: ConstraintLayout = parent.findViewById(R.id.info_panel) as ConstraintLayout
         val list: RecyclerView = parent.findViewById(R.id.info) as RecyclerView
@@ -116,6 +120,10 @@ class InfoPanelDisplayService: AccessibilityService() {
                 makeInvisibile()
             }
 
+            itemAdapter.withFilterPredicate { item, constraint ->
+                val temp = constraint.toString()
+                item.selectedWord != temp
+            }
             list.layoutManager = LinearLayoutManager(context)
             list.layoutManager.isAutoMeasureEnabled = true
             list.itemAnimator = DefaultItemAnimator()
@@ -127,15 +135,9 @@ class InfoPanelDisplayService: AccessibilityService() {
             headerList.adapter = headerItemAdapter.wrap(headerFastAdapter)
 
             headerFastAdapter.withItemEvent(KanjiSelectionListModel.RadioButtonClickEvent())
-
-//            itemAdapter.set(cachedSamples.getObject())
-//            list.setAdapter(stickyHeaderAdapter.wrap(itemAdapter.wrap(headerAdapter.wrap(fastAdapter))))
-//            list.setAdapter(itemAdapter.wrap(fastAdapter))
-//            val decoration = StickyRecyclerHeadersDecoration(stickyHeaderAdapter)
         }
 
         fun updateView(word: String, string: String) {
-//            chosenWord.text =  word
             parseJsonString(string, word)
             makeVisible()
         }
@@ -145,6 +147,15 @@ class InfoPanelDisplayService: AccessibilityService() {
                 headerItems.add(KanjiSelectionListModel(it))
             }
             headerItemAdapter.set(headerItems)
+            if (headerItems.size > 0) {
+                headerFastAdapter.select(0)
+                selectedPosition(0)
+            }
+        }
+
+        fun selectedPosition(position: Int) {
+            val header = headerFastAdapter.getItem(position)
+            itemAdapter.filter(header.selectedWord)
         }
 
         fun makeInvisibile() {

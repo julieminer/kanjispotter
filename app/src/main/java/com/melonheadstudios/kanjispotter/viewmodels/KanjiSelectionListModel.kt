@@ -4,7 +4,9 @@ import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.RadioButton
 import android.widget.TextView
+import com.eightbitlab.rxbus.Bus
 import com.melonheadstudios.kanjispotter.R
+import com.melonheadstudios.kanjispotter.models.InfoPanelSelectedWordEvent
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.items.AbstractItem
 import com.mikepenz.fastadapter.listeners.ClickEventHook
@@ -72,6 +74,7 @@ class KanjiSelectionListModel(val selectedWord: String): AbstractItem<KanjiSelec
                     fastAdapter.notifyItemChanged(selectedPosition)
                 }
                 fastAdapter.select(position)
+                Bus.send(InfoPanelSelectedWordEvent(position))
             }
         }
     }
