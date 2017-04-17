@@ -4,4 +4,5 @@
     <string name="app_name_info">Kanji Spotter Info Panel</string>
     <string name="service_active">Active</string>
     <string name="service_inactive">Inactive</string>
+    <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
 </resources>

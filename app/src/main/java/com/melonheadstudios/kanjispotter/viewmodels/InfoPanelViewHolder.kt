@@ -15,7 +15,10 @@ import com.eightbitlab.rxbus.Bus
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
 import com.melonheadstudios.kanjispotter.R
+import com.melonheadstudios.kanjispotter.R.id.ad_spot
 import com.melonheadstudios.kanjispotter.models.InfoPanelErrorEvent
 import com.melonheadstudios.kanjispotter.models.JishoResponse
 import com.melonheadstudios.kanjispotter.services.QuickTileService
@@ -30,6 +33,7 @@ import com.mikepenz.fastadapter.adapters.ItemAdapter
 class InfoPanelViewHolder(context: Context, parent: View) {
     private val TAG = "InfoPanelViewHolder"
 
+    val adView: AdView = parent.findViewById(R.id.ad_spot) as AdView
     val container: CardView = parent.findViewById(R.id.info_panel) as CardView
     val list: RecyclerView = parent.findViewById(R.id.info) as RecyclerView
     val button: ImageButton = parent.findViewById(R.id.info_button) as ImageButton
@@ -49,6 +53,9 @@ class InfoPanelViewHolder(context: Context, parent: View) {
         button.setOnClickListener {
             makeInvisibile()
         }
+
+        val adRequest = AdRequest.Builder().build()
+        adView.loadAd(adRequest)
 
         list.layoutManager = LinearLayoutManager(context)
         list.layoutManager.isAutoMeasureEnabled = true

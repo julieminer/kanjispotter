@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "132504318589",
+    "firebase_url": "https://kanjispotter.firebaseio.com",
+    "project_id": "kanjispotter",
+    "storage_bucket": "kanjispotter.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:132504318589:android:42fb10d12b0988bc",
+        "android_client_info": {
+          "package_name": "com.melonheadstudios.apps.kanjispotter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "132504318589-6e5rvumo4pjq9uigg5m7s4226v8mloe8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.melonheadstudios.apps.kanjispotter",
+            "certificate_hash": "9fe45a55b1dbfc52c94321bc18e651058cbd1625"
+          }
+        },
+        {
+          "client_id": "132504318589-hhm6tfc64g8oi665ulbbkbrool7fqcus.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBhqHS2SpkxVk8tPBR09apLqbFYU2GbnZ0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "132504318589-hhm6tfc64g8oi665ulbbkbrool7fqcus.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
