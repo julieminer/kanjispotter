@@ -65,8 +65,10 @@ dependencies {
         transitive = true
     }
     compile 'com.mikepenz:fastadapter-commons:2.1.0@aar'
+    compile 'com.github.jrejaud:Onboarder:v1.02'
 }
 
 repositories {
     mavenCentral()
+    maven { url 'https://jitpack.io' }
 }
