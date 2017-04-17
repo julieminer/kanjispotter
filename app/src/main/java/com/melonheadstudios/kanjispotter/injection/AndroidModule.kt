@@ -2,9 +2,13 @@ package com.melonheadstudios.kanjispotter.injection
 
 import android.app.Application
 import android.content.Context
+import com.crashlytics.android.Crashlytics
+import com.google.android.gms.ads.MobileAds
+import com.melonheadstudios.kanjispotter.R
 import com.melonheadstudios.kanjispotter.managers.TextManager
 import dagger.Module
 import dagger.Provides
+import io.fabric.sdk.android.Fabric
 import javax.inject.Singleton
 
 /**
@@ -13,6 +17,11 @@ import javax.inject.Singleton
  */
 @Module
 class AndroidModule(private val application: Application) {
+
+    init {
+        MobileAds.initialize(application, application.getString(R.string.app_ad_unit_id))
+        Fabric.with(application, Crashlytics())
+    }
 
     /**
      * Allow the application context to be injected but require that it be annotated with [ ][ForApplication] to explicitly differentiate it from an activity context.
