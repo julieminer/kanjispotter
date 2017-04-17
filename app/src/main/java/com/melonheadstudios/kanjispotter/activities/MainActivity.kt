@@ -13,17 +13,30 @@ import com.jrejaud.onboarder.OnboardingActivity
 import android.content.Intent
 import android.os.Build
 import android.provider.Settings
+import android.widget.Button
 import com.melonheadstudios.kanjispotter.services.JapaneseTextGrabberService
+import android.util.Log
+
 
 class MainActivity : AppCompatActivity() {
+    var button: Button? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        button = findViewById(R.id.overlay_permission_button) as Button
+
         if (shouldLaunchOnboarding()) {
             launchOnboarding()
         }
+
+        val mainIntent = Intent(Intent.ACTION_MAIN, null)
+        mainIntent.addCategory(Intent.CATEGORY_LAUNCHER)
+        val pkgAppsList = packageManager.queryIntentActivities(mainIntent, 0)
+        pkgAppsList.forEach {
+            Log.d("lists", "name: ${it.loadLabel(packageManager)} ${it.activityInfo.taskAffinity}") }
+
     }
 
     private fun launchOnboarding() {

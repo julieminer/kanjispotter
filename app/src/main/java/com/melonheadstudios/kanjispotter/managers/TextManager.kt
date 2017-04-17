@@ -1,6 +1,5 @@
 package com.melonheadstudios.kanjispotter.managers
 
-import android.os.Handler
 import android.view.accessibility.AccessibilityEvent
 import com.eightbitlab.rxbus.Bus
 import com.melonheadstudios.kanjispotter.extensions.getReadings
