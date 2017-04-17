@@ -78,8 +78,12 @@ class InfoPanelDisplayService: Service() {
                 .subscribe { selectedPosition(it.position) }
                 .registerInBus(this)
 
-        Bus.observe<InfoPanelDisabledEvent>()
-                .subscribe { viewHolder?.makeInvisibile(fromTile = true) }
+        Bus.observe<InfoPanelPreferenceChanged>()
+                .subscribe {
+                    if (!it.enabled) {
+                        viewHolder?.makeInvisibile(fromTile = true)
+                    }
+                }
                 .registerInBus(this)
     }
 

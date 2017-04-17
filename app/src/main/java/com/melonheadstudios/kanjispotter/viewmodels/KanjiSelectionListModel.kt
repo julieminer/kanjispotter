@@ -22,7 +22,7 @@ import com.mikepenz.fastadapter.utils.ViewHolderFactory
  */
 class KanjiSelectionListModel(val selectedWord: String): AbstractItem<KanjiSelectionListModel, KanjiSelectionListModel.ViewHolder>() {
     override fun getType(): Int {
-        return R.id.KANJI_LIST_MODEL
+        return R.id.KANJI_LIST_SELECTION_MODEL
     }
 
     override fun getLayoutRes(): Int {

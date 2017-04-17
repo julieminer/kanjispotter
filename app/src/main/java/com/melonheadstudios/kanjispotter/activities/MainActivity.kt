@@ -13,30 +13,144 @@ import com.jrejaud.onboarder.OnboardingActivity
 import android.content.Intent
 import android.os.Build
 import android.provider.Settings
-import android.widget.Button
+import android.support.v7.widget.DefaultItemAnimator
+import android.support.v7.widget.LinearLayoutManager
 import com.melonheadstudios.kanjispotter.services.JapaneseTextGrabberService
-import android.util.Log
+import android.view.View.GONE
+import android.view.View.VISIBLE
+import com.eightbitlab.rxbus.Bus
+import com.eightbitlab.rxbus.registerInBus
+import com.melonheadstudios.kanjispotter.models.InfoPanelPreferenceChanged
+import com.melonheadstudios.kanjispotter.services.QuickTileService
+import com.melonheadstudios.kanjispotter.viewmodels.BlacklistSelectionModel
+import com.mikepenz.fastadapter.FastAdapter
+import com.mikepenz.fastadapter.adapters.ItemAdapter
+import kotlinx.android.synthetic.main.activity_main.*
 
 
 class MainActivity : AppCompatActivity() {
-    var button: Button? = null
+    val fastAdapter = FastAdapter<BlacklistSelectionModel>()
+    val itemAdapter = ItemAdapter<BlacklistSelectionModel>()
+    var items = ArrayList<BlacklistSelectionModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        button = findViewById(R.id.overlay_permission_button) as Button
-
         if (shouldLaunchOnboarding()) {
             launchOnboarding()
         }
 
+        Bus.observe<InfoPanelPreferenceChanged>()
+                .subscribe { updateUI() }
+                .registerInBus(this)
+
+        report_issue_button.setOnClickListener {
+            // TODO open email to github or something
+        }
+
+        remove_ads_button.setOnClickListener {
+            // TODO open IAP
+        }
+
+        blacklist_switch.setOnCheckedChangeListener { _, isChecked ->
+            setBlacklistEnabled(isChecked)
+            updateUI()
+        }
+
+        blacklist_all_check.setOnCheckedChangeListener { _, isChecked ->
+            selectAllBlacklist(isChecked)
+            updateUI()
+        }
+
+        spotter_overlay_switch.setOnCheckedChangeListener { _, isChecked ->
+            setOverlayEnabled(isChecked)
+            updateUI()
+        }
+
+        blacklist_list.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        blacklist_list.layoutManager.isAutoMeasureEnabled = true
+        blacklist_list.itemAnimator = DefaultItemAnimator()
+        blacklist_list.adapter = itemAdapter.wrap(fastAdapter)
+
+        fastAdapter.withItemEvent(BlacklistSelectionModel.CheckButtonClickEvent())
+
+        updateUI()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        updateUI()
+    }
+
+    private fun updateUI() {
+        remove_ads_button.visibility = if (hasPurchasedPro()) GONE else VISIBLE
+        val overlayDisabled = !isOverlayEnabled()
+        spotter_overlay_switch.isSelected = overlayDisabled
+
+        blacklist_check_container.visibility = if (overlayDisabled) GONE else VISIBLE
+
+        val blacklistEnabled = !overlayDisabled && isBlacklistEnabled()
+        blacklist_switch.isChecked = blacklistEnabled
+        blacklist_list.visibility = if (blacklistEnabled) VISIBLE else GONE
+        blacklist_all_container.visibility = if (blacklistEnabled) VISIBLE else GONE
+        blacklist_all_check.isChecked = allBlacklistChecked()
+        if (blacklistEnabled) {
+            populateBlacklist()
+        }
+    }
+
+    private fun populateBlacklist() {
         val mainIntent = Intent(Intent.ACTION_MAIN, null)
         mainIntent.addCategory(Intent.CATEGORY_LAUNCHER)
         val pkgAppsList = packageManager.queryIntentActivities(mainIntent, 0)
-        pkgAppsList.forEach {
-            Log.d("lists", "name: ${it.loadLabel(packageManager)} ${it.activityInfo.taskAffinity}") }
 
+        items.clear()
+        pkgAppsList.forEach {
+            val appLabel = it.loadLabel(packageManager).toString()
+            val packageName = it.activityInfo.taskAffinity
+            items.add(BlacklistSelectionModel(appName = appLabel, packageName = packageName))
+        }
+        itemAdapter.set(items)
+    }
+
+    private fun hasPurchasedPro(): Boolean {
+        // TODO check if purchased
+        return false
+    }
+
+    private fun setOverlayEnabled(enabled: Boolean) {
+        val prefs = applicationContext.getSharedPreferences(QuickTileService.PREFERENCES_KEY, Context.MODE_PRIVATE)
+        prefs.edit().putBoolean(QuickTileService.SERVICE_STATUS_FLAG, enabled).apply()
+        Bus.send(InfoPanelPreferenceChanged(enabled = enabled))
+    }
+
+    private fun isOverlayEnabled(): Boolean {
+        val prefs = applicationContext.getSharedPreferences(QuickTileService.PREFERENCES_KEY, Context.MODE_PRIVATE)
+        return prefs.getBoolean(QuickTileService.SERVICE_STATUS_FLAG, true)
+    }
+
+    private fun isBlacklistEnabled(): Boolean {
+        val prefs = applicationContext.getSharedPreferences(QuickTileService.PREFERENCES_KEY, Context.MODE_PRIVATE)
+        return prefs.getBoolean(QuickTileService.BLACKLIST_STATUS_FLAG, false)
+    }
+
+    private fun setBlacklistEnabled(enabled: Boolean) {
+        val prefs = applicationContext.getSharedPreferences(QuickTileService.PREFERENCES_KEY, Context.MODE_PRIVATE)
+        prefs.edit().putBoolean(QuickTileService.BLACKLIST_STATUS_FLAG, enabled).apply()
+        if (enabled) {
+            populateBlacklist()
+        }
+    }
+
+    private fun allBlacklistChecked(): Boolean {
+        val prefs = applicationContext.getSharedPreferences(QuickTileService.PREFERENCES_KEY, Context.MODE_PRIVATE)
+        return prefs.getBoolean(QuickTileService.BLACKLIST_SELECTION_STATUS_FLAG, false)
+    }
+
+    private fun selectAllBlacklist(selectedAll: Boolean) {
+        val prefs = applicationContext.getSharedPreferences(QuickTileService.PREFERENCES_KEY, Context.MODE_PRIVATE)
+        prefs.edit().putBoolean(QuickTileService.BLACKLIST_SELECTION_STATUS_FLAG, selectedAll).apply()
     }
 
     private fun launchOnboarding() {

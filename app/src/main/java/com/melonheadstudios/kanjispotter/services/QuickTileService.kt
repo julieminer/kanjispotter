@@ -8,8 +8,9 @@ import android.os.Build
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import com.eightbitlab.rxbus.Bus
+import com.eightbitlab.rxbus.registerInBus
 import com.melonheadstudios.kanjispotter.R
-import com.melonheadstudios.kanjispotter.models.InfoPanelDisabledEvent
+import com.melonheadstudios.kanjispotter.models.InfoPanelPreferenceChanged
 import java.util.*
 
 /**
@@ -20,18 +21,32 @@ import java.util.*
 @TargetApi(Build.VERSION_CODES.N)
 class QuickTileService: TileService() {
 
+    override fun onCreate() {
+        super.onCreate()
+
+        Bus.observe<InfoPanelPreferenceChanged>()
+                .subscribe { updateTile() }
+                .registerInBus(this)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+    }
+
     companion object {
         val SERVICE_STATUS_FLAG = "serviceStatus"
+        val BLACKLIST_STATUS_FLAG = "blacklistEnabled"
+        val BLACKLIST_SELECTION_STATUS_FLAG = "blacklistAllChecked"
         val PREFERENCES_KEY = "com.melonhead.android_quick_settings"
     }
 
     override fun onClick() {
-        updateTile()
+        toggleServiceStatus()
     }
 
     private fun updateTile() {
         val tile = this.qsTile
-        val isActive = toggleServiceStatus()
+        val isActive = getServiceStatus()
 
         val newIcon: Icon
         val newLabel: String
@@ -56,18 +71,19 @@ class QuickTileService: TileService() {
 
         // Need to call updateTile for the tile to pick up changes.
         tile.updateTile()
+    }
 
+    private fun getServiceStatus(): Boolean {
+        val prefs = applicationContext.getSharedPreferences(PREFERENCES_KEY, Context.MODE_PRIVATE)
+        return prefs.getBoolean(SERVICE_STATUS_FLAG, true)
     }
 
     private fun toggleServiceStatus(): Boolean {
-
         val prefs = applicationContext.getSharedPreferences(PREFERENCES_KEY, Context.MODE_PRIVATE)
 
         var isActive = prefs.getBoolean(SERVICE_STATUS_FLAG, true)
         isActive = !isActive
-        if (!isActive) {
-            Bus.send(InfoPanelDisabledEvent())
-        }
+        Bus.send(InfoPanelPreferenceChanged(isActive))
         prefs.edit().putBoolean(SERVICE_STATUS_FLAG, isActive).apply()
 
         return isActive
