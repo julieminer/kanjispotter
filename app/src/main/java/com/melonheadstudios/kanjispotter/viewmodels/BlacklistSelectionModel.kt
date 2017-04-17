@@ -36,7 +36,9 @@ class BlacklistSelectionModel(val sharedPreferences: SharedPreferences, val appN
         holder.checkBox.isChecked = isItemChecked()
         holder.appIcon.setImageDrawable(icon)
         holder.container.setOnClickListener { holder.checkBox.performClick() }
-        holder.checkBox.setOnCheckedChangeListener { _, isChecked -> setItemChecked(isChecked) }
+        holder.checkBox.setOnClickListener {
+            val isChecked = !isItemChecked()
+            setItemChecked(isChecked) }
     }
 
     @SuppressLint("CommitPrefEdits")
