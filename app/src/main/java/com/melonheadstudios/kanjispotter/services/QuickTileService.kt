@@ -78,13 +78,14 @@ class QuickTileService: TileService() {
         return prefs.getBoolean(SERVICE_STATUS_FLAG, true)
     }
 
+    @SuppressLint("CommitPrefEdits")
     private fun toggleServiceStatus(): Boolean {
         val prefs = applicationContext.getSharedPreferences(PREFERENCES_KEY, Context.MODE_PRIVATE)
 
         var isActive = prefs.getBoolean(SERVICE_STATUS_FLAG, true)
         isActive = !isActive
+        prefs.edit().putBoolean(SERVICE_STATUS_FLAG, isActive).commit()
         Bus.send(InfoPanelPreferenceChanged(isActive))
-        prefs.edit().putBoolean(SERVICE_STATUS_FLAG, isActive).apply()
 
         return isActive
     }

@@ -53,7 +53,8 @@ class MainActivity : AppCompatActivity() {
             // TODO open IAP
         }
 
-        blacklist_switch.setOnCheckedChangeListener { _, isChecked ->
+        blacklist_switch.setOnClickListener {
+            val isChecked = !isBlacklistEnabled()
             setBlacklistEnabled(isChecked)
             updateUI()
         }
@@ -63,12 +64,13 @@ class MainActivity : AppCompatActivity() {
             updateUI()
         }
 
-        spotter_overlay_switch.setOnCheckedChangeListener { _, isChecked ->
+        spotter_overlay_switch.setOnClickListener {
+            val isChecked = !isOverlayEnabled()
             setOverlayEnabled(isChecked)
             updateUI()
         }
 
-        blacklist_list.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        blacklist_list.layoutManager = LinearLayoutManager(this)
         blacklist_list.layoutManager.isAutoMeasureEnabled = true
         blacklist_list.itemAnimator = DefaultItemAnimator()
         blacklist_list.adapter = itemAdapter.wrap(fastAdapter)
@@ -85,12 +87,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateUI() {
         remove_ads_button.visibility = if (hasPurchasedPro()) GONE else VISIBLE
-        val overlayDisabled = !isOverlayEnabled()
-        spotter_overlay_switch.isSelected = overlayDisabled
+        val overlayEnabled = isOverlayEnabled()
+        spotter_overlay_switch.isChecked = overlayEnabled
+        blacklist_check_container.visibility = if (overlayEnabled) VISIBLE else GONE
 
-        blacklist_check_container.visibility = if (overlayDisabled) GONE else VISIBLE
-
-        val blacklistEnabled = !overlayDisabled && isBlacklistEnabled()
+        val blacklistEnabled = overlayEnabled && isBlacklistEnabled()
         blacklist_switch.isChecked = blacklistEnabled
         blacklist_list.visibility = if (blacklistEnabled) VISIBLE else GONE
         blacklist_all_container.visibility = if (blacklistEnabled) VISIBLE else GONE
@@ -106,9 +107,9 @@ class MainActivity : AppCompatActivity() {
         val pkgAppsList = packageManager.queryIntentActivities(mainIntent, 0)
 
         items.clear()
-        pkgAppsList.forEach {
-            val appLabel = it.loadLabel(packageManager).toString()
-            val packageName = it.activityInfo.taskAffinity
+        for (app in pkgAppsList) {
+            val appLabel = app.loadLabel(packageManager).toString()
+            val packageName = app.activityInfo.taskAffinity ?: continue
             items.add(BlacklistSelectionModel(appName = appLabel, packageName = packageName))
         }
         itemAdapter.set(items)
@@ -119,9 +120,10 @@ class MainActivity : AppCompatActivity() {
         return false
     }
 
+    @SuppressLint("CommitPrefEdits")
     private fun setOverlayEnabled(enabled: Boolean) {
         val prefs = applicationContext.getSharedPreferences(QuickTileService.PREFERENCES_KEY, Context.MODE_PRIVATE)
-        prefs.edit().putBoolean(QuickTileService.SERVICE_STATUS_FLAG, enabled).apply()
+        prefs.edit().putBoolean(QuickTileService.SERVICE_STATUS_FLAG, enabled).commit()
         Bus.send(InfoPanelPreferenceChanged(enabled = enabled))
     }
 

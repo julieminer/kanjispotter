@@ -42,7 +42,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="start"
-                android:text="Disable Kanji Spotter" />
+                android:text="Enabled Kanji Spotter Overlay" />
 
             <android.support.v4.widget.Space
                 android:layout_width="0dp"
@@ -110,7 +110,9 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         tools:listitem="@layout/blacklist_item"
-        android:layout_margin="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
         app:layout_constraintTop_toBottomOf="@id/general_container"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"

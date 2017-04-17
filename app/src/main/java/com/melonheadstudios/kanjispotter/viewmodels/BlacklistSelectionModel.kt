@@ -49,9 +49,9 @@ class BlacklistSelectionModel(val appName: String, val packageName: String): Abs
     }
 
     class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
-        var appName: TextView = view.findViewById(R.id.selected_word) as TextView
-        var checkBox: CheckBox = view.findViewById(R.id.radiobutton) as CheckBox
-        var container: LinearLayout = view.findViewById(R.id.selection_background) as LinearLayout
+        var appName: TextView = view.findViewById(R.id.app_name) as TextView
+        var checkBox: CheckBox = view.findViewById(R.id.app_blacklisted) as CheckBox
+        var container: LinearLayout = view.findViewById(R.id.app_container) as LinearLayout
     }
 
     class CheckButtonClickEvent: ClickEventHook<BlacklistSelectionModel>() {
