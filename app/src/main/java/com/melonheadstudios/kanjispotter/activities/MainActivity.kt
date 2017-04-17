@@ -82,10 +82,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        updateUI()
+        updateUI(forceRepopulate = true)
     }
 
-    private fun updateUI() {
+    private fun updateUI(forceRepopulate: Boolean = false) {
         remove_ads_button.visibility = if (hasPurchasedPro()) GONE else VISIBLE
         val overlayEnabled = isOverlayEnabled()
         spotter_overlay_switch.isChecked = overlayEnabled
@@ -97,23 +97,28 @@ class MainActivity : AppCompatActivity() {
         blacklist_all_container.visibility = if (blacklistEnabled) VISIBLE else GONE
         blacklist_all_check.isChecked = allBlacklistChecked()
         if (blacklistEnabled) {
-            populateBlacklist()
+            populateBlacklist(forceRepopulate = forceRepopulate)
         }
     }
 
-    private fun populateBlacklist() {
+    private fun populateBlacklist(forceRepopulate: Boolean = false) {
         val mainIntent = Intent(Intent.ACTION_MAIN, null)
         mainIntent.addCategory(Intent.CATEGORY_LAUNCHER)
         val pkgAppsList = packageManager.queryIntentActivities(mainIntent, 0)
+
+        if (!forceRepopulate && items.isNotEmpty()) return
+
+        val prefs = applicationContext.getSharedPreferences(QuickTileService.PREFERENCES_KEY, Context.MODE_PRIVATE)
 
         items.clear()
         for (app in pkgAppsList) {
             val appLabel = app.loadLabel(packageManager).toString()
             val packageName = app.activityInfo.taskAffinity ?: continue
-            items.add(BlacklistSelectionModel(appName = appLabel, packageName = packageName))
+            val packageIcon = app.loadIcon(packageManager)
+            items.add(BlacklistSelectionModel(sharedPreferences = prefs, appName = appLabel, packageName = packageName, icon = packageIcon))
         }
-
-        itemAdapter.set(items.sortedBy { it.appName })
+        items.sortBy { it.appName }
+        itemAdapter.set(items)
     }
 
     private fun hasPurchasedPro(): Boolean {
@@ -151,9 +156,17 @@ class MainActivity : AppCompatActivity() {
         return prefs.getBoolean(QuickTileService.BLACKLIST_SELECTION_STATUS_FLAG, false)
     }
 
+    @SuppressLint("CommitPrefEdits")
     private fun selectAllBlacklist(selectedAll: Boolean) {
         val prefs = applicationContext.getSharedPreferences(QuickTileService.PREFERENCES_KEY, Context.MODE_PRIVATE)
-        prefs.edit().putBoolean(QuickTileService.BLACKLIST_SELECTION_STATUS_FLAG, selectedAll).apply()
+        val edit = prefs.edit()
+        edit.putBoolean(QuickTileService.BLACKLIST_SELECTION_STATUS_FLAG, selectedAll)
+        for (item in items) {
+            edit.putBoolean(QuickTileService.APP_BLACKLISTED + item.packageName, selectedAll)
+        }
+        edit.commit()
+
+        itemAdapter.set(items)
     }
 
     private fun launchOnboarding() {

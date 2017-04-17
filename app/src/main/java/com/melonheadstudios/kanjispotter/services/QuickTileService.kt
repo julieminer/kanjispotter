@@ -37,6 +37,7 @@ class QuickTileService: TileService() {
         val SERVICE_STATUS_FLAG = "serviceStatus"
         val BLACKLIST_STATUS_FLAG = "blacklistEnabled"
         val BLACKLIST_SELECTION_STATUS_FLAG = "blacklistAllChecked"
+        val APP_BLACKLISTED = "appBlacklisted:"
         val PREFERENCES_KEY = "com.melonhead.android_quick_settings"
     }
 
