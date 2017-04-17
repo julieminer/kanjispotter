@@ -46,24 +46,16 @@ class KanjiOnboardingActivity: BaseOnboardingActivity() {
     @SuppressLint("NewApi")
     override fun onResume() {
         super.onResume()
-        if (userSettingOverlay && !userSettingAccessibility) {
-            if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.M || Settings.canDrawOverlays(this)) {
-                // user can move on
-                goToNextFragment(0)
-            }
-        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE) {
             if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.M || Settings.canDrawOverlays(this)) {
-                goToNextFragment(1)
+                goToNextFragment(0)
             }
         } else if (requestCode == ACTION_ACESSIBILITY_REQUEST_CODE) {
             if (isMyServiceRunning(JapaneseTextGrabberService::class.java)) {
-                goToNextFragment(2)
-            } else {
-
+                goToNextFragment(1)
             }
         }
     }

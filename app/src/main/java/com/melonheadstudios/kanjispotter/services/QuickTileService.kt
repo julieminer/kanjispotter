@@ -63,7 +63,7 @@ class QuickTileService: TileService() {
 
         val prefs = applicationContext.getSharedPreferences(PREFERENCES_KEY, Context.MODE_PRIVATE)
 
-        var isActive = prefs.getBoolean(SERVICE_STATUS_FLAG, false)
+        var isActive = prefs.getBoolean(SERVICE_STATUS_FLAG, true)
         isActive = !isActive
         if (!isActive) {
             Bus.send(InfoPanelDisabledEvent())
