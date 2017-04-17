@@ -79,7 +79,7 @@ class InfoPanelDisplayService: Service() {
                 .registerInBus(this)
 
         Bus.observe<InfoPanelDisabledEvent>()
-                .subscribe { viewHolder?.makeInvisibile() }
+                .subscribe { viewHolder?.makeInvisibile(fromTile = true) }
                 .registerInBus(this)
     }
 

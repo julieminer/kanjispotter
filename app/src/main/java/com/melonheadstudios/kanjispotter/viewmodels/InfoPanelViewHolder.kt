@@ -127,9 +127,14 @@ class InfoPanelViewHolder(context: Context, parent: View) {
         animateVisibility(from = 0f, to = 1f)
     }
 
-    fun makeInvisibile() {
-        animateVisibility(from = 1f, to = 0f)
+    fun makeInvisibile(fromTile: Boolean = false) {
         clearPanel()
+        if (!fromTile) {
+            animateVisibility(from = 1f, to = 0f)
+        } else {
+            container.visibility = GONE
+        }
+
     }
 
     private fun animateVisibility(from: Float, to: Float) {
