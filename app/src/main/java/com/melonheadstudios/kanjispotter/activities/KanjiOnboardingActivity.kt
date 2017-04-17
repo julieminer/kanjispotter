@@ -7,6 +7,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import com.jrejaud.onboarder.OnboardingActivity
 import com.melonheadstudios.kanjispotter.services.JapaneseTextGrabberService
 
 
@@ -14,7 +15,7 @@ import com.melonheadstudios.kanjispotter.services.JapaneseTextGrabberService
  * kanjispotter
  * Created by jake on 2017-04-16, 5:23 PM
  */
-class KanjiOnboardingActivity: BaseOnboardingActivity() {
+class KanjiOnboardingActivity: OnboardingActivity() {
     val ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE: Int = 5469
     val ACTION_ACESSIBILITY_REQUEST_CODE: Int = 5269
 
@@ -39,6 +40,9 @@ class KanjiOnboardingActivity: BaseOnboardingActivity() {
                 } else {
                     goToNextFragment(position)
                 }
+            }
+            2 -> {
+                goToNextFragment(position)
             }
         }
     }

@@ -65,7 +65,7 @@ dependencies {
         transitive = true
     }
     compile 'com.mikepenz:fastadapter-commons:2.1.0@aar'
-    compile 'com.github.jrejaud:Onboarder:v1.02'
+    compile 'com.github.jacobminer:Onboarder:master-SNAPSHOT'
 }
 
 repositories {
