@@ -37,13 +37,14 @@
             android:label="@string/app_name_info" />
 
         <activity android:name=".activities.MainActivity"
-            android:theme="@style/AppTheme"
-            android:launchMode="singleTask">
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".activities.KanjiOnboardingActivity"
+            android:theme="@style/AppTheme" />
     </application>
 
 </manifest>

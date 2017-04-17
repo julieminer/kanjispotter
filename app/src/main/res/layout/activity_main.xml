@@ -3,6 +3,44 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.melonheadstudios.kanjispotter.activities.MainActivity">
+
+    <TextView
+        android:id="@+id/welcome_string"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        style="@style/TextAppearance.AppCompat.Medium"
+        android:layout_margin="16dp"
+        android:text="Welcome to Kanji Spotter!"/>
+
+    <LinearLayout
+        android:id="@+id/permission_container"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/welcome_string"
+        android:orientation="vertical"
+        android:layout_margin="16dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+
+        <TextView
+            android:id="@+id/permission_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:text="Kanji Spotter requires an additional permission in order to draw over other apps."/>
+
+        <Button
+            android:id="@+id/overlay_permission_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Enable Permission" />
+    </LinearLayout>
+
 
 </android.support.constraint.ConstraintLayout>

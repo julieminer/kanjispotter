@@ -122,7 +122,7 @@ class InfoPanelViewHolder(context: Context, parent: View) {
 
     private fun makeVisible() {
         val prefs = container.context.getSharedPreferences(QuickTileService.PREFERENCES_KEY, Context.MODE_PRIVATE)
-        val isActive = prefs.getBoolean(QuickTileService.SERVICE_STATUS_FLAG, false)
+        val isActive = prefs.getBoolean(QuickTileService.SERVICE_STATUS_FLAG, true)
         container.visibility = if (isActive) VISIBLE else GONE
         animateVisibility(from = 0f, to = 1f)
     }
