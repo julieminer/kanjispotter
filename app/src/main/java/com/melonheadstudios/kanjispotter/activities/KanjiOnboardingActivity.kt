@@ -29,7 +29,7 @@ class KanjiOnboardingActivity: OnboardingActivity() {
                     val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + packageName))
                     startActivityForResult(intent, ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE)
                 } else {
-                    goToNextFragment(position)
+                    super.onOnboardingClick(position)
                 }
             }
             1 -> {
@@ -38,11 +38,11 @@ class KanjiOnboardingActivity: OnboardingActivity() {
                     val intent = Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS)
                     startActivityForResult(intent, ACTION_ACESSIBILITY_REQUEST_CODE)
                 } else {
-                    goToNextFragment(position)
+                    super.onOnboardingClick(position)
                 }
             }
             2 -> {
-                goToNextFragment(position)
+                super.onOnboardingClick(position)
             }
         }
     }
@@ -55,11 +55,11 @@ class KanjiOnboardingActivity: OnboardingActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE) {
             if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.M || Settings.canDrawOverlays(this)) {
-                goToNextFragment(0)
+                super.onOnboardingClick(0)
             }
         } else if (requestCode == ACTION_ACESSIBILITY_REQUEST_CODE) {
             if (isMyServiceRunning(JapaneseTextGrabberService::class.java)) {
-                goToNextFragment(1)
+                super.onOnboardingClick(1)
             }
         }
     }
