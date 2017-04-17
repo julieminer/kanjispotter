@@ -88,8 +88,6 @@
             app:layout_constraintTop_toBottomOf="@id/info"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            android:layout_centerVertical="true"
-            android:layout_alignParentBottom="true"
             ads:adSize="BANNER"
             ads:adUnitId="@string/banner_ad_unit_id">
         </com.google.android.gms.ads.AdView>

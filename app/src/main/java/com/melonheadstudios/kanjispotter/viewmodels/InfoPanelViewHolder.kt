@@ -17,6 +17,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
+import com.melonheadstudios.kanjispotter.BuildConfig
 import com.melonheadstudios.kanjispotter.R
 import com.melonheadstudios.kanjispotter.R.id.ad_spot
 import com.melonheadstudios.kanjispotter.models.InfoPanelErrorEvent
@@ -30,7 +31,7 @@ import com.mikepenz.fastadapter.adapters.ItemAdapter
  * Created by jake on 2017-04-16, 2:09 PM
  */
 
-class InfoPanelViewHolder(context: Context, parent: View) {
+class InfoPanelViewHolder(val context: Context, parent: View) {
     private val TAG = "InfoPanelViewHolder"
 
     val adView: AdView = parent.findViewById(R.id.ad_spot) as AdView
@@ -54,8 +55,12 @@ class InfoPanelViewHolder(context: Context, parent: View) {
             makeInvisibile()
         }
 
-        val adRequest = AdRequest.Builder().build()
-        adView.loadAd(adRequest)
+        if (!BuildConfig.DEBUG) {
+            val adRequest = AdRequest.Builder().build()
+            adView.loadAd(adRequest)
+        } else {
+            adView.visibility = GONE
+        }
 
         list.layoutManager = LinearLayoutManager(context)
         list.layoutManager.isAutoMeasureEnabled = true
