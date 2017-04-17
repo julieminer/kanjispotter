@@ -19,7 +19,6 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.melonheadstudios.kanjispotter.BuildConfig
 import com.melonheadstudios.kanjispotter.R
-import com.melonheadstudios.kanjispotter.R.id.ad_spot
 import com.melonheadstudios.kanjispotter.models.InfoPanelErrorEvent
 import com.melonheadstudios.kanjispotter.models.JishoResponse
 import com.melonheadstudios.kanjispotter.services.QuickTileService
