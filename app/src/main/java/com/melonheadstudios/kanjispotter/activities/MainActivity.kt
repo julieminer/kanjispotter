@@ -112,7 +112,8 @@ class MainActivity : AppCompatActivity() {
             val packageName = app.activityInfo.taskAffinity ?: continue
             items.add(BlacklistSelectionModel(appName = appLabel, packageName = packageName))
         }
-        itemAdapter.set(items)
+
+        itemAdapter.set(items.sortedBy { it.appName })
     }
 
     private fun hasPurchasedPro(): Boolean {
