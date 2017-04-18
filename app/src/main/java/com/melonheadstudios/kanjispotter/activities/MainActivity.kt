@@ -30,7 +30,6 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
-import android.net.Uri.fromParts
 import com.melonheadstudios.kanjispotter.BuildConfig
 
 
