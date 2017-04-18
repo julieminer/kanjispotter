@@ -3,29 +3,32 @@ package com.melonheadstudios.kanjispotter.activities
 import android.annotation.SuppressLint
 import android.app.ActivityManager
 import android.content.Context
-import android.support.v7.app.AppCompatActivity
-import android.os.Bundle
-
-import com.melonheadstudios.kanjispotter.R
-import com.jrejaud.onboarder.OnboardingPage
-import java.util.*
-import com.jrejaud.onboarder.OnboardingActivity
 import android.content.Intent
 import android.os.Build
+import android.os.Bundle
 import android.provider.Settings
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.LinearLayoutManager
-import com.melonheadstudios.kanjispotter.services.JapaneseTextGrabberService
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import com.eightbitlab.rxbus.Bus
 import com.eightbitlab.rxbus.registerInBus
+import com.jrejaud.onboarder.OnboardingActivity
+import com.jrejaud.onboarder.OnboardingPage
+import com.melonheadstudios.kanjispotter.R
 import com.melonheadstudios.kanjispotter.models.InfoPanelPreferenceChanged
-import com.melonheadstudios.kanjispotter.services.QuickTileService
+import com.melonheadstudios.kanjispotter.services.JapaneseTextGrabberService
+import com.melonheadstudios.kanjispotter.utils.Constants.Companion.APP_BLACKLISTED
+import com.melonheadstudios.kanjispotter.utils.Constants.Companion.BLACKLIST_SELECTION_STATUS_FLAG
+import com.melonheadstudios.kanjispotter.utils.Constants.Companion.BLACKLIST_STATUS_FLAG
+import com.melonheadstudios.kanjispotter.utils.Constants.Companion.PREFERENCES_KEY
+import com.melonheadstudios.kanjispotter.utils.Constants.Companion.SERVICE_STATUS_FLAG
 import com.melonheadstudios.kanjispotter.viewmodels.BlacklistSelectionModel
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import kotlinx.android.synthetic.main.activity_main.*
+import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -50,7 +53,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         remove_ads_button.setOnClickListener {
-//            startActivity(Intent(this, RemoveAdsActivity::class.java))
+            startActivity(Intent(this, RemoveAdsActivity::class.java))
         }
 
         blacklist_switch.setOnClickListener {
@@ -108,7 +111,7 @@ class MainActivity : AppCompatActivity() {
 
         if (!forceRepopulate && items.isNotEmpty()) return
 
-        val prefs = applicationContext.getSharedPreferences(QuickTileService.PREFERENCES_KEY, Context.MODE_PRIVATE)
+        val prefs = applicationContext.getSharedPreferences(PREFERENCES_KEY, Context.MODE_PRIVATE)
 
         items.clear()
         for (app in pkgAppsList) {
@@ -128,41 +131,41 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("CommitPrefEdits")
     private fun setOverlayEnabled(enabled: Boolean) {
-        val prefs = applicationContext.getSharedPreferences(QuickTileService.PREFERENCES_KEY, Context.MODE_PRIVATE)
-        prefs.edit().putBoolean(QuickTileService.SERVICE_STATUS_FLAG, enabled).commit()
+        val prefs = applicationContext.getSharedPreferences(PREFERENCES_KEY, Context.MODE_PRIVATE)
+        prefs.edit().putBoolean(SERVICE_STATUS_FLAG, enabled).commit()
         Bus.send(InfoPanelPreferenceChanged(enabled = enabled))
     }
 
     private fun isOverlayEnabled(): Boolean {
-        val prefs = applicationContext.getSharedPreferences(QuickTileService.PREFERENCES_KEY, Context.MODE_PRIVATE)
-        return prefs.getBoolean(QuickTileService.SERVICE_STATUS_FLAG, true)
+        val prefs = applicationContext.getSharedPreferences(PREFERENCES_KEY, Context.MODE_PRIVATE)
+        return prefs.getBoolean(SERVICE_STATUS_FLAG, true)
     }
 
     private fun isBlacklistEnabled(): Boolean {
-        val prefs = applicationContext.getSharedPreferences(QuickTileService.PREFERENCES_KEY, Context.MODE_PRIVATE)
-        return prefs.getBoolean(QuickTileService.BLACKLIST_STATUS_FLAG, false)
+        val prefs = applicationContext.getSharedPreferences(PREFERENCES_KEY, Context.MODE_PRIVATE)
+        return prefs.getBoolean(BLACKLIST_STATUS_FLAG, false)
     }
 
     private fun setBlacklistEnabled(enabled: Boolean) {
-        val prefs = applicationContext.getSharedPreferences(QuickTileService.PREFERENCES_KEY, Context.MODE_PRIVATE)
-        prefs.edit().putBoolean(QuickTileService.BLACKLIST_STATUS_FLAG, enabled).apply()
+        val prefs = applicationContext.getSharedPreferences(PREFERENCES_KEY, Context.MODE_PRIVATE)
+        prefs.edit().putBoolean(BLACKLIST_STATUS_FLAG, enabled).apply()
         if (enabled) {
             populateBlacklist()
         }
     }
 
     private fun allBlacklistChecked(): Boolean {
-        val prefs = applicationContext.getSharedPreferences(QuickTileService.PREFERENCES_KEY, Context.MODE_PRIVATE)
-        return prefs.getBoolean(QuickTileService.BLACKLIST_SELECTION_STATUS_FLAG, false)
+        val prefs = applicationContext.getSharedPreferences(PREFERENCES_KEY, Context.MODE_PRIVATE)
+        return prefs.getBoolean(BLACKLIST_SELECTION_STATUS_FLAG, false)
     }
 
     @SuppressLint("CommitPrefEdits")
     private fun selectAllBlacklist(selectedAll: Boolean) {
-        val prefs = applicationContext.getSharedPreferences(QuickTileService.PREFERENCES_KEY, Context.MODE_PRIVATE)
+        val prefs = applicationContext.getSharedPreferences(PREFERENCES_KEY, Context.MODE_PRIVATE)
         val edit = prefs.edit()
-        edit.putBoolean(QuickTileService.BLACKLIST_SELECTION_STATUS_FLAG, selectedAll)
+        edit.putBoolean(BLACKLIST_SELECTION_STATUS_FLAG, selectedAll)
         for (item in items) {
-            edit.putBoolean(QuickTileService.APP_BLACKLISTED + item.packageName, selectedAll)
+            edit.putBoolean(APP_BLACKLISTED + item.packageName, selectedAll)
         }
         edit.commit()
 

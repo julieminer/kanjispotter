@@ -10,7 +10,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.melonheadstudios.kanjispotter.R
-import com.melonheadstudios.kanjispotter.services.QuickTileService
+import com.melonheadstudios.kanjispotter.utils.Constants.Companion.APP_BLACKLISTED
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.items.AbstractItem
 import com.mikepenz.fastadapter.listeners.ClickEventHook
@@ -43,11 +43,11 @@ class BlacklistSelectionModel(val sharedPreferences: SharedPreferences, val appN
 
     @SuppressLint("CommitPrefEdits")
     private fun setItemChecked(isChecked: Boolean) {
-        sharedPreferences.edit().putBoolean(QuickTileService.APP_BLACKLISTED + packageName, isChecked).commit()
+        sharedPreferences.edit().putBoolean(APP_BLACKLISTED + packageName, isChecked).commit()
     }
 
     private fun isItemChecked(): Boolean {
-        return sharedPreferences.getBoolean(QuickTileService.APP_BLACKLISTED + packageName, false)
+        return sharedPreferences.getBoolean(APP_BLACKLISTED + packageName, false)
     }
 
     override fun getFactory(): ViewHolderFactory<out ViewHolder> {

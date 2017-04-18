@@ -11,6 +11,8 @@ import com.eightbitlab.rxbus.Bus
 import com.eightbitlab.rxbus.registerInBus
 import com.melonheadstudios.kanjispotter.R
 import com.melonheadstudios.kanjispotter.models.InfoPanelPreferenceChanged
+import com.melonheadstudios.kanjispotter.utils.Constants.Companion.PREFERENCES_KEY
+import com.melonheadstudios.kanjispotter.utils.Constants.Companion.SERVICE_STATUS_FLAG
 import java.util.*
 
 /**
@@ -31,14 +33,6 @@ class QuickTileService: TileService() {
 
     override fun onDestroy() {
         super.onDestroy()
-    }
-
-    companion object {
-        val SERVICE_STATUS_FLAG = "serviceStatus"
-        val BLACKLIST_STATUS_FLAG = "blacklistEnabled"
-        val BLACKLIST_SELECTION_STATUS_FLAG = "blacklistAllChecked"
-        val APP_BLACKLISTED = "appBlacklisted:"
-        val PREFERENCES_KEY = "com.melonhead.android_quick_settings"
     }
 
     override fun onClick() {

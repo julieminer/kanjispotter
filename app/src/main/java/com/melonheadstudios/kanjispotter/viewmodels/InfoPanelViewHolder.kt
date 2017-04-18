@@ -21,7 +21,8 @@ import com.melonheadstudios.kanjispotter.BuildConfig
 import com.melonheadstudios.kanjispotter.R
 import com.melonheadstudios.kanjispotter.models.InfoPanelErrorEvent
 import com.melonheadstudios.kanjispotter.models.JishoResponse
-import com.melonheadstudios.kanjispotter.services.QuickTileService
+import com.melonheadstudios.kanjispotter.utils.Constants.Companion.PREFERENCES_KEY
+import com.melonheadstudios.kanjispotter.utils.Constants.Companion.SERVICE_STATUS_FLAG
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 
@@ -132,8 +133,8 @@ class InfoPanelViewHolder(val context: Context, parent: View) {
     }
 
     private fun makeVisible() {
-        val prefs = container.context.getSharedPreferences(QuickTileService.PREFERENCES_KEY, Context.MODE_PRIVATE)
-        val isActive = prefs.getBoolean(QuickTileService.SERVICE_STATUS_FLAG, true)
+        val prefs = container.context.getSharedPreferences(PREFERENCES_KEY, Context.MODE_PRIVATE)
+        val isActive = prefs.getBoolean(SERVICE_STATUS_FLAG, true)
         container.visibility = if (isActive) VISIBLE else GONE
         animateVisibility(from = 0f, to = 1f)
     }

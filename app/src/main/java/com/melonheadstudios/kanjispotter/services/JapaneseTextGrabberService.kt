@@ -12,6 +12,9 @@ import com.melonheadstudios.kanjispotter.MainApplication
 import com.melonheadstudios.kanjispotter.injection.AndroidModule
 import com.melonheadstudios.kanjispotter.injection.DaggerApplicationComponent
 import com.melonheadstudios.kanjispotter.managers.TextManager
+import com.melonheadstudios.kanjispotter.utils.Constants.Companion.APP_BLACKLISTED
+import com.melonheadstudios.kanjispotter.utils.Constants.Companion.BLACKLIST_STATUS_FLAG
+import com.melonheadstudios.kanjispotter.utils.Constants.Companion.PREFERENCES_KEY
 import javax.inject.Inject
 
 
@@ -28,7 +31,7 @@ class JapaneseTextGrabberService : AccessibilityService() {
         MainApplication.graph = DaggerApplicationComponent.builder().androidModule(AndroidModule(application)).build()
         MainApplication.graph.inject(this)
 
-        prefs = applicationContext.getSharedPreferences(QuickTileService.PREFERENCES_KEY, Context.MODE_PRIVATE)
+        prefs = applicationContext.getSharedPreferences(PREFERENCES_KEY, Context.MODE_PRIVATE)
 
         Log.d(TAG, "Service connected")
 
@@ -46,9 +49,9 @@ class JapaneseTextGrabberService : AccessibilityService() {
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent) {
-        val blackListEnabled = prefs?.getBoolean(QuickTileService.BLACKLIST_STATUS_FLAG, false) ?: false
+        val blackListEnabled = prefs?.getBoolean(BLACKLIST_STATUS_FLAG, false) ?: false
         if (blackListEnabled) {
-            val appBlacklisted = prefs?.getBoolean(QuickTileService.APP_BLACKLISTED + event.packageName, false) ?: false
+            val appBlacklisted = prefs?.getBoolean(APP_BLACKLISTED + event.packageName, false) ?: false
             if (appBlacklisted) return
         }
         textManager.parseEvent(event)
