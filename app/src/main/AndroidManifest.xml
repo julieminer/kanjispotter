@@ -7,7 +7,6 @@
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="com.android.vending.BILLING" />
 
-
     <application
         android:name=".MainApplication"
         android:allowBackup="false"
@@ -47,8 +46,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".activities.KanjiOnboardingActivity"
-            android:theme="@style/AppTheme" />
-        <activity android:name=".activities.RemoveAdsActivity"
             android:theme="@style/AppTheme" />
         <meta-data
             android:name="io.fabric.ApiKey"
