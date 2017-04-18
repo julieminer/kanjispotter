@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
@@ -29,6 +30,8 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
+import android.net.Uri.fromParts
+import com.melonheadstudios.kanjispotter.BuildConfig
 
 
 class MainActivity : AppCompatActivity() {
@@ -49,7 +52,7 @@ class MainActivity : AppCompatActivity() {
                 .registerInBus(this)
 
         report_issue_button.setOnClickListener {
-            // TODO open email to github or something
+            reportIssue()
         }
 
         remove_ads_button.setOnClickListener {
@@ -200,5 +203,16 @@ class MainActivity : AppCompatActivity() {
     private fun isMyServiceRunning(serviceClass: Class<*>): Boolean {
         val manager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
         return manager.getRunningServices(Integer.MAX_VALUE).any { serviceClass.name == it.service.className }
+    }
+
+    private fun reportIssue() {
+        val emailIntent = Intent(Intent.ACTION_SENDTO, Uri.fromParts(
+                "mailto", "melonheadstudiosapps@gmail.com", null))
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Issue report")
+        val userInfo = "Build Number: ${BuildConfig.VERSION_CODE}\n Version: ${BuildConfig.VERSION_NAME}\n " +
+                "Model: ${Build.MODEL}\n Manufacturer: ${Build.MANUFACTURER}\n" +
+                "API Version: ${Build.VERSION.SDK_INT}\n Android Version ${Build.VERSION.RELEASE}\n "
+        emailIntent.putExtra(Intent.EXTRA_TEXT, userInfo)
+        startActivity(Intent.createChooser(emailIntent, "Send email..."))
     }
 }
