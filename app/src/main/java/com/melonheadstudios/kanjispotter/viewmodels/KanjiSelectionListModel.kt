@@ -7,10 +7,14 @@ import android.view.View.VISIBLE
 import android.widget.LinearLayout
 import android.widget.RadioButton
 import android.widget.TextView
+import com.crashlytics.android.answers.Answers
+import com.crashlytics.android.answers.CustomEvent
 import com.eightbitlab.rxbus.Bus
 import com.melonheadstudios.kanjispotter.R
 import com.melonheadstudios.kanjispotter.extensions.saveToClipboard
 import com.melonheadstudios.kanjispotter.models.InfoPanelSelectedWordEvent
+import com.melonheadstudios.kanjispotter.utils.Constants
+import com.melonheadstudios.kanjispotter.utils.Constants.Companion.EVENT_SWITCHED_WORDS
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.items.AbstractItem
 import com.mikepenz.fastadapter.listeners.ClickEventHook
@@ -85,6 +89,7 @@ class KanjiSelectionListModel(val selectedWord: String): AbstractItem<KanjiSelec
                 }
                 fastAdapter.select(position)
                 Bus.send(InfoPanelSelectedWordEvent(position))
+                Answers.getInstance().logCustom(CustomEvent(EVENT_SWITCHED_WORDS))
             }
         }
     }

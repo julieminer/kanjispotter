@@ -5,6 +5,9 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.view.View
 import android.widget.Toast
+import com.crashlytics.android.answers.Answers
+import com.crashlytics.android.answers.CustomEvent
+import com.melonheadstudios.kanjispotter.utils.Constants
 
 /**
  * kanjispotter
@@ -17,6 +20,7 @@ fun View.saveToClipboard(text: String) {
         val clip = ClipData.newPlainText("KanjiSpotter", text)
         clipboard.primaryClip = clip
         Toast.makeText(context, "Copied ${text} to clipboard", Toast.LENGTH_SHORT).show()
+        Answers.getInstance().logCustom(CustomEvent(Constants.EVENT_CLIPBOARD))
         true
     }
 }

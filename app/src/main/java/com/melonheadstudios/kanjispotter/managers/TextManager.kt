@@ -10,6 +10,14 @@ import com.melonheadstudios.kanjispotter.models.InfoPanelEvent
 import com.melonheadstudios.kanjispotter.models.InfoPanelSelectionsEvent
 import com.melonheadstudios.kanjispotter.utils.JapaneseCharMatcher
 import javax.inject.Singleton
+import com.crashlytics.android.answers.PurchaseEvent
+import com.crashlytics.android.answers.Answers
+import com.crashlytics.android.answers.CustomEvent
+import com.melonheadstudios.kanjispotter.utils.Constants.Companion.ATTRIBUTE_CHARACTERS
+import com.melonheadstudios.kanjispotter.utils.Constants.Companion.ATTRIBUTE_WORDS
+import com.melonheadstudios.kanjispotter.utils.Constants.Companion.EVENT_API
+import com.melonheadstudios.kanjispotter.utils.Constants.Companion.EVENT_USED
+
 
 /**
  * KanjiSpotter
@@ -72,12 +80,17 @@ class TextManager {
         Bus.send(InfoPanelClearEvent())
         val components = text.split(" ")
         Bus.send(InfoPanelSelectionsEvent(components))
+        Answers.getInstance().logCustom(CustomEvent(EVENT_USED)
+                .putCustomAttribute(ATTRIBUTE_WORDS, components.size)
+                .putCustomAttribute(ATTRIBUTE_CHARACTERS, text.length))
         components.forEach {
             it.getReadings { readings ->
                 if (readings.isEmpty()) {
                     Bus.send(InfoPanelErrorEvent("No data to display. Are you connected to the internet?"))
                     return@getReadings
                 }
+
+                Answers.getInstance().logCustom(CustomEvent(EVENT_API))
                 Bus.send(InfoPanelEvent(chosenWord = it, json = readings))
             }
         }
