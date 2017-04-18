@@ -394,14 +394,14 @@ class MainActivity : AppCompatActivity(), IabBroadcastReceiver.IabBroadcastListe
         Log.d(TAG, "Initial inventory query finished; enabling main UI.")
     }
 
-    internal var mPurchaseFinishedListener: IabHelper.OnIabPurchaseFinishedListener = IabHelper.OnIabPurchaseFinishedListener { result, purchase ->
+    private var mPurchaseFinishedListener: IabHelper.OnIabPurchaseFinishedListener = IabHelper.OnIabPurchaseFinishedListener { result, purchase ->
         Log.d(TAG, "Purchase finished: $result, purchase: $purchase")
 
         // if we were disposed of in the meantime, quit.
         if (mHelper == null) return@OnIabPurchaseFinishedListener
 
         if (result.isFailure) {
-            alert("Error purchasing: " + result)
+            alert("Error purchasing: " + result.message)
             return@OnIabPurchaseFinishedListener
         }
         if (!verifyDeveloperPayload(purchase)) {
