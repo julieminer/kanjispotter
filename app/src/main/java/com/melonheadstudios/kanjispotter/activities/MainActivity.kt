@@ -50,7 +50,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         remove_ads_button.setOnClickListener {
-            // TODO open IAP
+//            startActivity(Intent(this, RemoveAdsActivity::class.java))
         }
 
         blacklist_switch.setOnClickListener {

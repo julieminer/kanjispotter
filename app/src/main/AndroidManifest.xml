@@ -48,6 +48,7 @@
         </activity>
         <activity android:name=".activities.KanjiOnboardingActivity"
             android:theme="@style/AppTheme" />
+
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="0a42b40a552517099cb9cc3566d71400743e7984" />
