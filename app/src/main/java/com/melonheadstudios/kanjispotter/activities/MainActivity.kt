@@ -144,7 +144,7 @@ class MainActivity : AppCompatActivity(), IabBroadcastReceiver.IabBroadcastListe
     }
 
     private fun alert(message: String) {
-        val bld = AlertDialog.Builder(this)
+        val bld = AlertDialog.Builder(this, R.style.DialogTheme)
         bld.setMessage(message)
         bld.setNeutralButton("OK", null)
         Log.d(TAG, "Showing alert dialog: " + message)
