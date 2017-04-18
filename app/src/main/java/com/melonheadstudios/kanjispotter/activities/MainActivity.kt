@@ -94,7 +94,6 @@ class MainActivity : AppCompatActivity(), IabBroadcastReceiver.IabBroadcastListe
         fastAdapter.withItemEvent(BlacklistSelectionModel.CheckButtonClickEvent())
 
         setupIAB()
-
         updateUI()
     }
 
@@ -243,7 +242,7 @@ class MainActivity : AppCompatActivity(), IabBroadcastReceiver.IabBroadcastListe
     }
 
     private fun updateUI(forceRepopulate: Boolean = false) {
-        remove_ads_button.visibility = if (hasPurchasedPro()) GONE else VISIBLE
+        remove_ads_button.visibility = if (mIsPremium) GONE else VISIBLE
         val overlayEnabled = isOverlayEnabled()
         spotter_overlay_switch.isChecked = overlayEnabled
         blacklist_check_container.visibility = if (overlayEnabled) VISIBLE else GONE
@@ -278,9 +277,9 @@ class MainActivity : AppCompatActivity(), IabBroadcastReceiver.IabBroadcastListe
         itemAdapter.set(items)
     }
 
-    private fun hasPurchasedPro(): Boolean {
-        // TODO check if purchased
-        return false
+    private fun hasPurchasedPro(inventory: Inventory): Boolean {
+        val premiumPurchase = inventory.getPurchase(REMOVE_ADS)
+        return premiumPurchase != null && verifyDeveloperPayload(premiumPurchase)
     }
 
     @SuppressLint("CommitPrefEdits")
@@ -388,8 +387,7 @@ class MainActivity : AppCompatActivity(), IabBroadcastReceiver.IabBroadcastListe
          */
 
         // Do we have the premium upgrade?
-        val premiumPurchase = inventory.getPurchase(REMOVE_ADS)
-        mIsPremium = premiumPurchase != null && verifyDeveloperPayload(premiumPurchase)
+        mIsPremium = hasPurchasedPro(inventory)
         Log.d(TAG, "User is " + if (mIsPremium) "PREMIUM" else "NOT PREMIUM")
 
         updateUI()
