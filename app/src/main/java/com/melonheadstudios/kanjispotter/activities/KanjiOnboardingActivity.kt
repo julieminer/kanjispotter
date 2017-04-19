@@ -13,6 +13,7 @@ import com.melonheadstudios.kanjispotter.activities.fragments.OnboardingFragment
 import com.melonheadstudios.kanjispotter.activities.fragments.OnboardingFragmentListener
 import com.melonheadstudios.kanjispotter.services.JapaneseTextGrabberService
 import com.melonheadstudios.kanjispotter.viewmodels.OnboardingViewModel
+import kotlinx.android.synthetic.main.activity_onboarding.*
 
 /**
  * kanjispotter
@@ -46,13 +47,16 @@ class KanjiOnboardingActivity: AppCompatActivity(), OnboardingFragmentListener {
     }
 
     private fun goToPage(pageIndex: Int, withTransition: Boolean = true) {
-        var transaction = supportFragmentManager
-                .beginTransaction()
-                .replace(R.id.oboarding_content_layout, pages[pageIndex])
-        if (withTransition) {
-            transaction = transaction.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left)
+        oboarding_content_layout.post {
+            var transaction = supportFragmentManager.beginTransaction()
+            if (withTransition) {
+                transaction = transaction.replace(R.id.oboarding_content_layout, pages[pageIndex])
+                        .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left)
+            } else {
+                transaction = transaction.add(R.id.oboarding_content_layout, pages[pageIndex])
+            }
+            transaction.commitNow()
         }
-        transaction.commitNow()
     }
 
     private fun isMyServiceRunning(serviceClass: Class<*>): Boolean {
@@ -93,7 +97,7 @@ class KanjiOnboardingActivity: AppCompatActivity(), OnboardingFragmentListener {
             }
         } else if (requestCode == ACTION_ACESSIBILITY_REQUEST_CODE) {
             if (isMyServiceRunning(JapaneseTextGrabberService::class.java)) {
-//                goToPage(2)
+                goToPage(2)
             }
         }
     }

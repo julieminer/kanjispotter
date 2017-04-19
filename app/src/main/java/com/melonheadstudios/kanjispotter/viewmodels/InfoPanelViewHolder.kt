@@ -125,7 +125,7 @@ class InfoPanelViewHolder(val context: Context, parent: View, var iabManager: IA
             adView.loadAd(adRequest)
         } else {
             adView.visibility = GONE
-            val parent = adView.parent as ViewGroup
+            val parent = adView.parent as ViewGroup? ?: return
             parent.removeView(adView)
         }
     }
