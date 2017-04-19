@@ -11,6 +11,7 @@ import android.provider.Settings
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.LinearLayoutManager
+import android.util.Log
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import com.eightbitlab.rxbus.Bus
@@ -63,7 +64,10 @@ class MainActivity : AppCompatActivity() {
                 .registerInBus(this)
 
         Bus.observe<IABUpdateUIEvent>()
-                .subscribe { updateUI(forceRepopulate = false, isPremium = it.isPremium) }
+                .subscribe {
+                    Log.d("IABManager", "premium status update ${it.isPremium}")
+                    updateUI(forceRepopulate = false, isPremium = it.isPremium)
+                }
                 .registerInBus(this)
 
         report_issue_button.setOnClickListener {
@@ -118,8 +122,10 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
-    private fun updateUI(forceRepopulate: Boolean = false, isPremium: Boolean = false) {
-        remove_ads_button.visibility = if (isPremium) GONE else VISIBLE
+    private fun updateUI(forceRepopulate: Boolean = false, isPremium: Boolean? = null) {
+        if (isPremium != null) {
+            remove_ads_button.visibility = if (isPremium) GONE else VISIBLE
+        }
         val overlayEnabled = isOverlayEnabled()
         spotter_overlay_switch.isChecked = overlayEnabled
         blacklist_check_container.visibility = if (overlayEnabled) VISIBLE else GONE
