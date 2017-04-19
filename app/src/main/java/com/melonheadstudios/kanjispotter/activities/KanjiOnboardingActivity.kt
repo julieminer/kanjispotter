@@ -39,9 +39,9 @@ class KanjiOnboardingActivity: AppCompatActivity(), OnboardingFragmentListener {
 
     private fun viewModelForPage(index: Int): OnboardingViewModel {
         return when (index) {
-            0 -> OnboardingViewModel(R.drawable.abc_ab_share_pack_mtrl_alpha, R.string.page_1_text, R.string.page_1_desc, R.string.page_1_button)
-            1 -> OnboardingViewModel(R.drawable.abc_ab_share_pack_mtrl_alpha, R.string.page_2_text, R.string.page_2_desc, R.string.page_2_button)
-            2 -> OnboardingViewModel(R.drawable.abc_ab_share_pack_mtrl_alpha, R.string.page_3_text, R.string.page_3_desc, R.string.page_3_button)
+            0 -> OnboardingViewModel(R.drawable.image1b, R.string.page_1_text, R.string.page_1_desc, R.string.page_1_button)
+            1 -> OnboardingViewModel(R.drawable.image2b, R.string.page_2_text, R.string.page_2_desc, R.string.page_2_button)
+            2 -> OnboardingViewModel(R.drawable.image3, R.string.page_3_text, R.string.page_3_desc, R.string.page_3_button)
             else -> OnboardingViewModel()
         }
     }
