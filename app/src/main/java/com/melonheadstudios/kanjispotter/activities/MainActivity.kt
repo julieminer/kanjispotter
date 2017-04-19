@@ -53,9 +53,9 @@ class MainActivity : AppCompatActivity() {
         MainApplication.graph = DaggerApplicationComponent.builder().androidModule(AndroidModule(application)).build()
         MainApplication.graph.inject(this)
 
-//        if (shouldLaunchOnboarding()) {
+        if (shouldLaunchOnboarding()) {
             startActivity(Intent(this, KanjiOnboardingActivity::class.java))
-//        }
+        }
 
         Bus.observe<InfoPanelPreferenceChanged>()
                 .subscribe { updateUI() }
