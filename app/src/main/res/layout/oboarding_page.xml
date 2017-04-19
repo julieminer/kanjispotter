@@ -34,11 +34,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/onboarding_button"
-        android:textAlignment="center"
-        android:focusable="true"
-        android:clickable="true"
-        android:textColor="@android:color/white"
         android:layout_marginBottom="8dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
         tools:text="Onboarding Description" />
 
     <Button
