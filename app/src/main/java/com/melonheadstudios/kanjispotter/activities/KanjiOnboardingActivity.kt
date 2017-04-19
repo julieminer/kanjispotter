@@ -50,8 +50,8 @@ class KanjiOnboardingActivity: AppCompatActivity(), OnboardingFragmentListener {
         oboarding_content_layout.post {
             var transaction = supportFragmentManager.beginTransaction()
             if (withTransition) {
-                transaction = transaction.replace(R.id.oboarding_content_layout, pages[pageIndex])
-                        .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left)
+                transaction = transaction.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left)
+                        .replace(R.id.oboarding_content_layout, pages[pageIndex])
             } else {
                 transaction = transaction.add(R.id.oboarding_content_layout, pages[pageIndex])
             }
