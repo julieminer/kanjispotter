@@ -55,8 +55,12 @@ class IABManager(val appContext: Context): IabBroadcastReceiver.IabBroadcastList
         // very important:
         Log.d(TAG, "Destroying helper.")
         if (mHelper != null) {
-            mHelper?.disposeWhenFinished()
-            mHelper = null
+            try {
+                mHelper?.disposeWhenFinished()
+                mHelper = null
+            } catch (e: Exception) {
+                Log.d(TAG, "Exception while disposing.")
+            }
         }
     }
 
