@@ -42,6 +42,7 @@ class TextManager {
         val sb = StringBuilder()
         val sbi = StringBuilder()
         event ?: return ""
+        event.text ?: return ""
 
         for (s in event.text) {
             s.forEach { e ->
