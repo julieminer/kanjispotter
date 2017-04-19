@@ -12,6 +12,11 @@ import com.melonheadstudios.kanjispotter.utils.iap.IabHelper
 import com.melonheadstudios.kanjispotter.utils.iap.Inventory
 import com.melonheadstudios.kanjispotter.utils.iap.Purchase
 import javax.inject.Singleton
+import com.crashlytics.android.answers.PurchaseEvent
+import com.crashlytics.android.answers.Answers
+import java.math.BigDecimal
+import java.util.*
+
 
 /**
  * kanjispotter
@@ -203,6 +208,12 @@ class IABManager(val appContext: Context): IabBroadcastReceiver.IabBroadcastList
                 Log.d(TAG, "Purchase is premium upgrade. Congratulating user.")
                 alert("Thank you for upgrading to premium!")
                 mIsPremium = true
+                Answers.getInstance().logPurchase(PurchaseEvent()
+                        .putItemPrice(BigDecimal.valueOf(3.00))
+                        .putCurrency(Currency.getInstance("CAD"))
+                        .putItemName("Premium Status")
+                        .putItemId(REMOVE_ADS)
+                        .putSuccess(true))
                 Bus.send(IABUpdateUIEvent(isPremium = mIsPremium))
             }
         }
