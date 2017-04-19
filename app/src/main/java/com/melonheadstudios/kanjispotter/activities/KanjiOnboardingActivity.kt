@@ -1,35 +1,74 @@
 package com.melonheadstudios.kanjispotter.activities
 
-import android.annotation.SuppressLint
 import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
+import android.os.Bundle
 import android.provider.Settings
-import com.jrejaud.onboarder.OnboardingActivity
+import android.support.v7.app.AppCompatActivity
+import com.melonheadstudios.kanjispotter.R
+import com.melonheadstudios.kanjispotter.activities.fragments.OnboardingFragment
+import com.melonheadstudios.kanjispotter.activities.fragments.OnboardingFragmentListener
 import com.melonheadstudios.kanjispotter.services.JapaneseTextGrabberService
-
+import com.melonheadstudios.kanjispotter.viewmodels.OnboardingViewModel
 
 /**
  * kanjispotter
  * Created by jake on 2017-04-16, 5:23 PM
  */
-class KanjiOnboardingActivity: OnboardingActivity() {
+class KanjiOnboardingActivity: AppCompatActivity(), OnboardingFragmentListener {
     val ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE: Int = 5469
     val ACTION_ACESSIBILITY_REQUEST_CODE: Int = 5269
 
     var userSettingOverlay = false
     var userSettingAccessibility = false
-    override fun onOnboardingClick(position: Int) {
-        when (position) {
+
+    val pages = arrayOf( OnboardingFragment(), OnboardingFragment(), OnboardingFragment() )
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_onboarding)
+
+        pages.forEachIndexed { index, page -> page.setupPage(this, index, viewModelForPage(index)) }
+
+        goToPage(0, false)
+    }
+
+    private fun viewModelForPage(index: Int): OnboardingViewModel {
+        return when (index) {
+            0 -> OnboardingViewModel(R.drawable.abc_ab_share_pack_mtrl_alpha, R.string.page_1_text, R.string.page_1_desc, R.string.page_1_button)
+            1 -> OnboardingViewModel(R.drawable.abc_ab_share_pack_mtrl_alpha, R.string.page_2_text, R.string.page_2_desc, R.string.page_2_button)
+            2 -> OnboardingViewModel(R.drawable.abc_ab_share_pack_mtrl_alpha, R.string.page_3_text, R.string.page_3_desc, R.string.page_3_button)
+            else -> OnboardingViewModel()
+        }
+    }
+
+    private fun goToPage(pageIndex: Int, withTransition: Boolean = true) {
+        var transaction = supportFragmentManager
+                .beginTransaction()
+                .replace(R.id.oboarding_content_layout, pages[pageIndex])
+        if (withTransition) {
+            transaction = transaction.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left)
+        }
+        transaction.commitNow()
+    }
+
+    private fun isMyServiceRunning(serviceClass: Class<*>): Boolean {
+        val manager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        return manager.getRunningServices(Integer.MAX_VALUE).any { serviceClass.name == it.service.className }
+    }
+
+    override fun onPageButtonClicked(pageNumber: Int) {
+        when (pageNumber) {
             0 -> {
                 if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
                     userSettingOverlay = true
                     val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + packageName))
                     startActivityForResult(intent, ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE)
                 } else {
-                    super.onOnboardingClick(position)
+                    goToPage(1)
                 }
             }
             1 -> {
@@ -38,34 +77,24 @@ class KanjiOnboardingActivity: OnboardingActivity() {
                     val intent = Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS)
                     startActivityForResult(intent, ACTION_ACESSIBILITY_REQUEST_CODE)
                 } else {
-                    super.onOnboardingClick(position)
+                    goToPage(2)
                 }
             }
             2 -> {
-                super.onOnboardingClick(position)
+                finish()
             }
         }
-    }
-
-    @SuppressLint("NewApi")
-    override fun onResume() {
-        super.onResume()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE) {
             if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.M || Settings.canDrawOverlays(this)) {
-                super.onOnboardingClick(0)
+                goToPage(1)
             }
         } else if (requestCode == ACTION_ACESSIBILITY_REQUEST_CODE) {
             if (isMyServiceRunning(JapaneseTextGrabberService::class.java)) {
-                super.onOnboardingClick(1)
+//                goToPage(2)
             }
         }
-    }
-
-    private fun isMyServiceRunning(serviceClass: Class<*>): Boolean {
-        val manager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-        return manager.getRunningServices(Integer.MAX_VALUE).any { serviceClass.name == it.service.className }
     }
 }

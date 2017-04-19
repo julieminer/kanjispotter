@@ -17,4 +17,15 @@
     <string name="content_description_title_image">80\'s Video Game Style Car Logo</string>
     <string name="content_desc_gas_gauge_indicator">Gas gauge indicator</string>
     <string name="content_desc_free_vs_premium_indicator">Free or Premium Image Indicator</string>
+    <string name="page_1_text">Overlay Permission</string>
+    <string name="page_1_desc">You\'ll need to enable the app to draw over other apps on screen before we continue, though.</string>
+    <string name="page_1_button">Enable permission</string>
+
+    <string name="page_2_text">Accessibility Feature</string>
+    <string name="page_2_desc">Thanks! Now we\'ll just need to enable the accessibility service that powers the app!</string>
+    <string name="page_2_button">Enable Service</string>
+
+    <string name="page_3_text">Perfect!</string>
+    <string name="page_3_desc">Test out the app by clicking the kanji below!\n 食べる\n男の人\nご主人</string>
+    <string name="page_3_button">Looking good!</string>
 </resources>
