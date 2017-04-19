@@ -121,6 +121,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateUI(forceRepopulate: Boolean = false, isPremium: Boolean? = null) {
+        if (BuildConfig.DEBUG) {
+            remove_ads_button.visibility = GONE 
+        }
         if (isPremium != null) {
             remove_ads_button.visibility = if (isPremium) GONE else VISIBLE
         }
