@@ -12,9 +12,14 @@ import android.view.WindowManager
 import android.widget.FrameLayout
 import com.eightbitlab.rxbus.Bus
 import com.eightbitlab.rxbus.registerInBus
+import com.melonheadstudios.kanjispotter.MainApplication
 import com.melonheadstudios.kanjispotter.R
+import com.melonheadstudios.kanjispotter.injection.AndroidModule
+import com.melonheadstudios.kanjispotter.injection.DaggerApplicationComponent
+import com.melonheadstudios.kanjispotter.managers.IABManager
 import com.melonheadstudios.kanjispotter.models.*
 import com.melonheadstudios.kanjispotter.viewmodels.InfoPanelViewHolder
+import javax.inject.Inject
 
 /**
  * GlobalActionBarService
@@ -22,6 +27,9 @@ import com.melonheadstudios.kanjispotter.viewmodels.InfoPanelViewHolder
  */
 class InfoPanelDisplayService: Service() {
     val TAG = "InfoPanelDisplay"
+
+    @Inject
+    lateinit var iabManager: IABManager
 
     var mLayout: FrameLayout? = null
     var viewHolder: InfoPanelViewHolder? = null
@@ -32,6 +40,9 @@ class InfoPanelDisplayService: Service() {
 
     override fun onCreate() {
         super.onCreate()
+
+        MainApplication.graph = DaggerApplicationComponent.builder().androidModule(AndroidModule(application)).build()
+        MainApplication.graph.inject(this)
 
         Log.d(TAG, "Service created")
         // Create an overlay and display the action bar
@@ -51,7 +62,7 @@ class InfoPanelDisplayService: Service() {
 
         val inflater = LayoutInflater.from(this)
         val parent = inflater.inflate(R.layout.action_bar, mLayout)
-        viewHolder = InfoPanelViewHolder(applicationContext, parent)
+        viewHolder = InfoPanelViewHolder(applicationContext, parent, iabManager)
         try {
             windowManager?.addView(mLayout, params)
         } catch (e: Exception) {
@@ -78,6 +89,10 @@ class InfoPanelDisplayService: Service() {
                 .subscribe { selectedPosition(it.position) }
                 .registerInBus(this)
 
+        Bus.observe<IABUpdateUIEvent>()
+                .subscribe { viewHolder?.updateAd(it.isPremium) }
+                .registerInBus(this)
+
         Bus.observe<InfoPanelPreferenceChanged>()
                 .subscribe {
                     if (!it.enabled) {
@@ -89,6 +104,7 @@ class InfoPanelDisplayService: Service() {
 
     override fun onDestroy() {
         super.onDestroy()
+        viewHolder?.destroy()
         if (mLayout != null) windowManager?.removeView(mLayout)
     }
 

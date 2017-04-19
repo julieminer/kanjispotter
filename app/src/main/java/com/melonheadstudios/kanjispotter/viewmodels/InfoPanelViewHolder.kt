@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.View
 import android.view.View.*
+import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -19,6 +20,7 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.melonheadstudios.kanjispotter.BuildConfig
 import com.melonheadstudios.kanjispotter.R
+import com.melonheadstudios.kanjispotter.managers.IABManager
 import com.melonheadstudios.kanjispotter.models.InfoPanelErrorEvent
 import com.melonheadstudios.kanjispotter.models.JishoResponse
 import com.melonheadstudios.kanjispotter.utils.Constants.Companion.PREFERENCES_KEY
@@ -31,7 +33,7 @@ import com.mikepenz.fastadapter.adapters.ItemAdapter
  * Created by jake on 2017-04-16, 2:09 PM
  */
 
-class InfoPanelViewHolder(val context: Context, parent: View) {
+class InfoPanelViewHolder(val context: Context, parent: View, var iabManager: IABManager) {
     private val TAG = "InfoPanelViewHolder"
 
     val adView: AdView = parent.findViewById(R.id.ad_spot) as AdView
@@ -55,12 +57,7 @@ class InfoPanelViewHolder(val context: Context, parent: View) {
             makeInvisibile()
         }
 
-        if (!BuildConfig.DEBUG) {
-            val adRequest = AdRequest.Builder().build()
-            adView.loadAd(adRequest)
-        } else {
-            adView.visibility = GONE
-        }
+        updateAd()
 
         list.layoutManager = LinearLayoutManager(context)
         list.layoutManager.isAutoMeasureEnabled = true
@@ -73,6 +70,12 @@ class InfoPanelViewHolder(val context: Context, parent: View) {
         headerList.adapter = headerItemAdapter.wrap(headerFastAdapter)
 
         headerFastAdapter.withItemEvent(KanjiSelectionListModel.RadioButtonClickEvent())
+
+        iabManager.setupIAB(context)
+    }
+
+    fun destroy() {
+        iabManager.unregister(context)
     }
 
     fun updateView(word: String, string: String) {
@@ -113,6 +116,18 @@ class InfoPanelViewHolder(val context: Context, parent: View) {
         itemAdapter.set(items)
         headerItems.clear()
         headerItemAdapter.set(headerItems)
+    }
+
+    fun updateAd(isPremium: Boolean = false) {
+        val shouldShowAds = !BuildConfig.DEBUG && !isPremium
+        if (shouldShowAds) {
+            val adRequest = AdRequest.Builder().build()
+            adView.loadAd(adRequest)
+        } else {
+            adView.visibility = GONE
+            val parent = adView.parent as ViewGroup
+            parent.removeView(adView)
+        }
     }
 
     private fun clearError() {
