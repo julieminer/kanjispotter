@@ -47,14 +47,15 @@ class MainActivity : AppCompatActivity() {
     private var items = ArrayList<BlacklistSelectionModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        MainApplication.graph = DaggerApplicationComponent.builder().androidModule(AndroidModule(application)).build()
+        MainApplication.graph.inject(this)
+
         if (!prefManager.darkThemeEnabled()) {
             setTheme(R.style.AppThemeLight)
         }
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        MainApplication.graph = DaggerApplicationComponent.builder().androidModule(AndroidModule(application)).build()
-        MainApplication.graph.inject(this)
 
         if (shouldLaunchOnboarding()) {
             startActivity(Intent(this, KanjiOnboardingActivity::class.java))

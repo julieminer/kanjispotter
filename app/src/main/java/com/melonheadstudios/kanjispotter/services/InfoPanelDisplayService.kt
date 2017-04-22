@@ -44,11 +44,11 @@ class InfoPanelDisplayService: Service() {
     }
 
     override fun onCreate() {
-        updateTheme()
-        super.onCreate()
-
         MainApplication.graph = DaggerApplicationComponent.builder().androidModule(AndroidModule(application)).build()
         MainApplication.graph.inject(this)
+
+        updateTheme()
+        super.onCreate()
 
         Log.d(TAG, "Service created")
         // Create an overlay and display the action bar
