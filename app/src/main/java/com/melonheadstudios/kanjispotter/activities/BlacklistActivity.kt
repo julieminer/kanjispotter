@@ -15,7 +15,6 @@ import com.melonheadstudios.kanjispotter.managers.PrefManager
 import com.melonheadstudios.kanjispotter.viewmodels.BlacklistSelectionModel
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.actvity_blacklist.*
 import java.util.ArrayList
 import javax.inject.Inject
@@ -69,6 +68,7 @@ class BlacklistActivity: AppCompatActivity() {
         updateUI(forceRepopulate = true)
     }
 
+    // TODO move to async task
     private fun populateBlacklist(forceRepopulate: Boolean = false) {
         val mainIntent = Intent(Intent.ACTION_MAIN, null)
         mainIntent.addCategory(Intent.CATEGORY_LAUNCHER)
