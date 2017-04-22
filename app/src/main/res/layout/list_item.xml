@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/backgroundColor"
     android:layout_margin="4dp"
+    android:background="@color/backgroundColor"
     android:orientation="horizontal">
 
     <TextView
@@ -12,17 +12,17 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="0.3"
-        android:textStyle="bold"
         android:textColor="@color/textColor"
+        android:textStyle="bold"
         tools:text="Hello" />
 
     <LinearLayout
         android:id="@+id/furigana_container"
         android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:layout_weight="0.7"
-        android:orientation="vertical"
         android:gravity="center_vertical"
-        android:layout_height="wrap_content">
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/furigana_text"
@@ -36,9 +36,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/subTextColor"
+            android:visibility="gone"
             tools:text="english world"
-            tools:visibility="visible"
-            android:visibility="gone"/>
+            tools:visibility="visible" />
 
     </LinearLayout>
 
