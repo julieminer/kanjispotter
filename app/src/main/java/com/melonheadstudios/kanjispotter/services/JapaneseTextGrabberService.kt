@@ -48,7 +48,8 @@ class JapaneseTextGrabberService : AccessibilityService() {
         startService(service)
     }
 
-    override fun onAccessibilityEvent(event: AccessibilityEvent) {
+    override fun onAccessibilityEvent(event: AccessibilityEvent?) {
+        event ?: return
         val blackListEnabled = prefs?.getBoolean(BLACKLIST_STATUS_FLAG, false) ?: false
         if (blackListEnabled) {
             val appBlacklisted = prefs?.getBoolean(APP_BLACKLISTED + event.packageName, false) ?: false
