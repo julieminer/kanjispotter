@@ -1,8 +1,6 @@
 package com.melonheadstudios.kanjispotter.activities
 
 import android.annotation.SuppressLint
-import android.app.ActivityManager
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -20,6 +18,7 @@ import com.eightbitlab.rxbus.registerInBus
 import com.melonheadstudios.kanjispotter.BuildConfig
 import com.melonheadstudios.kanjispotter.MainApplication
 import com.melonheadstudios.kanjispotter.R
+import com.melonheadstudios.kanjispotter.extensions.isServiceRunning
 import com.melonheadstudios.kanjispotter.injection.AndroidModule
 import com.melonheadstudios.kanjispotter.injection.DaggerApplicationComponent
 import com.melonheadstudios.kanjispotter.managers.IABManager
@@ -68,7 +67,7 @@ class MainActivity : AppCompatActivity() {
         Bus.observe<IABUpdateUIEvent>()
                 .subscribe {
                     Log.d("IABManager", "premium status update ${it.isPremium}")
-                    updateUI(forceRepopulate = false, isPremium = it.isPremium)
+                    updateUI(forceRepopulate = false, isPremium = it.isPremium || BuildConfig.DEBUG)
                 }
                 .registerInBus(this)
 
@@ -130,8 +129,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateUI(forceRepopulate: Boolean = false, isPremium: Boolean? = null) {
-        if (BuildConfig.DEBUG) {
-            remove_ads_button.visibility = GONE 
+        if (isPremium == null && BuildConfig.DEBUG) {
+            remove_ads_button.visibility = GONE
         }
         if (isPremium != null) {
             remove_ads_button.visibility = if (isPremium) GONE else VISIBLE
@@ -178,7 +177,7 @@ class MainActivity : AppCompatActivity() {
     private fun setDarkThemeEnabled(enabled: Boolean) {
         prefManager.setDarkTheme(enabled)
 
-        if (isMyServiceRunning(InfoPanelDisplayService::class.java)) {
+        if (isServiceRunning(InfoPanelDisplayService::class.java)) {
             val service = Intent(applicationContext, InfoPanelDisplayService::class.java)
             stopService(service)
         }
@@ -206,13 +205,8 @@ class MainActivity : AppCompatActivity() {
         val needsPermission = android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
         val hasPermission = Settings.canDrawOverlays(this)
         val canDrawOverApps = !needsPermission || (needsPermission && hasPermission)
-        val serviceIsRunning = isMyServiceRunning(JapaneseTextGrabberService::class.java)
+        val serviceIsRunning = isServiceRunning(JapaneseTextGrabberService::class.java)
         return !(canDrawOverApps && serviceIsRunning)
-    }
-
-    private fun isMyServiceRunning(serviceClass: Class<*>): Boolean {
-        val manager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-        return manager.getRunningServices(Integer.MAX_VALUE).any { serviceClass.name == it.service.className }
     }
 
     private fun reportIssue() {

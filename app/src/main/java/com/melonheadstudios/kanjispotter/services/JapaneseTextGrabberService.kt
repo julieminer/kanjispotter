@@ -2,12 +2,11 @@ package com.melonheadstudios.kanjispotter.services
 
 import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.AccessibilityServiceInfo
-import android.app.ActivityManager
-import android.content.Context
 import android.content.Intent
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import com.melonheadstudios.kanjispotter.MainApplication
+import com.melonheadstudios.kanjispotter.extensions.isServiceRunning
 import com.melonheadstudios.kanjispotter.injection.AndroidModule
 import com.melonheadstudios.kanjispotter.injection.DaggerApplicationComponent
 import com.melonheadstudios.kanjispotter.managers.PrefManager
@@ -39,7 +38,7 @@ class JapaneseTextGrabberService : AccessibilityService() {
         serviceInfo = info
 
         val service = Intent(applicationContext, InfoPanelDisplayService::class.java)
-        if (isMyServiceRunning(InfoPanelDisplayService::class.java)) {
+        if (isServiceRunning(InfoPanelDisplayService::class.java)) {
             stopService(service)
         }
         startService(service)
@@ -51,7 +50,7 @@ class JapaneseTextGrabberService : AccessibilityService() {
         if (blackListEnabled) {
             if (prefManager.blacklisted(event.packageName)) return
         }
-        if (!isMyServiceRunning(InfoPanelDisplayService::class.java)) {
+        if (!isServiceRunning(InfoPanelDisplayService::class.java)) {
             val service = Intent(applicationContext, InfoPanelDisplayService::class.java)
             startService(service)
         }
@@ -60,10 +59,4 @@ class JapaneseTextGrabberService : AccessibilityService() {
 
     override fun onInterrupt() {
     }
-
-    private fun isMyServiceRunning(serviceClass: Class<*>): Boolean {
-        val manager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-        return manager.getRunningServices(Integer.MAX_VALUE).any { serviceClass.name == it.service.className }
-    }
-
 }

@@ -1,7 +1,5 @@
 package com.melonheadstudios.kanjispotter.activities
 
-import android.app.ActivityManager
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -11,6 +9,7 @@ import com.melonheadstudios.kanjispotter.R
 import com.melonheadstudios.kanjispotter.activities.fragments.OnboardingFragment
 import com.melonheadstudios.kanjispotter.activities.fragments.OnboardingFragmentListener
 import com.melonheadstudios.kanjispotter.extensions.canDrawOverlays
+import com.melonheadstudios.kanjispotter.extensions.isServiceRunning
 import com.melonheadstudios.kanjispotter.services.JapaneseTextGrabberService
 import com.melonheadstudios.kanjispotter.viewmodels.OnboardingViewModel
 import kotlinx.android.synthetic.main.activity_onboarding.*
@@ -59,11 +58,6 @@ class KanjiOnboardingActivity: AppCompatActivity(), OnboardingFragmentListener {
         }
     }
 
-    private fun isMyServiceRunning(serviceClass: Class<*>): Boolean {
-        val manager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-        return manager.getRunningServices(Integer.MAX_VALUE).any { serviceClass.name == it.service.className }
-    }
-
     override fun onPageButtonClicked(pageNumber: Int) {
         when (pageNumber) {
             0 -> {
@@ -76,7 +70,7 @@ class KanjiOnboardingActivity: AppCompatActivity(), OnboardingFragmentListener {
                 }
             }
             1 -> {
-                if (!isMyServiceRunning(JapaneseTextGrabberService::class.java)) {
+                if (!isServiceRunning(JapaneseTextGrabberService::class.java)) {
                     userSettingAccessibility = true
                     val intent = Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS)
                     startActivityForResult(intent, ACTION_ACESSIBILITY_REQUEST_CODE)
@@ -96,7 +90,7 @@ class KanjiOnboardingActivity: AppCompatActivity(), OnboardingFragmentListener {
                 goToPage(1)
             }
         } else if (requestCode == ACTION_ACESSIBILITY_REQUEST_CODE) {
-            if (isMyServiceRunning(JapaneseTextGrabberService::class.java)) {
+            if (isServiceRunning(JapaneseTextGrabberService::class.java)) {
                 goToPage(2)
             }
         }

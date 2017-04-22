@@ -1,5 +1,6 @@
 package com.melonheadstudios.kanjispotter.extensions
 
+import android.app.ActivityManager
 import android.content.Context
 import android.os.Build
 import android.provider.Settings
@@ -13,4 +14,9 @@ fun Context.canDrawOverlays(): Boolean {
         return Settings.canDrawOverlays(this)
     }
     return true
+}
+
+fun Context.isServiceRunning(serviceClass: Class<*>): Boolean {
+    val manager = this.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+    return manager.getRunningServices(Integer.MAX_VALUE).any { serviceClass.name == it.service.className }
 }
