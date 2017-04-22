@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.support.v4.content.IntentCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.LinearLayoutManager
@@ -28,6 +29,7 @@ import com.melonheadstudios.kanjispotter.services.JapaneseTextGrabberService
 import com.melonheadstudios.kanjispotter.utils.Constants.Companion.APP_BLACKLISTED
 import com.melonheadstudios.kanjispotter.utils.Constants.Companion.BLACKLIST_SELECTION_STATUS_FLAG
 import com.melonheadstudios.kanjispotter.utils.Constants.Companion.BLACKLIST_STATUS_FLAG
+import com.melonheadstudios.kanjispotter.utils.Constants.Companion.DARK_THEME_FLAG
 import com.melonheadstudios.kanjispotter.utils.Constants.Companion.PREFERENCES_KEY
 import com.melonheadstudios.kanjispotter.utils.Constants.Companion.SERVICE_STATUS_FLAG
 import com.melonheadstudios.kanjispotter.viewmodels.BlacklistSelectionModel
@@ -47,6 +49,9 @@ class MainActivity : AppCompatActivity() {
     private var items = ArrayList<BlacklistSelectionModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        if (!isDarkThemeEnabled()) {
+            setTheme(R.style.AppThemeLight)
+        }
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
@@ -93,6 +98,11 @@ class MainActivity : AppCompatActivity() {
             updateUI()
         }
 
+        theme_dark_switch.setOnClickListener {
+            val isChecked = !isDarkThemeEnabled()
+            setDarkThemeEnabled(isChecked)
+        }
+
         blacklist_list.layoutManager = LinearLayoutManager(this)
         blacklist_list.layoutManager.isAutoMeasureEnabled = true
         blacklist_list.itemAnimator = DefaultItemAnimator()
@@ -136,6 +146,7 @@ class MainActivity : AppCompatActivity() {
         blacklist_list.visibility = if (blacklistEnabled) VISIBLE else GONE
         blacklist_all_container.visibility = if (blacklistEnabled) VISIBLE else GONE
         blacklist_all_check.isChecked = allBlacklistChecked()
+        theme_dark_switch.isChecked = isDarkThemeEnabled()
         if (blacklistEnabled) {
             populateBlacklist(forceRepopulate = forceRepopulate)
         }
@@ -166,6 +177,21 @@ class MainActivity : AppCompatActivity() {
         val prefs = applicationContext.getSharedPreferences(PREFERENCES_KEY, Context.MODE_PRIVATE)
         prefs.edit().putBoolean(SERVICE_STATUS_FLAG, enabled).commit()
         Bus.send(InfoPanelPreferenceChanged(enabled = enabled))
+    }
+
+    private fun setDarkThemeEnabled(enabled: Boolean) {
+        val prefs = applicationContext.getSharedPreferences(PREFERENCES_KEY, Context.MODE_PRIVATE)
+        prefs.edit().putBoolean(DARK_THEME_FLAG, enabled).commit()
+
+        this.finish()
+        val intent = this.intent
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or IntentCompat.FLAG_ACTIVITY_CLEAR_TASK
+        this.startActivity(intent)
+    }
+
+    private fun isDarkThemeEnabled(): Boolean {
+        val prefs = applicationContext.getSharedPreferences(PREFERENCES_KEY, Context.MODE_PRIVATE)
+        return prefs.getBoolean(DARK_THEME_FLAG, true)
     }
 
     private fun isOverlayEnabled(): Boolean {
