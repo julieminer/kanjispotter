@@ -8,8 +8,6 @@ import android.os.Bundle
 import android.provider.Settings
 import android.support.v4.content.IntentCompat
 import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.DefaultItemAnimator
-import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
 import android.view.View.GONE
 import android.view.View.VISIBLE
@@ -27,11 +25,7 @@ import com.melonheadstudios.kanjispotter.models.IABUpdateUIEvent
 import com.melonheadstudios.kanjispotter.models.InfoPanelPreferenceChanged
 import com.melonheadstudios.kanjispotter.services.InfoPanelDisplayService
 import com.melonheadstudios.kanjispotter.services.JapaneseTextGrabberService
-import com.melonheadstudios.kanjispotter.viewmodels.BlacklistSelectionModel
-import com.mikepenz.fastadapter.FastAdapter
-import com.mikepenz.fastadapter.adapters.ItemAdapter
 import kotlinx.android.synthetic.main.activity_main.*
-import java.util.*
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
@@ -40,10 +34,6 @@ class MainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var prefManager: PrefManager
-
-    private val fastAdapter = FastAdapter<BlacklistSelectionModel>()
-    private val itemAdapter = ItemAdapter<BlacklistSelectionModel>()
-    private var items = ArrayList<BlacklistSelectionModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         MainApplication.graph = DaggerApplicationComponent.builder().androidModule(AndroidModule(application)).build()
@@ -67,7 +57,7 @@ class MainActivity : AppCompatActivity() {
         Bus.observe<IABUpdateUIEvent>()
                 .subscribe {
                     Log.d("IABManager", "premium status update ${it.isPremium}")
-                    updateUI(forceRepopulate = false, isPremium = it.isPremium || BuildConfig.DEBUG)
+                    updateUI(isPremium = it.isPremium || BuildConfig.DEBUG)
                 }
                 .registerInBus(this)
 
@@ -77,17 +67,6 @@ class MainActivity : AppCompatActivity() {
 
         remove_ads_button.setOnClickListener {
             iabManager.onUpgradeAppButtonClicked(this)
-        }
-
-        blacklist_switch.setOnClickListener {
-            val isChecked = !prefManager.blacklistEnabled()
-            setBlacklistEnabled(isChecked)
-            updateUI()
-        }
-
-        blacklist_all_check.setOnCheckedChangeListener { _, isChecked ->
-            selectAllBlacklist(isChecked)
-            updateUI()
         }
 
         spotter_overlay_switch.setOnClickListener {
@@ -101,12 +80,10 @@ class MainActivity : AppCompatActivity() {
             setDarkThemeEnabled(isChecked)
         }
 
-        blacklist_list.layoutManager = LinearLayoutManager(this)
-        blacklist_list.layoutManager.isAutoMeasureEnabled = true
-        blacklist_list.itemAnimator = DefaultItemAnimator()
-        blacklist_list.adapter = itemAdapter.wrap(fastAdapter)
-
-        fastAdapter.withItemEvent(BlacklistSelectionModel.CheckButtonClickEvent())
+        blacklist_settings_button.setOnClickListener {
+            val blacklistIntent = Intent(this, BlacklistActivity::class.java)
+            startActivity(blacklistIntent)
+        }
 
         iabManager.setupIAB(context = this)
         updateUI()
@@ -114,7 +91,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        updateUI(forceRepopulate = true)
+        updateUI()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
@@ -128,7 +105,7 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
-    private fun updateUI(forceRepopulate: Boolean = false, isPremium: Boolean? = null) {
+    private fun updateUI(isPremium: Boolean? = null) {
         if (isPremium == null && BuildConfig.DEBUG) {
             remove_ads_button.visibility = GONE
         }
@@ -137,35 +114,8 @@ class MainActivity : AppCompatActivity() {
         }
         val overlayEnabled = prefManager.overlayEnabled()
         spotter_overlay_switch.isChecked = overlayEnabled
-        blacklist_check_container.visibility = if (overlayEnabled) VISIBLE else GONE
-
-        val blacklistEnabled = overlayEnabled && prefManager.blacklistEnabled()
-        blacklist_switch.isChecked = blacklistEnabled
-        blacklist_list.visibility = if (blacklistEnabled) VISIBLE else GONE
-        blacklist_all_container.visibility = if (blacklistEnabled) VISIBLE else GONE
-        blacklist_all_check.isChecked = prefManager.allBlackListChecked()
         theme_dark_switch.isChecked = prefManager.darkThemeEnabled()
-        if (blacklistEnabled) {
-            populateBlacklist(forceRepopulate = forceRepopulate)
-        }
-    }
-
-    private fun populateBlacklist(forceRepopulate: Boolean = false) {
-        val mainIntent = Intent(Intent.ACTION_MAIN, null)
-        mainIntent.addCategory(Intent.CATEGORY_LAUNCHER)
-        val pkgAppsList = packageManager.queryIntentActivities(mainIntent, 0)
-
-        if (!forceRepopulate && items.isNotEmpty()) return
-
-        items.clear()
-        for (app in pkgAppsList) {
-            val appLabel = app.loadLabel(packageManager).toString()
-            val packageName = app.activityInfo.taskAffinity ?: continue
-            val packageIcon = app.loadIcon(packageManager)
-            items.add(BlacklistSelectionModel(sharedPreferences = prefManager.prefs, appName = appLabel, packageName = packageName, icon = packageIcon))
-        }
-        items.sortBy { it.appName }
-        itemAdapter.set(items)
+        blacklist_settings_button.visibility = if (overlayEnabled) VISIBLE else GONE
     }
 
     @SuppressLint("CommitPrefEdits")
@@ -185,19 +135,6 @@ class MainActivity : AppCompatActivity() {
         val intent = this.intent
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or IntentCompat.FLAG_ACTIVITY_CLEAR_TASK
         this.startActivity(intent)
-    }
-
-    private fun setBlacklistEnabled(enabled: Boolean) {
-        prefManager.setBlacklist(enabled)
-        if (enabled) {
-            populateBlacklist()
-        }
-    }
-
-    @SuppressLint("CommitPrefEdits")
-    private fun selectAllBlacklist(selectedAll: Boolean) {
-        prefManager.setAllBlackListChecked(selectedAll, items)
-        itemAdapter.set(items)
     }
 
     @SuppressLint("NewApi")

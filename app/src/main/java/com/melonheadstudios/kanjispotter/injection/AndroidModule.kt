@@ -12,6 +12,9 @@ import dagger.Module
 import dagger.Provides
 import io.fabric.sdk.android.Fabric
 import javax.inject.Singleton
+import com.crashlytics.android.core.CrashlyticsCore
+import com.melonheadstudios.kanjispotter.BuildConfig
+
 
 /**
  * KanjiSpotter
@@ -22,7 +25,8 @@ class AndroidModule(private val application: Application) {
 
     init {
         MobileAds.initialize(application, application.getString(R.string.app_ad_unit_id))
-        Fabric.with(application, Crashlytics())
+        val core = CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build()
+        Fabric.with(application, Crashlytics.Builder().core(core).build())
     }
 
     /**
