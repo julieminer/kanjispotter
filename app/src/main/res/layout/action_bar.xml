@@ -55,7 +55,7 @@
             android:minHeight="0dp"
             android:minWidth="0dp"
             android:padding="4dp"
-            android:src="?attr/themeBackgroundColor"
+            android:src="?attr/themeCloseDrawable"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 

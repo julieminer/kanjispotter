@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAlignment="center"
-        android:textColor="@android:color/white"
+        android:textColor="?attr/themeTextColor"
         tools:text="Onboarding Title Text" />
 
     <ImageView
@@ -38,7 +38,7 @@
         android:clickable="true"
         android:focusable="true"
         android:textAlignment="center"
-        android:textColor="@android:color/white"
+        android:textColor="?attr/themeTextColor"
         tools:text="Onboarding Description" />
 
     <Button

@@ -47,7 +47,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="start"
-                android:textColor="@android:color/white"
+                android:textColor="?attr/themeTextColor"
                 android:text="Enabled Kanji Spotter Overlay" />
 
             <android.support.v4.widget.Space
@@ -72,7 +72,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="start"
-                android:textColor="@android:color/white"
+                android:textColor="?attr/themeTextColor"
                 android:text="Blacklist apps" />
 
             <android.support.v4.widget.Space
@@ -97,7 +97,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="start"
-                android:textColor="@android:color/white"
+                android:textColor="?attr/themeTextColor"
                 android:text="Select all" />
 
             <android.support.v4.widget.Space
