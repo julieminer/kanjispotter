@@ -239,10 +239,10 @@ class IABManager(val appContext: Context): IabBroadcastReceiver.IabBroadcastList
     }
 
     private fun alert(message: String) {
+        Log.d(TAG, "Showing alert dialog: " + message)
 //        val bld = AlertDialog.Builder(appContext, R.style.DialogTheme)
 //        bld.setMessage(message)
 //        bld.setNeutralButton("OK", null)
-//        Log.d(TAG, "Showing alert dialog: " + message)
 //        bld.create().show()
     }
 

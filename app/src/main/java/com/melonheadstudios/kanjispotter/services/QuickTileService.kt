@@ -2,18 +2,20 @@ package com.melonheadstudios.kanjispotter.services
 
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
-import android.content.Context
 import android.graphics.drawable.Icon
 import android.os.Build
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import com.eightbitlab.rxbus.Bus
 import com.eightbitlab.rxbus.registerInBus
+import com.melonheadstudios.kanjispotter.MainApplication
 import com.melonheadstudios.kanjispotter.R
+import com.melonheadstudios.kanjispotter.injection.AndroidModule
+import com.melonheadstudios.kanjispotter.injection.DaggerApplicationComponent
+import com.melonheadstudios.kanjispotter.managers.PrefManager
 import com.melonheadstudios.kanjispotter.models.InfoPanelPreferenceChanged
-import com.melonheadstudios.kanjispotter.utils.Constants.Companion.PREFERENCES_KEY
-import com.melonheadstudios.kanjispotter.utils.Constants.Companion.SERVICE_STATUS_FLAG
 import java.util.*
+import javax.inject.Inject
 
 /**
  * kanjispotter
@@ -23,7 +25,13 @@ import java.util.*
 @TargetApi(Build.VERSION_CODES.N)
 class QuickTileService: TileService() {
 
+    @Inject
+    lateinit var prefManager: PrefManager
+
     override fun onCreate() {
+        MainApplication.graph = DaggerApplicationComponent.builder().androidModule(AndroidModule(application)).build()
+        MainApplication.graph.inject(this)
+
         super.onCreate()
 
         Bus.observe<InfoPanelPreferenceChanged>()
@@ -41,7 +49,7 @@ class QuickTileService: TileService() {
 
     private fun updateTile() {
         val tile = this.qsTile
-        val isActive = getServiceStatus()
+        val isActive = prefManager.serviceStatus()
 
         val newIcon: Icon
         val newLabel: String
@@ -68,18 +76,11 @@ class QuickTileService: TileService() {
         tile.updateTile()
     }
 
-    private fun getServiceStatus(): Boolean {
-        val prefs = applicationContext.getSharedPreferences(PREFERENCES_KEY, Context.MODE_PRIVATE)
-        return prefs.getBoolean(SERVICE_STATUS_FLAG, true)
-    }
-
     @SuppressLint("CommitPrefEdits")
     private fun toggleServiceStatus(): Boolean {
-        val prefs = applicationContext.getSharedPreferences(PREFERENCES_KEY, Context.MODE_PRIVATE)
-
-        var isActive = prefs.getBoolean(SERVICE_STATUS_FLAG, true)
+        var isActive = prefManager.serviceStatus()
         isActive = !isActive
-        prefs.edit().putBoolean(SERVICE_STATUS_FLAG, isActive).commit()
+        prefManager.serviceStatus(isActive)
         Bus.send(InfoPanelPreferenceChanged(isActive))
 
         return isActive

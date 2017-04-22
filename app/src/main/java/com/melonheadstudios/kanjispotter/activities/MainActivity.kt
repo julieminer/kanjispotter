@@ -23,16 +23,11 @@ import com.melonheadstudios.kanjispotter.R
 import com.melonheadstudios.kanjispotter.injection.AndroidModule
 import com.melonheadstudios.kanjispotter.injection.DaggerApplicationComponent
 import com.melonheadstudios.kanjispotter.managers.IABManager
+import com.melonheadstudios.kanjispotter.managers.PrefManager
 import com.melonheadstudios.kanjispotter.models.IABUpdateUIEvent
 import com.melonheadstudios.kanjispotter.models.InfoPanelPreferenceChanged
 import com.melonheadstudios.kanjispotter.services.InfoPanelDisplayService
 import com.melonheadstudios.kanjispotter.services.JapaneseTextGrabberService
-import com.melonheadstudios.kanjispotter.utils.Constants.Companion.APP_BLACKLISTED
-import com.melonheadstudios.kanjispotter.utils.Constants.Companion.BLACKLIST_SELECTION_STATUS_FLAG
-import com.melonheadstudios.kanjispotter.utils.Constants.Companion.BLACKLIST_STATUS_FLAG
-import com.melonheadstudios.kanjispotter.utils.Constants.Companion.DARK_THEME_FLAG
-import com.melonheadstudios.kanjispotter.utils.Constants.Companion.PREFERENCES_KEY
-import com.melonheadstudios.kanjispotter.utils.Constants.Companion.SERVICE_STATUS_FLAG
 import com.melonheadstudios.kanjispotter.viewmodels.BlacklistSelectionModel
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
@@ -40,17 +35,19 @@ import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 import javax.inject.Inject
 
-
 class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var iabManager: IABManager
+
+    @Inject
+    lateinit var prefManager: PrefManager
 
     private val fastAdapter = FastAdapter<BlacklistSelectionModel>()
     private val itemAdapter = ItemAdapter<BlacklistSelectionModel>()
     private var items = ArrayList<BlacklistSelectionModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        if (!isDarkThemeEnabled()) {
+        if (!prefManager.darkThemeEnabled()) {
             setTheme(R.style.AppThemeLight)
         }
         super.onCreate(savedInstanceState)
@@ -83,7 +80,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         blacklist_switch.setOnClickListener {
-            val isChecked = !isBlacklistEnabled()
+            val isChecked = !prefManager.blacklistEnabled()
             setBlacklistEnabled(isChecked)
             updateUI()
         }
@@ -94,13 +91,13 @@ class MainActivity : AppCompatActivity() {
         }
 
         spotter_overlay_switch.setOnClickListener {
-            val isChecked = !isOverlayEnabled()
+            val isChecked = !prefManager.overlayEnabled()
             setOverlayEnabled(isChecked)
             updateUI()
         }
 
         theme_dark_switch.setOnClickListener {
-            val isChecked = !isDarkThemeEnabled()
+            val isChecked = !prefManager.darkThemeEnabled()
             setDarkThemeEnabled(isChecked)
         }
 
@@ -138,16 +135,16 @@ class MainActivity : AppCompatActivity() {
         if (isPremium != null) {
             remove_ads_button.visibility = if (isPremium) GONE else VISIBLE
         }
-        val overlayEnabled = isOverlayEnabled()
+        val overlayEnabled = prefManager.overlayEnabled()
         spotter_overlay_switch.isChecked = overlayEnabled
         blacklist_check_container.visibility = if (overlayEnabled) VISIBLE else GONE
 
-        val blacklistEnabled = overlayEnabled && isBlacklistEnabled()
+        val blacklistEnabled = overlayEnabled && prefManager.blacklistEnabled()
         blacklist_switch.isChecked = blacklistEnabled
         blacklist_list.visibility = if (blacklistEnabled) VISIBLE else GONE
         blacklist_all_container.visibility = if (blacklistEnabled) VISIBLE else GONE
-        blacklist_all_check.isChecked = allBlacklistChecked()
-        theme_dark_switch.isChecked = isDarkThemeEnabled()
+        blacklist_all_check.isChecked = prefManager.allBlackListChecked()
+        theme_dark_switch.isChecked = prefManager.darkThemeEnabled()
         if (blacklistEnabled) {
             populateBlacklist(forceRepopulate = forceRepopulate)
         }
@@ -160,14 +157,12 @@ class MainActivity : AppCompatActivity() {
 
         if (!forceRepopulate && items.isNotEmpty()) return
 
-        val prefs = applicationContext.getSharedPreferences(PREFERENCES_KEY, Context.MODE_PRIVATE)
-
         items.clear()
         for (app in pkgAppsList) {
             val appLabel = app.loadLabel(packageManager).toString()
             val packageName = app.activityInfo.taskAffinity ?: continue
             val packageIcon = app.loadIcon(packageManager)
-            items.add(BlacklistSelectionModel(sharedPreferences = prefs, appName = appLabel, packageName = packageName, icon = packageIcon))
+            items.add(BlacklistSelectionModel(sharedPreferences = prefManager.prefs, appName = appLabel, packageName = packageName, icon = packageIcon))
         }
         items.sortBy { it.appName }
         itemAdapter.set(items)
@@ -175,14 +170,12 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("CommitPrefEdits")
     private fun setOverlayEnabled(enabled: Boolean) {
-        val prefs = applicationContext.getSharedPreferences(PREFERENCES_KEY, Context.MODE_PRIVATE)
-        prefs.edit().putBoolean(SERVICE_STATUS_FLAG, enabled).commit()
+        prefManager.setOverlay(enabled)
         Bus.send(InfoPanelPreferenceChanged(enabled = enabled))
     }
 
     private fun setDarkThemeEnabled(enabled: Boolean) {
-        val prefs = applicationContext.getSharedPreferences(PREFERENCES_KEY, Context.MODE_PRIVATE)
-        prefs.edit().putBoolean(DARK_THEME_FLAG, enabled).commit()
+        prefManager.setDarkTheme(enabled)
 
         if (isMyServiceRunning(InfoPanelDisplayService::class.java)) {
             val service = Intent(applicationContext, InfoPanelDisplayService::class.java)
@@ -194,44 +187,16 @@ class MainActivity : AppCompatActivity() {
         this.startActivity(intent)
     }
 
-    private fun isDarkThemeEnabled(): Boolean {
-        val prefs = applicationContext.getSharedPreferences(PREFERENCES_KEY, Context.MODE_PRIVATE)
-        return prefs.getBoolean(DARK_THEME_FLAG, true)
-    }
-
-    private fun isOverlayEnabled(): Boolean {
-        val prefs = applicationContext.getSharedPreferences(PREFERENCES_KEY, Context.MODE_PRIVATE)
-        return prefs.getBoolean(SERVICE_STATUS_FLAG, true)
-    }
-
-    private fun isBlacklistEnabled(): Boolean {
-        val prefs = applicationContext.getSharedPreferences(PREFERENCES_KEY, Context.MODE_PRIVATE)
-        return prefs.getBoolean(BLACKLIST_STATUS_FLAG, false)
-    }
-
     private fun setBlacklistEnabled(enabled: Boolean) {
-        val prefs = applicationContext.getSharedPreferences(PREFERENCES_KEY, Context.MODE_PRIVATE)
-        prefs.edit().putBoolean(BLACKLIST_STATUS_FLAG, enabled).apply()
+        prefManager.setBlacklist(enabled)
         if (enabled) {
             populateBlacklist()
         }
     }
 
-    private fun allBlacklistChecked(): Boolean {
-        val prefs = applicationContext.getSharedPreferences(PREFERENCES_KEY, Context.MODE_PRIVATE)
-        return prefs.getBoolean(BLACKLIST_SELECTION_STATUS_FLAG, false)
-    }
-
     @SuppressLint("CommitPrefEdits")
     private fun selectAllBlacklist(selectedAll: Boolean) {
-        val prefs = applicationContext.getSharedPreferences(PREFERENCES_KEY, Context.MODE_PRIVATE)
-        val edit = prefs.edit()
-        edit.putBoolean(BLACKLIST_SELECTION_STATUS_FLAG, selectedAll)
-        for (item in items) {
-            edit.putBoolean(APP_BLACKLISTED + item.packageName, selectedAll)
-        }
-        edit.commit()
-
+        prefManager.setAllBlackListChecked(selectedAll, items)
         itemAdapter.set(items)
     }
 

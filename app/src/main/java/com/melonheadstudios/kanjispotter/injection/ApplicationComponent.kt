@@ -4,6 +4,7 @@ import com.melonheadstudios.kanjispotter.MainApplication
 import com.melonheadstudios.kanjispotter.activities.MainActivity
 import com.melonheadstudios.kanjispotter.services.InfoPanelDisplayService
 import com.melonheadstudios.kanjispotter.services.JapaneseTextGrabberService
+import com.melonheadstudios.kanjispotter.services.QuickTileService
 import dagger.Component
 import javax.inject.Singleton
 
@@ -18,4 +19,5 @@ interface ApplicationComponent {
     fun inject(application: MainApplication)
     fun inject(textGrabberService: JapaneseTextGrabberService)
     fun inject(infoPanelDisplayService: InfoPanelDisplayService)
+    fun inject(tileService: QuickTileService)
 }

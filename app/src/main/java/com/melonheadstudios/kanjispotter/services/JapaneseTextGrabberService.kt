@@ -5,22 +5,21 @@ import android.accessibilityservice.AccessibilityServiceInfo
 import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import com.melonheadstudios.kanjispotter.MainApplication
 import com.melonheadstudios.kanjispotter.injection.AndroidModule
 import com.melonheadstudios.kanjispotter.injection.DaggerApplicationComponent
+import com.melonheadstudios.kanjispotter.managers.PrefManager
 import com.melonheadstudios.kanjispotter.managers.TextManager
-import com.melonheadstudios.kanjispotter.utils.Constants.Companion.APP_BLACKLISTED
-import com.melonheadstudios.kanjispotter.utils.Constants.Companion.BLACKLIST_STATUS_FLAG
-import com.melonheadstudios.kanjispotter.utils.Constants.Companion.PREFERENCES_KEY
 import javax.inject.Inject
 
 
 class JapaneseTextGrabberService : AccessibilityService() {
     private val TAG = "JapaneseTextGrabber"
-    private var prefs: SharedPreferences? = null
+
+    @Inject
+    lateinit var prefManager: PrefManager
 
     @Inject
     lateinit var textManager: TextManager
@@ -30,8 +29,6 @@ class JapaneseTextGrabberService : AccessibilityService() {
 
         MainApplication.graph = DaggerApplicationComponent.builder().androidModule(AndroidModule(application)).build()
         MainApplication.graph.inject(this)
-
-        prefs = applicationContext.getSharedPreferences(PREFERENCES_KEY, Context.MODE_PRIVATE)
 
         Log.d(TAG, "Service connected")
 
@@ -50,10 +47,9 @@ class JapaneseTextGrabberService : AccessibilityService() {
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         event ?: return
-        val blackListEnabled = prefs?.getBoolean(BLACKLIST_STATUS_FLAG, false) ?: false
+        val blackListEnabled = prefManager.blacklistEnabled()
         if (blackListEnabled) {
-            val appBlacklisted = prefs?.getBoolean(APP_BLACKLISTED + event.packageName, false) ?: false
-            if (appBlacklisted) return
+            if (prefManager.blacklisted(event.packageName)) return
         }
         if (!isMyServiceRunning(InfoPanelDisplayService::class.java)) {
             val service = Intent(applicationContext, InfoPanelDisplayService::class.java)

@@ -6,6 +6,7 @@ import com.crashlytics.android.Crashlytics
 import com.google.android.gms.ads.MobileAds
 import com.melonheadstudios.kanjispotter.R
 import com.melonheadstudios.kanjispotter.managers.IABManager
+import com.melonheadstudios.kanjispotter.managers.PrefManager
 import com.melonheadstudios.kanjispotter.managers.TextManager
 import dagger.Module
 import dagger.Provides
@@ -44,6 +45,12 @@ class AndroidModule(private val application: Application) {
     @Singleton
     fun providesIABManager(): IABManager {
         return IABManager(application)
+    }
+
+    @Provides
+    @Singleton
+    fun providesPrefManager(): PrefManager {
+        return PrefManager(application)
     }
 
 //    @Provides
