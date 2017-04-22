@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@color/backgroundColor"
     android:layout_margin="4dp"
     android:orientation="horizontal">
 
@@ -12,7 +13,7 @@
         android:layout_height="match_parent"
         android:layout_weight="0.3"
         android:textStyle="bold"
-        android:textColor="@android:color/black"
+        android:textColor="@color/textColor"
         tools:text="Hello" />
 
     <LinearLayout
@@ -27,14 +28,14 @@
             android:id="@+id/furigana_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@android:color/black"
+            android:textColor="@color/textColor"
             tools:text="world" />
 
         <TextView
             android:id="@+id/english_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@android:color/darker_gray"
+            android:textColor="@color/subTextColor"
             tools:text="english world"
             tools:visibility="visible"
             android:visibility="gone"/>

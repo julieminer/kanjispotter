@@ -12,13 +12,14 @@
     android:visibility="gone"
     app:cardElevation="8dp"
     card_view:cardCornerRadius="4dp"
+    app:cardBackgroundColor="@color/backgroundColor"
     tools:visibility="visible">
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="4dp"
-        android:background="@android:color/white"
+        android:background="@color/backgroundColor"
         android:orientation="vertical">
 
         <TextView
@@ -26,7 +27,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAlignment="center"
-            android:textColor="@android:color/black"
+            android:textColor="@color/textColor"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -54,7 +55,7 @@
             android:minHeight="0dp"
             android:minWidth="0dp"
             android:padding="4dp"
-            android:src="@drawable/close_button"
+            android:src="@drawable/close_light"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -68,7 +69,8 @@
             app:layout_constraintBottom_toBottomOf="@+id/info_button"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@+id/info_button"
-            app:layout_constraintTop_toTopOf="@+id/info_button" />
+            app:layout_constraintTop_toTopOf="@+id/info_button"
+            tools:listitem="@layout/list_selection_item"/>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/info"

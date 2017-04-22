@@ -18,7 +18,9 @@
 <resources>
     <color name="colorPrimary">#202930</color>
     <color name="colorPrimaryDark">#12171b</color>
-    <color name="colorAccentSubtle">#415667</color>
     <color name="colorAccent">#48d1ff</color>
     <color name="colorAccentClean">#FFFFFF</color>
+    <color name="backgroundColor">#415667</color>
+    <color name="textColor">#FFFFFF</color>
+    <color name="subTextColor">#C0C0C0</color>
 </resources>
