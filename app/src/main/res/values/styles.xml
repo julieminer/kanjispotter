@@ -21,7 +21,23 @@
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/textColor</item>
+        <item name="colorAccent">@color/textColorDark</item>
+
+        <item name="themeCloseDrawable">@drawable/close_light</item>
+        <item name="themeTextColor">@color/textColorDark</item>
+        <item name="themeSubTextColor">@color/subTextColorDark</item>
+        <item name="themeBackgroundColor">@color/backgroundColorDark</item>
+    </style>
+
+    <style name="AppThemeLight" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/textColorDark</item>
+
+        <item name="themeCloseDrawable">@drawable/close_button</item>
+        <item name="themeTextColor">@color/textColorLight</item>
+        <item name="themeSubTextColor">@color/subTextColorLight</item>
+        <item name="themeBackgroundColor">@color/backgroundColorLight</item>
     </style>
 
     <style name="DialogTheme" parent="Theme.AppCompat.Light.Dialog">
