@@ -33,7 +33,7 @@
     <style name="AppThemeLight" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/textColorDark</item>
+        <item name="colorAccent">@color/textColorLight</item>
 
         <item name="themeCloseDrawable">@drawable/close_button</item>
         <item name="themeTextColor">@color/textColorLight</item>
