@@ -55,6 +55,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="start"
+                    android:padding="2dp"
                     android:text="Enable dark theme"
                     android:textColor="?attr/themeTextColor" />
 
@@ -66,8 +67,16 @@
                 <Switch
                     android:id="@+id/theme_dark_switch"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="match_parent"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitCenter"/>
             </LinearLayout>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:src="@drawable/theme_preview"/>
 
             <Button
                 android:id="@+id/blacklist_settings_button"
