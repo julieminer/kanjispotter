@@ -55,6 +55,10 @@ class JapaneseTextGrabberService : AccessibilityService() {
             val appBlacklisted = prefs?.getBoolean(APP_BLACKLISTED + event.packageName, false) ?: false
             if (appBlacklisted) return
         }
+        if (!isMyServiceRunning(InfoPanelDisplayService::class.java)) {
+            val service = Intent(applicationContext, InfoPanelDisplayService::class.java)
+            startService(service)
+        }
         textManager.parseEvent(event)
     }
 

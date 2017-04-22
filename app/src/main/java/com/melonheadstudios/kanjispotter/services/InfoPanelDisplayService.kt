@@ -18,6 +18,7 @@ import com.melonheadstudios.kanjispotter.injection.AndroidModule
 import com.melonheadstudios.kanjispotter.injection.DaggerApplicationComponent
 import com.melonheadstudios.kanjispotter.managers.IABManager
 import com.melonheadstudios.kanjispotter.models.*
+import com.melonheadstudios.kanjispotter.utils.Constants
 import com.melonheadstudios.kanjispotter.viewmodels.InfoPanelViewHolder
 import javax.inject.Inject
 
@@ -36,10 +37,12 @@ class InfoPanelDisplayService: Service() {
     var windowManager: WindowManager? = null
     var isPremium = false
     override fun onBind(intent: Intent?): IBinder? {
+        Log.d("","")
         return null
     }
 
     override fun onCreate() {
+        updateTheme()
         super.onCreate()
 
         MainApplication.graph = DaggerApplicationComponent.builder().androidModule(AndroidModule(application)).build()
@@ -135,5 +138,18 @@ class InfoPanelDisplayService: Service() {
     private fun selectedPosition(position: Int) {
         Log.d(TAG, "selected position $position")
         viewHolder?.selectedPosition(position)
+    }
+
+    private fun isDarkThemeEnabled(): Boolean {
+        val prefs = applicationContext.getSharedPreferences(Constants.PREFERENCES_KEY, Context.MODE_PRIVATE)
+        return prefs.getBoolean(Constants.DARK_THEME_FLAG, true)
+    }
+
+    private fun updateTheme() {
+        if (isDarkThemeEnabled()) {
+            setTheme(R.style.AppTheme)
+        } else {
+            setTheme(R.style.AppThemeLight)
+        }
     }
 }

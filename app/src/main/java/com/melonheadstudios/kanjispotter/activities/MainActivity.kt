@@ -25,6 +25,7 @@ import com.melonheadstudios.kanjispotter.injection.DaggerApplicationComponent
 import com.melonheadstudios.kanjispotter.managers.IABManager
 import com.melonheadstudios.kanjispotter.models.IABUpdateUIEvent
 import com.melonheadstudios.kanjispotter.models.InfoPanelPreferenceChanged
+import com.melonheadstudios.kanjispotter.services.InfoPanelDisplayService
 import com.melonheadstudios.kanjispotter.services.JapaneseTextGrabberService
 import com.melonheadstudios.kanjispotter.utils.Constants.Companion.APP_BLACKLISTED
 import com.melonheadstudios.kanjispotter.utils.Constants.Companion.BLACKLIST_SELECTION_STATUS_FLAG
@@ -183,6 +184,10 @@ class MainActivity : AppCompatActivity() {
         val prefs = applicationContext.getSharedPreferences(PREFERENCES_KEY, Context.MODE_PRIVATE)
         prefs.edit().putBoolean(DARK_THEME_FLAG, enabled).commit()
 
+        if (isMyServiceRunning(InfoPanelDisplayService::class.java)) {
+            val service = Intent(applicationContext, InfoPanelDisplayService::class.java)
+            stopService(service)
+        }
         this.finish()
         val intent = this.intent
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or IntentCompat.FLAG_ACTIVITY_CLEAR_TASK
