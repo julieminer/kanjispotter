@@ -10,7 +10,7 @@
     android:layout_gravity="center"
     android:layout_margin="16dp"
     android:visibility="gone"
-    app:cardBackgroundColor="@color/backgroundColor"
+    app:cardBackgroundColor="?attr/themeBackgroundColor"
     app:cardElevation="8dp"
     card_view:cardCornerRadius="4dp"
     tools:visibility="visible">
@@ -19,7 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="4dp"
-        android:background="@color/backgroundColor"
+        android:background="?attr/themeBackgroundColor"
         android:orientation="vertical">
 
         <TextView
@@ -27,7 +27,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAlignment="center"
-            android:textColor="@color/textColor"
+            android:textColor="?attr/themeTextColor"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -55,7 +55,7 @@
             android:minHeight="0dp"
             android:minWidth="0dp"
             android:padding="4dp"
-            android:src="@drawable/close_light"
+            android:src="?attr/themeBackgroundColor"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 

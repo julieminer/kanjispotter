@@ -27,6 +27,7 @@
         <item name="themeTextColor">@color/textColorDark</item>
         <item name="themeSubTextColor">@color/subTextColorDark</item>
         <item name="themeBackgroundColor">@color/backgroundColorDark</item>
+        <item name="themeSubBackgroundColor">@color/textColorDark</item>
     </style>
 
     <style name="AppThemeLight" parent="Theme.AppCompat.Light.DarkActionBar">
@@ -38,6 +39,7 @@
         <item name="themeTextColor">@color/textColorLight</item>
         <item name="themeSubTextColor">@color/subTextColorLight</item>
         <item name="themeBackgroundColor">@color/backgroundColorLight</item>
+        <item name="themeSubBackgroundColor">@color/colorPrimary</item>
     </style>
 
     <style name="DialogTheme" parent="Theme.AppCompat.Light.Dialog">

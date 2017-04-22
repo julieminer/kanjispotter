@@ -5,7 +5,7 @@
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
     android:layout_margin="4dp"
-    android:background="@color/backgroundColor"
+    android:background="?attr/themeBackgroundColor"
     android:gravity="center"
     android:orientation="horizontal"
     android:paddingEnd="4dp"
@@ -20,7 +20,7 @@
             android:id="@+id/selected_word"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/textColor"
+            android:textColor="?attr/themeTextColor"
             android:textStyle="bold"
             tools:text="test name" />
 
@@ -28,7 +28,7 @@
             android:id="@+id/selected_underline"
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:background="@color/colorPrimary"
+            android:background="?attr/themeSubBackgroundColor"
             android:orientation="horizontal"
             android:visibility="gone"
             tools:visibility="visible" />

@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center"
-    tools:background="@color/backgroundColor"
+    tools:background="?attr/themeBackgroundColor"
     android:layout_marginTop="8dp"
     android:layout_marginBottom="8dp">
 
@@ -24,7 +24,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="start"
-        android:textColor="@color/textColor"
+        android:textColor="?attr/themeTextColor"
         tools:text="App Name" />
 
     <android.support.v4.widget.Space

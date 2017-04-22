@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="4dp"
-    android:background="@color/backgroundColor"
+    android:background="?attr/themeBackgroundColor"
     android:orientation="horizontal">
 
     <TextView
@@ -12,7 +12,7 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="0.3"
-        android:textColor="@color/textColor"
+        android:textColor="?attr/themeTextColor"
         android:textStyle="bold"
         tools:text="Hello" />
 
@@ -28,14 +28,14 @@
             android:id="@+id/furigana_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/textColor"
+            android:textColor="?attr/themeTextColor"
             tools:text="world" />
 
         <TextView
             android:id="@+id/english_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/subTextColor"
+            android:textColor="?attr/themeSubTextColor"
             android:visibility="gone"
             tools:text="english world"
             tools:visibility="visible" />
