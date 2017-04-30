@@ -41,8 +41,7 @@ class TextManager {
     private fun getEventText(event: AccessibilityEvent?): String {
         val sb = StringBuilder()
         val sbi = StringBuilder()
-        event ?: return ""
-        event.text ?: return ""
+        event?.text ?: return ""
 
         for (s in event.text) {
             s.forEach { e ->
@@ -54,7 +53,7 @@ class TextManager {
             }
         }
 
-        val text = event.source.text ?: return sb.stringify()
+        val text = event.source?.text ?: return sb.stringify()
         for (s in text) {
             if (JapaneseCharMatcher.isKanji(s)) {
                 sbi.append(s)

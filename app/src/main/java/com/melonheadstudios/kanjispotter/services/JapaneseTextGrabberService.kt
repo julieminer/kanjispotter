@@ -45,7 +45,7 @@ class JapaneseTextGrabberService : AccessibilityService() {
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
-        event ?: return
+        event?.packageName ?: return
         val blackListEnabled = prefManager.blacklistEnabled()
         if (blackListEnabled) {
             if (prefManager.blacklisted(event.packageName)) return
