@@ -140,7 +140,12 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("NewApi")
     private fun shouldLaunchOnboarding(): Boolean {
         val needsPermission = android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-        val hasPermission = Settings.canDrawOverlays(this)
+        val hasPermission = try {
+            Settings.canDrawOverlays(this)
+        } catch (e: NoSuchMethodError) {
+            e.printStackTrace()
+            true
+        }
         val canDrawOverApps = !needsPermission || (needsPermission && hasPermission)
         val serviceIsRunning = isServiceRunning(JapaneseTextGrabberService::class.java)
         return !(canDrawOverApps && serviceIsRunning)

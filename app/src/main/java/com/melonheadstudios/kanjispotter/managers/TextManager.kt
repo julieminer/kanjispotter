@@ -10,7 +10,6 @@ import com.melonheadstudios.kanjispotter.models.InfoPanelEvent
 import com.melonheadstudios.kanjispotter.models.InfoPanelSelectionsEvent
 import com.melonheadstudios.kanjispotter.utils.JapaneseCharMatcher
 import javax.inject.Singleton
-import com.crashlytics.android.answers.PurchaseEvent
 import com.crashlytics.android.answers.Answers
 import com.crashlytics.android.answers.CustomEvent
 import com.melonheadstudios.kanjispotter.utils.Constants.Companion.ATTRIBUTE_CHARACTERS
