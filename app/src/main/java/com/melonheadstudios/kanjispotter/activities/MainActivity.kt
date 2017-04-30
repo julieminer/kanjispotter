@@ -27,6 +27,9 @@ import com.melonheadstudios.kanjispotter.services.InfoPanelDisplayService
 import com.melonheadstudios.kanjispotter.services.JapaneseTextGrabberService
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
+import android.support.v7.app.AlertDialog
+import android.support.v7.view.ContextThemeWrapper
+
 
 class MainActivity : AppCompatActivity() {
     @Inject
@@ -66,7 +69,17 @@ class MainActivity : AppCompatActivity() {
         }
 
         remove_ads_button.setOnClickListener {
-            iabManager.onUpgradeAppButtonClicked(this)
+            AlertDialog.Builder(ContextThemeWrapper(this, R.style.DialogTheme))
+                    .setMessage("Have you tested your favourite apps? Make sure you do that before purchasing!")
+                    .setCancelable(true)
+                    .setPositiveButton("Yes", { dialog, _ ->
+                        run {
+                            iabManager.onUpgradeAppButtonClicked(this)
+                            dialog.cancel()
+                        }
+                    })
+                    .setNegativeButton("No", { dialog, _ -> dialog.cancel() })
+                    .create().show()
         }
 
         spotter_overlay_switch.setOnClickListener {
