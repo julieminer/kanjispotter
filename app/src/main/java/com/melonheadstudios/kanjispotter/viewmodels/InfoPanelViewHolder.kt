@@ -1,7 +1,6 @@
 package com.melonheadstudios.kanjispotter.viewmodels
 
 import android.content.Context
-import android.support.v4.widget.NestedScrollView
 import android.support.v7.widget.CardView
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.LinearLayoutManager
@@ -36,7 +35,11 @@ import com.melonheadstudios.kanjispotter.views.NoTouchHorizontalScrollView
  * Created by jake on 2017-04-16, 2:09 PM
  */
 
-class InfoPanelViewHolder(val context: Context, parent: View, var iabManager: IABManager) {
+class InfoPanelViewHolder(val context: Context, parent: View, var iabManager: IABManager) : SelectionView.SelectionViewDelegate {
+    override fun selectedSegment(segment: String) {
+        Log.d(TAG, segment)
+    }
+
     private val TAG = "InfoPanelViewHolder"
 
     val selectionScroller: SeekBar = parent.findViewById(R.id.selection_scroll) as SeekBar
@@ -71,6 +74,8 @@ class InfoPanelViewHolder(val context: Context, parent: View, var iabManager: IA
                 selectionViewContainer.scrollTo(width, 0)
             }
         })
+
+        selectionView.delegate = this
 
         updateAd()
 

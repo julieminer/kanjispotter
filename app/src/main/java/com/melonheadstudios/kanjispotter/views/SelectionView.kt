@@ -15,6 +15,11 @@ import com.melonheadstudios.kanjispotter.viewmodels.TextSelection
  */
 class SelectionView @JvmOverloads constructor(internal var context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) :
         View(context, attrs, defStyleAttr) {
+
+    interface SelectionViewDelegate {
+        fun selectedSegment(segment: String)
+    }
+
     var selectionsList = ArrayList<TextSelection>()
         set(value) {
             clearData()
@@ -40,6 +45,8 @@ class SelectionView @JvmOverloads constructor(internal var context: Context, att
     private var mWidth = 1
     private var mHeight = 1
     private val textSize = 80f
+
+    var delegate: SelectionViewDelegate? = null
 
     init {
         circlePaint.isAntiAlias = true
@@ -163,6 +170,14 @@ class SelectionView @JvmOverloads constructor(internal var context: Context, att
         circlePath.reset()
         mCanvas.drawPath(mPath, mPaint)
         mPath.reset()
+
+        val selections = selectionsList.filter { it.selected }
+        var selectedString = ""
+        for (selected in selections) {
+            selectedString += selected.text
+        }
+        delegate?.selectedSegment(selectedString)
+        selections.forEach { it.selected = false }
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
