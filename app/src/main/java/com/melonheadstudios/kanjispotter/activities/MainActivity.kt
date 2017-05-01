@@ -48,6 +48,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        debug_button.visibility = if (BuildConfig.DEBUG) VISIBLE else GONE
 
         if (shouldLaunchOnboarding()) {
             startActivity(Intent(this, KanjiOnboardingActivity::class.java))
@@ -96,6 +97,10 @@ class MainActivity : AppCompatActivity() {
         blacklist_settings_button.setOnClickListener {
             val blacklistIntent = Intent(this, BlacklistActivity::class.java)
             startActivity(blacklistIntent)
+        }
+
+        debug_button.setOnClickListener {
+            startActivity(Intent(this, FingerPaint::class.java))
         }
 
         iabManager.setupIAB(context = this)

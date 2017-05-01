@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.support.v7.app.AppCompatActivity
+import com.melonheadstudios.kanjispotter.BuildConfig
 import com.melonheadstudios.kanjispotter.R
 import com.melonheadstudios.kanjispotter.activities.fragments.OnboardingFragment
 import com.melonheadstudios.kanjispotter.activities.fragments.OnboardingFragmentListener
@@ -70,7 +71,7 @@ class KanjiOnboardingActivity: AppCompatActivity(), OnboardingFragmentListener {
                 }
             }
             1 -> {
-                if (!isServiceRunning(JapaneseTextGrabberService::class.java)) {
+                if (!BuildConfig.DEBUG && !isServiceRunning(JapaneseTextGrabberService::class.java)) {
                     userSettingAccessibility = true
                     val intent = Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS)
                     startActivityForResult(intent, ACTION_ACESSIBILITY_REQUEST_CODE)
