@@ -1,6 +1,7 @@
 package com.melonheadstudios.kanjispotter.viewmodels
 
 import android.content.Context
+import android.support.v4.widget.NestedScrollView
 import android.support.v7.widget.CardView
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.LinearLayoutManager
@@ -37,7 +38,8 @@ import com.mikepenz.fastadapter.adapters.ItemAdapter
 class InfoPanelViewHolder(val context: Context, parent: View, var iabManager: IABManager) {
     private val TAG = "InfoPanelViewHolder"
 
-    val selectionView: SelectionView = parent.findViewById(R.id.selection_view) as SelectionView
+    val selectionView: SelectionView = parent.findViewById(R.id.selection_view_text) as SelectionView
+    val selectionViewContainer: NestedScrollView = parent.findViewById(R.id.selection_view) as NestedScrollView
     val adView: AdView = parent.findViewById(R.id.ad_spot) as AdView
     val container: CardView = parent.findViewById(R.id.info_panel) as CardView
     val list: RecyclerView = parent.findViewById(R.id.info) as RecyclerView
@@ -113,10 +115,10 @@ class InfoPanelViewHolder(val context: Context, parent: View, var iabManager: IA
 
     fun handleMultiSelectionEvent(rawString: String) {
         val selectionList = ArrayList<TextSelection>()
-        for (s in rawString.trim()) {
+        for (s in rawString) {
             selectionList.add(TextSelection(s.toString()))
         }
-        selectionView.visibility = if (selectionList.count() == 0) GONE else VISIBLE
+        selectionViewContainer.visibility = if (selectionList.count() == 0) GONE else VISIBLE
         selectionView.selectionsList = selectionList
     }
 

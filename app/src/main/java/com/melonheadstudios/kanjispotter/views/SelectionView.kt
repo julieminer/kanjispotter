@@ -95,7 +95,7 @@ class SelectionView @JvmOverloads constructor(internal var context: Context, att
             }
             totalX += x + selection.rect.width()
             if (BuildConfig.DEBUG) {
-                canvas.drawRect(selection.rect, mPaint)
+//                canvas.drawRect(selection.rect, mPaint)
             }
         }
     }

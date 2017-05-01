@@ -76,7 +76,7 @@ class TextManager {
         Bus.send(InfoPanelClearEvent())
         val components = text.split(" ")
         if (components.size > 1) {
-            Bus.send(InfoPanelMultiSelectEvent(text.trim()))
+            Bus.send(InfoPanelMultiSelectEvent(text.replace(regex = Regex("\\s+"), replacement = "").trim()))
         }
         Bus.send(InfoPanelSelectionsEvent(components))
         Answers.getInstance().logCustom(CustomEvent(EVENT_USED)
