@@ -15,14 +15,25 @@ import kotlinx.android.synthetic.main.oboarding_page.*
  */
 class OnboardingFragment: Fragment() {
     lateinit var delegate: OnboardingFragmentListener
-    lateinit var viewModel: OnboardingViewModel
+    var viewModel: OnboardingViewModel? = null
     var pageNumber: Int? = null
+    var viewCreated = false
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater?.inflate(R.layout.oboarding_page, container, false)
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+        viewCreated = true
+        updatePage(viewModel ?: return)
+    }
+
+    override fun onResume() {
+        super.onResume()
+    }
+
+    fun updatePage(viewModel: OnboardingViewModel) {
+        if (!viewCreated) return
         onboarding_title.setText(viewModel.titleText!!)
         onboarding_description.setText(viewModel.descriptionText!!)
         onboarding_button.setText(viewModel.buttonText!!)
@@ -33,14 +44,11 @@ class OnboardingFragment: Fragment() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-    }
-
     fun setupPage(listener: OnboardingFragmentListener, index: Int, model: OnboardingViewModel) {
         delegate = listener
         pageNumber = index
         viewModel = model
+        updatePage(viewModel!!)
     }
 }
 
