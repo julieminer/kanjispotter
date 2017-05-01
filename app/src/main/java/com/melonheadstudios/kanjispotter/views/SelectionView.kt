@@ -12,7 +12,7 @@ import com.melonheadstudios.kanjispotter.viewmodels.TextSelection
  * kanjispotter
  * Created by jake on 2017-04-30, 8:24 PM
  */
-class SelectionView(internal var context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) :
+class SelectionView @JvmOverloads constructor(internal var context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) :
         View(context, attrs, defStyleAttr) {
     var selectionsList = ArrayList<TextSelection>()
     private val TOUCH_TOLERANCE = 4f
@@ -84,7 +84,7 @@ class SelectionView(internal var context: Context, attrs: AttributeSet? = null, 
             }
             totalX += x + selection.rect.width()
             if (BuildConfig.DEBUG) {
-//                canvas.drawRect(selection.rect, mPaint)
+                canvas.drawRect(selection.rect, mPaint)
             }
         }
     }
