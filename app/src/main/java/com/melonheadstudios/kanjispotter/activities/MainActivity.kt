@@ -100,7 +100,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         debug_button.setOnClickListener {
-            startActivity(Intent(this, FingerPaint::class.java))
+
         }
 
         iabManager.setupIAB(context = this)

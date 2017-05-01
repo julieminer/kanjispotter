@@ -79,10 +79,12 @@ class SelectionView @JvmOverloads constructor(internal var context: Context, att
         super.onDraw(canvas)
 
         canvas.drawBitmap(mBitmap, 0f, 0f, mBitmapPaint)
-        canvas.drawPath(mPath, mPaint)
+        if (BuildConfig.DEBUG) {
+            canvas.drawPath(mPath, mPaint)
+        }
         canvas.drawPath(circlePath, circlePaint)
         val x = 0f
-        val y = (mHeight / 2).toFloat()
+        val y = (mHeight.toFloat() * 2) / 3
 
         var totalX = x
         for (selection in selectionsList) {

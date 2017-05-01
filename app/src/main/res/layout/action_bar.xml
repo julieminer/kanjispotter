@@ -22,6 +22,16 @@
         android:background="?attr/themeBackgroundColor"
         android:orientation="vertical">
 
+        <SeekBar
+            android:id="@+id/selection_scroll"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            ads:layout_constraintLeft_toLeftOf="parent"
+            ads:layout_constraintRight_toRightOf="parent"
+            ads:layout_constraintTop_toTopOf="parent"
+            tools:layout_editor_absoluteY="196dp"
+            tools:layout_editor_absoluteX="8dp" />
+
         <android.support.v4.widget.NestedScrollView
             android:id="@+id/selection_view"
             android:layout_width="0dp"
@@ -30,7 +40,7 @@
             android:visibility="gone"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/selection_scroll"
             tools:visibility="visible">
 
             <LinearLayout
@@ -38,26 +48,15 @@
                 android:layout_height="50dp"
                 android:gravity="center">
 
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:minWidth="1dp"
-                    android:text="b"/>
-
                 <com.melonheadstudios.kanjispotter.views.SelectionView
                     android:id="@+id/selection_view_text"
                     android:layout_width="0dp"
                     android:layout_weight="1"
+                    android:layout_margin="8dp"
+                    android:minHeight="32dp"
                     android:layout_height="match_parent" />
 
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:minWidth="1dp"
-                    android:text="f"/>
             </LinearLayout>
-
-
         </android.support.v4.widget.NestedScrollView>
 
         <TextView
