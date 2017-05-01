@@ -15,6 +15,11 @@ import com.melonheadstudios.kanjispotter.viewmodels.TextSelection
 class SelectionView @JvmOverloads constructor(internal var context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) :
         View(context, attrs, defStyleAttr) {
     var selectionsList = ArrayList<TextSelection>()
+        set(value) {
+            clearData()
+            field = value
+        }
+
     private val TOUCH_TOLERANCE = 4f
     private var mPaint = Paint()
     private val textPaint = Paint()
@@ -31,6 +36,10 @@ class SelectionView @JvmOverloads constructor(internal var context: Context, att
     private var mX = 0f
     private var mY = 0f
 
+    private var mWidth = 1
+    private var mHeight = 1
+    private val textSize = 80f
+
     init {
         circlePaint.isAntiAlias = true
         circlePaint.color = Color.BLUE
@@ -38,10 +47,10 @@ class SelectionView @JvmOverloads constructor(internal var context: Context, att
         circlePaint.strokeJoin = Paint.Join.MITER
         circlePaint.strokeWidth = 4f
         textPaint.color = Color.BLACK
-        textPaint.textSize = 136f
+        textPaint.textSize = textSize
 
         textHighlightPaint.color = Color.GREEN
-        textHighlightPaint.textSize = 136f
+        textHighlightPaint.textSize = textSize
 
         textHighlightPaintBackground.isAntiAlias = true
         textHighlightPaintBackground.color = Color.BLUE
@@ -54,13 +63,15 @@ class SelectionView @JvmOverloads constructor(internal var context: Context, att
         mPaint.strokeCap = Paint.Cap.ROUND
         mPaint.strokeWidth = 12f
 
-        mBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
+        mBitmap = Bitmap.createBitmap(mWidth, mHeight, Bitmap.Config.ARGB_8888)
         mCanvas = Canvas(mBitmap)
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
-        super.onSizeChanged(w, h, oldw, oldh)
-        mBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+        mWidth = maxOf(w, 1)
+        mHeight = maxOf(h, 1)
+        super.onSizeChanged(mWidth, mHeight, oldw, oldh)
+        mBitmap = Bitmap.createBitmap(mWidth, mHeight, Bitmap.Config.ARGB_8888)
         mCanvas = Canvas(mBitmap)
     }
 
@@ -71,7 +82,7 @@ class SelectionView @JvmOverloads constructor(internal var context: Context, att
         canvas.drawPath(mPath, mPaint)
         canvas.drawPath(circlePath, circlePaint)
         val x = 0f
-        val y = (height / 2).toFloat()
+        val y = (mHeight / 2).toFloat()
 
         var totalX = x
         for (selection in selectionsList) {
@@ -87,6 +98,16 @@ class SelectionView @JvmOverloads constructor(internal var context: Context, att
                 canvas.drawRect(selection.rect, mPaint)
             }
         }
+    }
+
+    private fun clearData() {
+        mBitmap = Bitmap.createBitmap(mWidth, mHeight, Bitmap.Config.ARGB_8888)
+        mCanvas = Canvas(mBitmap)
+        mPath.close()
+        mPath.reset()
+        circlePath.close()
+        circlePath.reset()
+        invalidate()
     }
 
     private fun touch_start(x: Float, y: Float) {
@@ -113,7 +134,7 @@ class SelectionView @JvmOverloads constructor(internal var context: Context, att
                 .forEach { it.selected = true }
     }
 
-    fun inBox(x1: Int, y1: Int, rect: Rect): Boolean {
+    private fun inBox(x1: Int, y1: Int, rect: Rect): Boolean {
         return rect.contains(x1, y1)
     }
 

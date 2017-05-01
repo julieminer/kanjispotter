@@ -22,6 +22,32 @@
         android:background="?attr/themeBackgroundColor"
         android:orientation="vertical">
 
+        <!--<android.support.v4.widget.NestedScrollView-->
+            <!--android:id="@+id/selection_view"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="50dp"-->
+            <!--android:orientation="horizontal"-->
+            <!--app:layout_constraintLeft_toLeftOf="parent"-->
+            <!--app:layout_constraintRight_toRightOf="parent"-->
+            <!--app:layout_constraintTop_toTopOf="parent" >-->
+
+            <!--<com.melonheadstudios.kanjispotter.views.SelectionView-->
+                <!--android:id="@+id/selection_view_text"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="50dp"-->
+                <!--android:minHeight="50dp"/>-->
+
+        <!--</android.support.v4.widget.NestedScrollView>-->
+
+        <com.melonheadstudios.kanjispotter.views.SelectionView
+            android:id="@+id/selection_view"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
         <TextView
             android:id="@+id/error_text"
             android:layout_width="wrap_content"
@@ -57,7 +83,7 @@
             android:padding="4dp"
             android:src="?attr/themeCloseDrawable"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            ads:layout_constraintTop_toBottomOf="@id/selection_view" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/info_word"

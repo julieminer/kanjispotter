@@ -57,10 +57,11 @@ class KanjiListModel(val kanjiText: String, private val readingText: String, val
 
     override fun equals(other: Any?): Boolean {
         val rhs = other as? KanjiListModel ?: return false
-        return rhs.kanjiText == kanjiText && rhs.readingText == readingText
+        val isEqual =  rhs.kanjiText == kanjiText || rhs.readingText == readingText || rhs.selectedWord == selectedWord
+        return isEqual
     }
 
     override fun hashCode(): Int {
-        return kanjiText.hashCode() + readingText.hashCode()
+        return (kanjiText + readingText).hashCode()
     }
 }

@@ -1,6 +1,7 @@
 package com.melonheadstudios.kanjispotter.viewmodels
 
 import android.content.Context
+import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.CardView
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.LinearLayoutManager
@@ -20,11 +21,13 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.melonheadstudios.kanjispotter.BuildConfig
 import com.melonheadstudios.kanjispotter.R
+import com.melonheadstudios.kanjispotter.extensions.pixels
 import com.melonheadstudios.kanjispotter.managers.IABManager
 import com.melonheadstudios.kanjispotter.models.InfoPanelErrorEvent
 import com.melonheadstudios.kanjispotter.models.JishoResponse
 import com.melonheadstudios.kanjispotter.utils.Constants.Companion.PREFERENCES_KEY
 import com.melonheadstudios.kanjispotter.utils.Constants.Companion.SERVICE_STATUS_FLAG
+import com.melonheadstudios.kanjispotter.views.SelectionView
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 
@@ -36,6 +39,7 @@ import com.mikepenz.fastadapter.adapters.ItemAdapter
 class InfoPanelViewHolder(val context: Context, parent: View, var iabManager: IABManager) {
     private val TAG = "InfoPanelViewHolder"
 
+    val selectionView: SelectionView = parent.findViewById(R.id.selection_view) as SelectionView
     val adView: AdView = parent.findViewById(R.id.ad_spot) as AdView
     val container: CardView = parent.findViewById(R.id.info_panel) as CardView
     val list: RecyclerView = parent.findViewById(R.id.info) as RecyclerView
@@ -217,5 +221,18 @@ class InfoPanelViewHolder(val context: Context, parent: View, var iabManager: IA
             headerFastAdapter.select(0)
             selectedPosition(0)
         }
+
+        val selectionList = LinkedHashSet<TextSelection>()
+//        val params = selectionView.layoutParams as ConstraintLayout.LayoutParams
+//        if (selectionList.count() == 0) {
+//            params.height = 0
+//        }
+//        selectionView.layoutParams = params
+
+        for (item in items) {
+            Log.d(TAG, "Adding ${item.kanjiText} to selections")
+            selectionList.add(TextSelection(item.selectedWord))
+        }
+        selectionView.selectionsList = ArrayList(selectionList)
     }
 }

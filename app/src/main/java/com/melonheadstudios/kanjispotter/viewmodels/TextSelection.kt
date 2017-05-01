@@ -18,4 +18,13 @@ class TextSelection(var text: String, var rect: Rect = Rect(), var highlightRect
         highlightRect.left -= 12
         highlightRect.right += 12
     }
+
+    override fun equals(other: Any?): Boolean {
+        val rhs = other as? TextSelection ?: return false
+        return text == rhs.text
+    }
+
+    override fun hashCode(): Int {
+        return text.hashCode()
+    }
 }
