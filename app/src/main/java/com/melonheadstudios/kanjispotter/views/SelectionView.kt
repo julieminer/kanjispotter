@@ -25,8 +25,8 @@ class SelectionView(internal var context: Context, attrs: AttributeSet? = null, 
     private val circlePath: Path = Path()
 
     private val mPath: Path = Path()
-    private lateinit var mBitmap: Bitmap
-    private lateinit var mCanvas: Canvas
+    private var mBitmap: Bitmap
+    private var mCanvas: Canvas
 
     private var mX = 0f
     private var mY = 0f
@@ -53,11 +53,13 @@ class SelectionView(internal var context: Context, attrs: AttributeSet? = null, 
         mPaint.strokeJoin = Paint.Join.ROUND
         mPaint.strokeCap = Paint.Cap.ROUND
         mPaint.strokeWidth = 12f
+
+        mBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
+        mCanvas = Canvas(mBitmap)
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-
         mBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
         mCanvas = Canvas(mBitmap)
     }
