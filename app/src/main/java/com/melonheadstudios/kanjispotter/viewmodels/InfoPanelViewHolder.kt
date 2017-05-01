@@ -1,7 +1,6 @@
 package com.melonheadstudios.kanjispotter.viewmodels
 
 import android.content.Context
-import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.CardView
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.LinearLayoutManager
@@ -21,7 +20,6 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.melonheadstudios.kanjispotter.BuildConfig
 import com.melonheadstudios.kanjispotter.R
-import com.melonheadstudios.kanjispotter.extensions.pixels
 import com.melonheadstudios.kanjispotter.managers.IABManager
 import com.melonheadstudios.kanjispotter.models.InfoPanelErrorEvent
 import com.melonheadstudios.kanjispotter.models.JishoResponse
@@ -111,6 +109,15 @@ class InfoPanelViewHolder(val context: Context, parent: View, var iabManager: IA
             Log.d(TAG, "Filtering word ${it.selectedWord} w/ ${header.selectedWord}")
             it.selectedWord == header.selectedWord
         })
+    }
+
+    fun handleMultiSelectionEvent(rawString: String) {
+        val selectionList = ArrayList<TextSelection>()
+        for (s in rawString.trim()) {
+            selectionList.add(TextSelection(s.toString()))
+        }
+        selectionView.visibility = if (selectionList.count() == 0) GONE else VISIBLE
+        selectionView.selectionsList = selectionList
     }
 
     fun clearPanel() {
@@ -221,18 +228,5 @@ class InfoPanelViewHolder(val context: Context, parent: View, var iabManager: IA
             headerFastAdapter.select(0)
             selectedPosition(0)
         }
-
-        val selectionList = LinkedHashSet<TextSelection>()
-//        val params = selectionView.layoutParams as ConstraintLayout.LayoutParams
-//        if (selectionList.count() == 0) {
-//            params.height = 0
-//        }
-//        selectionView.layoutParams = params
-
-        for (item in items) {
-            Log.d(TAG, "Adding ${item.kanjiText} to selections")
-            selectionList.add(TextSelection(item.selectedWord))
-        }
-        selectionView.selectionsList = ArrayList(selectionList)
     }
 }

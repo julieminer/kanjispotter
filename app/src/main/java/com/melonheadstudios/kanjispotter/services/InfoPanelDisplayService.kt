@@ -91,6 +91,10 @@ class InfoPanelDisplayService: Service() {
                 .subscribe { handleSelections(it.selections) }
                 .registerInBus(this)
 
+        Bus.observe<InfoPanelMultiSelectEvent>()
+                .subscribe { handleMultiSelectEvent(it.rawString) }
+                .registerInBus(this)
+
         Bus.observe<InfoPanelSelectedWordEvent>()
                 .subscribe { selectedPosition(it.position) }
                 .registerInBus(this)
@@ -140,6 +144,11 @@ class InfoPanelDisplayService: Service() {
     private fun selectedPosition(position: Int) {
         Log.d(TAG, "selected position $position")
         viewHolder?.selectedPosition(position)
+    }
+
+    private fun handleMultiSelectEvent(rawString: String) {
+        Log.d(TAG, "handle multiselect event $rawString")
+        viewHolder?.handleMultiSelectionEvent(rawString)
     }
 
     private fun updateTheme() {
