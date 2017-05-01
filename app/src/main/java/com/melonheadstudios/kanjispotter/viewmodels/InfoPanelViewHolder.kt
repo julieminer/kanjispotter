@@ -28,7 +28,7 @@ import com.melonheadstudios.kanjispotter.views.SelectionView
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import android.widget.SeekBar.OnSeekBarChangeListener
-
+import com.melonheadstudios.kanjispotter.views.NoTouchHorizontalScrollView
 
 
 /**
@@ -41,7 +41,7 @@ class InfoPanelViewHolder(val context: Context, parent: View, var iabManager: IA
 
     val selectionScroller: SeekBar = parent.findViewById(R.id.selection_scroll) as SeekBar
     val selectionView: SelectionView = parent.findViewById(R.id.selection_view_text) as SelectionView
-    val selectionViewContainer: HorizontalScrollView = parent.findViewById(R.id.selection_view) as HorizontalScrollView
+    val selectionViewContainer: NoTouchHorizontalScrollView = parent.findViewById(R.id.selection_view) as NoTouchHorizontalScrollView
     val adView: AdView = parent.findViewById(R.id.ad_spot) as AdView
     val container: CardView = parent.findViewById(R.id.info_panel) as CardView
     val list: RecyclerView = parent.findViewById(R.id.info) as RecyclerView
@@ -63,20 +63,10 @@ class InfoPanelViewHolder(val context: Context, parent: View, var iabManager: IA
             makeInvisibile()
         }
 
-        selectionViewContainer.setOnTouchListener { v, event -> true }
-
         selectionScroller.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
-
-            override fun onStopTrackingTouch(seekBar: SeekBar) {
-                // TODO Auto-generated method stub
-            }
-
-            override fun onStartTrackingTouch(seekBar: SeekBar) {
-                // TODO Auto-generated method stub
-            }
-
+            override fun onStopTrackingTouch(seekBar: SeekBar) {}
+            override fun onStartTrackingTouch(seekBar: SeekBar) {}
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-                // TODO Auto-generated method stub
                 val width =  (selectionView.measuredWidth * progress) / 100
                 selectionViewContainer.scrollTo(width, 0)
             }
@@ -139,8 +129,13 @@ class InfoPanelViewHolder(val context: Context, parent: View, var iabManager: IA
         for (s in rawString) {
             selectionList.add(TextSelection(s.toString()))
         }
-        selectionViewContainer.visibility = if (selectionList.count() == 0) GONE else VISIBLE
-        selectionScroller.visibility = if (selectionList.count() == 0) GONE else VISIBLE
+        selectionViewContainer.visibility = if (selectionList.count() <= 1) GONE else VISIBLE
+        selectionView.viewTreeObserver.addOnGlobalLayoutListener {
+            val hasManySelections = selectionList.count() > 0
+            val needsScroll = selectionView.measuredWidth >= selectionScroller.measuredWidth
+            val hasItems = selectionList.count() > 1
+            selectionScroller.visibility = if (hasItems && hasManySelections && needsScroll) VISIBLE else GONE
+        }
         selectionView.selectionsList = selectionList
     }
 

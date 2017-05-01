@@ -35,12 +35,13 @@
             tools:layout_editor_absoluteY="196dp"
             tools:visibility="visible" />
 
-        <HorizontalScrollView
+        <com.melonheadstudios.kanjispotter.views.NoTouchHorizontalScrollView
             android:id="@+id/selection_view"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:orientation="horizontal"
             android:visibility="gone"
+            android:scrollbars="none"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/selection_scroll"
@@ -60,7 +61,7 @@
                     android:minHeight="32dp" />
 
             </LinearLayout>
-        </HorizontalScrollView>
+        </com.melonheadstudios.kanjispotter.views.NoTouchHorizontalScrollView>
 
         <TextView
             android:id="@+id/error_text"
