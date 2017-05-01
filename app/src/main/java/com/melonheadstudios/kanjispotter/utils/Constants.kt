@@ -14,6 +14,7 @@ class Constants {
         val PREFERENCES_KEY = "com.melonhead.android_quick_settings"
 
         val EVENT_USED = "Parsed Kanji"
+        val EVENT_ADDED_OPTION = "Manually selected words"
         val EVENT_API = "Checked API"
         val EVENT_SWITCHED_WORDS = "Switched Words using tabs"
         val EVENT_CLIPBOARD = "Copied to clipboard"

@@ -5,12 +5,15 @@ import android.accessibilityservice.AccessibilityServiceInfo
 import android.content.Intent
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
+import com.eightbitlab.rxbus.Bus
+import com.eightbitlab.rxbus.registerInBus
 import com.melonheadstudios.kanjispotter.MainApplication
 import com.melonheadstudios.kanjispotter.extensions.isServiceRunning
 import com.melonheadstudios.kanjispotter.injection.AndroidModule
 import com.melonheadstudios.kanjispotter.injection.DaggerApplicationComponent
 import com.melonheadstudios.kanjispotter.managers.PrefManager
 import com.melonheadstudios.kanjispotter.managers.TextManager
+import com.melonheadstudios.kanjispotter.models.InfoPanelAddOptionEvent
 import javax.inject.Inject
 
 
@@ -28,6 +31,10 @@ class JapaneseTextGrabberService : AccessibilityService() {
 
         MainApplication.graph = DaggerApplicationComponent.builder().androidModule(AndroidModule(application)).build()
         MainApplication.graph.inject(this)
+
+        Bus.observe<InfoPanelAddOptionEvent>()
+                .subscribe { textManager.addSelectionOption(it.option) }
+                .registerInBus(this)
 
         Log.d(TAG, "Service connected")
 
@@ -58,5 +65,10 @@ class JapaneseTextGrabberService : AccessibilityService() {
     }
 
     override fun onInterrupt() {
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Bus.unregister(this)
     }
 }

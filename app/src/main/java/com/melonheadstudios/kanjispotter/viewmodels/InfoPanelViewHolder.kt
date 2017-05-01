@@ -27,6 +27,8 @@ import com.melonheadstudios.kanjispotter.views.SelectionView
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import android.widget.SeekBar.OnSeekBarChangeListener
+import com.melonheadstudios.kanjispotter.models.InfoPanelAddOptionEvent
+import com.melonheadstudios.kanjispotter.models.InfoPanelSelectionsEvent
 import com.melonheadstudios.kanjispotter.views.NoTouchHorizontalScrollView
 
 
@@ -38,6 +40,8 @@ import com.melonheadstudios.kanjispotter.views.NoTouchHorizontalScrollView
 class InfoPanelViewHolder(val context: Context, parent: View, var iabManager: IABManager) : SelectionView.SelectionViewDelegate {
     override fun selectedSegment(segment: String) {
         Log.d(TAG, segment)
+        Bus.send(InfoPanelAddOptionEvent(segment))
+        Bus.send(InfoPanelSelectionsEvent(listOf(segment)))
     }
 
     private val TAG = "InfoPanelViewHolder"

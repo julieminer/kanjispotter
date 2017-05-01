@@ -68,6 +68,14 @@ class TextManager {
         }
     }
 
+    fun addSelectionOption(option: String) {
+        Answers.getInstance().logCustom(CustomEvent(EVENT_USED))
+        option.getReadings { reading ->
+            Answers.getInstance().logCustom(CustomEvent(EVENT_API))
+            Bus.send(InfoPanelEvent(chosenWord = option, json = reading))
+        }
+    }
+
     fun parseEvent(event: AccessibilityEvent) {
         if (!getEventType(event)) return
         val text = getEventText(event)
