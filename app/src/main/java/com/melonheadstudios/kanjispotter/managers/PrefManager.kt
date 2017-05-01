@@ -45,7 +45,13 @@ class PrefManager(appContext: Context) {
         return prefs.getBoolean(Constants.BLACKLIST_SELECTION_STATUS_FLAG, false)
     }
 
-    fun setAllBlackListChecked(selectedAll: Boolean, items: ArrayList<BlacklistSelectionModel>) {
+    fun setAllBlackListChecked(selectedAll: Boolean) {
+        val edit = prefs.edit()
+        edit.putBoolean(Constants.BLACKLIST_SELECTION_STATUS_FLAG, selectedAll)
+        edit.commit()
+    }
+
+    fun setAllAppsBlackilist(selectedAll: Boolean, items: ArrayList<BlacklistSelectionModel>) {
         val edit = prefs.edit()
         edit.putBoolean(Constants.BLACKLIST_SELECTION_STATUS_FLAG, selectedAll)
         for (item in items) {

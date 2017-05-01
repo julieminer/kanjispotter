@@ -8,6 +8,9 @@ import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.LinearLayoutManager
 import android.view.MenuItem
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
+import co.metalab.asyncawait.async
 import com.melonheadstudios.kanjispotter.MainApplication
 import com.melonheadstudios.kanjispotter.R
 import com.melonheadstudios.kanjispotter.injection.AndroidModule
@@ -28,9 +31,9 @@ class BlacklistActivity: AppCompatActivity() {
     @Inject
     lateinit var prefManager: PrefManager
 
-    private val fastAdapter = FastAdapter<BlacklistSelectionModel>()
-    private val itemAdapter = ItemAdapter<BlacklistSelectionModel>()
-    private var items = ArrayList<BlacklistSelectionModel>()
+    private lateinit var fastAdapter: FastAdapter<BlacklistSelectionModel>
+    private lateinit var itemAdapter: ItemAdapter<BlacklistSelectionModel>
+    private lateinit var items: ArrayList<BlacklistSelectionModel>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         MainApplication.graph = DaggerApplicationComponent.builder().androidModule(AndroidModule(application)).build()
@@ -45,13 +48,20 @@ class BlacklistActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.actvity_blacklist)
 
+        items = ArrayList<BlacklistSelectionModel>()
+        fastAdapter = FastAdapter<BlacklistSelectionModel>()
+        itemAdapter = ItemAdapter<BlacklistSelectionModel>()
+
+        blacklist_progress.visibility = VISIBLE
+
         blacklist_switch.setOnClickListener {
             val isChecked = !prefManager.blacklistEnabled()
             setBlacklistEnabled(isChecked)
             updateUI()
         }
 
-        blacklist_all_check.setOnCheckedChangeListener { _, isChecked ->
+        blacklist_all_check.setOnClickListener {
+            val isChecked = !prefManager.allBlackListChecked()
             selectAllBlacklist(isChecked)
             updateUI()
         }
@@ -62,6 +72,11 @@ class BlacklistActivity: AppCompatActivity() {
         blacklist_list.adapter = itemAdapter.wrap(fastAdapter)
 
         fastAdapter.withItemEvent(BlacklistSelectionModel.CheckButtonClickEvent())
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        async.cancelAll()
     }
 
     override fun onResume() {
@@ -77,23 +92,31 @@ class BlacklistActivity: AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    // TODO move to async task
     private fun populateBlacklist(forceRepopulate: Boolean = false) {
-        val mainIntent = Intent(Intent.ACTION_MAIN, null)
-        mainIntent.addCategory(Intent.CATEGORY_LAUNCHER)
-        val pkgAppsList = packageManager.queryIntentActivities(mainIntent, 0)
+        async {
+            blacklist_progress.visibility = VISIBLE
+            val mainIntent = Intent(Intent.ACTION_MAIN, null)
+            mainIntent.addCategory(Intent.CATEGORY_LAUNCHER)
+            val pkgAppsList = packageManager.queryIntentActivities(mainIntent, 0)
 
-        if (!forceRepopulate && items.isNotEmpty()) return
-
-        items.clear()
-        for (app in pkgAppsList) {
-            val appLabel = app.loadLabel(packageManager).toString()
-            val packageName = app.activityInfo.taskAffinity ?: continue
-            val packageIcon = app.loadIcon(packageManager)
-            items.add(BlacklistSelectionModel(sharedPreferences = prefManager.prefs, appName = appLabel, packageName = packageName, icon = packageIcon))
+            if (!forceRepopulate && items.isNotEmpty()) {
+                blacklist_progress.visibility = GONE
+            } else {
+                items = await {
+                    items.clear()
+                    for (app in pkgAppsList) {
+                        val appLabel = app.loadLabel(packageManager).toString()
+                        val packageName = app.activityInfo.taskAffinity ?: continue
+                        val packageIcon = app.loadIcon(packageManager)
+                        items.add(BlacklistSelectionModel(sharedPreferences = prefManager.prefs, appName = appLabel, packageName = packageName, icon = packageIcon))
+                    }
+                    items.sortBy { it.appName }
+                    items
+                }
+                itemAdapter.set(items)
+                blacklist_progress.visibility = GONE
+            }
         }
-        items.sortBy { it.appName }
-        itemAdapter.set(items)
     }
 
     private fun updateUI(forceRepopulate: Boolean = false) {
@@ -101,6 +124,7 @@ class BlacklistActivity: AppCompatActivity() {
         blacklist_check_container.visibility = if (overlayEnabled) View.VISIBLE else View.GONE
 
         val blacklistEnabled = overlayEnabled && prefManager.blacklistEnabled()
+        blacklist_progress.visibility = if (!blacklistEnabled) GONE else blacklist_progress.visibility
         blacklist_switch.isChecked = blacklistEnabled
         blacklist_list.visibility = if (blacklistEnabled) View.VISIBLE else View.GONE
         blacklist_all_container.visibility = if (blacklistEnabled) View.VISIBLE else View.GONE
@@ -111,15 +135,21 @@ class BlacklistActivity: AppCompatActivity() {
     }
 
     private fun setBlacklistEnabled(enabled: Boolean) {
+        blacklist_progress.visibility = VISIBLE
         prefManager.setBlacklist(enabled)
-        if (enabled) {
-            populateBlacklist()
-        }
     }
 
     @SuppressLint("CommitPrefEdits")
     private fun selectAllBlacklist(selectedAll: Boolean) {
-        prefManager.setAllBlackListChecked(selectedAll, items)
-        itemAdapter.set(items)
+        prefManager.setAllBlackListChecked(selectedAll)
+        async {
+            blacklist_progress.visibility = VISIBLE
+            prefManager.setAllAppsBlackilist(selectedAll, items)
+            items = await {
+                items
+            }
+            itemAdapter.set(items)
+            blacklist_progress.visibility = GONE
+        }
     }
 }

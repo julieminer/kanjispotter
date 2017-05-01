@@ -73,6 +73,8 @@ dependencies {
     }
     compile 'com.mikepenz:fastadapter-commons:2.1.0@aar'
 
+    compile 'co.metalab.asyncawait:asyncawait:1.0.0'
+
 }
 
 repositories {
@@ -82,3 +84,8 @@ repositories {
 }
 
 apply plugin: 'com.google.gms.google-services'
+kotlin {
+    experimental {
+        coroutines "enable"
+    }
+}
