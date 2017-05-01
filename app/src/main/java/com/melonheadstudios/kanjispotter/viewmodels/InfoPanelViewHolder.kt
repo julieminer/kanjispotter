@@ -10,9 +10,7 @@ import android.util.Log
 import android.view.View
 import android.view.View.*
 import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.ProgressBar
-import android.widget.TextView
+import android.widget.*
 import com.eightbitlab.rxbus.Bus
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -29,6 +27,9 @@ import com.melonheadstudios.kanjispotter.utils.Constants.Companion.SERVICE_STATU
 import com.melonheadstudios.kanjispotter.views.SelectionView
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
+import android.widget.SeekBar.OnSeekBarChangeListener
+
+
 
 /**
  * kanjispotter
@@ -38,8 +39,9 @@ import com.mikepenz.fastadapter.adapters.ItemAdapter
 class InfoPanelViewHolder(val context: Context, parent: View, var iabManager: IABManager) {
     private val TAG = "InfoPanelViewHolder"
 
+    val selectionScroller: SeekBar = parent.findViewById(R.id.selection_scroll) as SeekBar
     val selectionView: SelectionView = parent.findViewById(R.id.selection_view_text) as SelectionView
-    val selectionViewContainer: NestedScrollView = parent.findViewById(R.id.selection_view) as NestedScrollView
+    val selectionViewContainer: HorizontalScrollView = parent.findViewById(R.id.selection_view) as HorizontalScrollView
     val adView: AdView = parent.findViewById(R.id.ad_spot) as AdView
     val container: CardView = parent.findViewById(R.id.info_panel) as CardView
     val list: RecyclerView = parent.findViewById(R.id.info) as RecyclerView
@@ -60,6 +62,25 @@ class InfoPanelViewHolder(val context: Context, parent: View, var iabManager: IA
         button.setOnClickListener {
             makeInvisibile()
         }
+
+        selectionViewContainer.setOnTouchListener { v, event -> true }
+
+        selectionScroller.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
+
+            override fun onStopTrackingTouch(seekBar: SeekBar) {
+                // TODO Auto-generated method stub
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar) {
+                // TODO Auto-generated method stub
+            }
+
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                // TODO Auto-generated method stub
+                val width =  (selectionView.measuredWidth * progress) / 100
+                selectionViewContainer.scrollTo(width, 0)
+            }
+        })
 
         updateAd()
 
@@ -119,6 +140,7 @@ class InfoPanelViewHolder(val context: Context, parent: View, var iabManager: IA
             selectionList.add(TextSelection(s.toString()))
         }
         selectionViewContainer.visibility = if (selectionList.count() == 0) GONE else VISIBLE
+        selectionScroller.visibility = if (selectionList.count() == 0) GONE else VISIBLE
         selectionView.selectionsList = selectionList
     }
 

@@ -6,6 +6,7 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import com.melonheadstudios.kanjispotter.BuildConfig
+import com.melonheadstudios.kanjispotter.extensions.pixels
 import com.melonheadstudios.kanjispotter.viewmodels.TextSelection
 
 /**
@@ -67,6 +68,22 @@ class SelectionView @JvmOverloads constructor(internal var context: Context, att
         mCanvas = Canvas(mBitmap)
     }
 
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        // Compute the height required to render the view
+        // Assume Width will always be MATCH_PARENT.
+        var width = View.MeasureSpec.getSize(widthMeasureSpec)
+        var totalX = 0f
+        for (selection in selectionsList) {
+            selection.calculateRect(totalX, y, textPaint)
+            totalX += selection.rect.width()
+        }
+        if (totalX > 0f) {
+            width = totalX.toInt()
+        }
+        val height = context.pixels(50f).toInt()
+        setMeasuredDimension(width, height)
+    }
+
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         mWidth = maxOf(w, 1)
         mHeight = maxOf(h, 1)
@@ -109,6 +126,7 @@ class SelectionView @JvmOverloads constructor(internal var context: Context, att
         mPath.reset()
         circlePath.close()
         circlePath.reset()
+        parent.requestLayout()
         invalidate()
     }
 
