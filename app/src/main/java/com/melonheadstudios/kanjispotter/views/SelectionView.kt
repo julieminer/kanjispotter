@@ -46,7 +46,7 @@ class SelectionView @JvmOverloads constructor(internal var context: Context, att
 
     private var mWidth = 1
     private var mHeight = 1
-    private val textSize = 80f
+    private val textSize = 20f
 
     var delegate: SelectionViewDelegate? = null
 
@@ -60,15 +60,15 @@ class SelectionView @JvmOverloads constructor(internal var context: Context, att
         @ColorInt val themeBackgroundColor = typedValue.data
 
         circlePaint.isAntiAlias = true
-        circlePaint.color = Color.BLUE
+        circlePaint.color = themedTextColor
         circlePaint.style = Paint.Style.STROKE
         circlePaint.strokeJoin = Paint.Join.MITER
-        circlePaint.strokeWidth = 4f
+        circlePaint.strokeWidth = context.pixels(forDP = 1f)
         textPaint.color = themedTextColor
-        textPaint.textSize = textSize
+        textPaint.textSize = context.pixels(forDP = textSize)
 
         textHighlightPaint.color = themeBackgroundColor
-        textHighlightPaint.textSize = textSize
+        textHighlightPaint.textSize = context.pixels(forDP = textSize)
 
         textHighlightPaintBackground.isAntiAlias = true
         textHighlightPaintBackground.color = themedTextColor
