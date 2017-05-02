@@ -118,11 +118,14 @@ class InfoPanelViewHolder(val context: Context, parent: View, var iabManager: IA
 
     fun updateSelections(selections: List<String>) {
         selections.forEach {
-            headerItems.add(KanjiSelectionListModel(it))
+            val item = KanjiSelectionListModel(it)
+            if (!headerItems.contains(item)) {
+                headerItems.add(item)
+                headerItems = ArrayList(LinkedHashSet(headerItems))
+                headerItems.sortBy { it.selectedWord }
+                headerItemAdapter.set(headerItems)
+            }
         }
-        headerItems = ArrayList(LinkedHashSet(headerItems))
-        headerItems.sortBy { it.selectedWord }
-        headerItemAdapter.set(headerItems)
     }
 
     fun selectedPosition(position: Int) {
@@ -252,6 +255,7 @@ class InfoPanelViewHolder(val context: Context, parent: View, var iabManager: IA
             Bus.send(InfoPanelErrorEvent(errorText = "No data for this selection", showHeaders = true))
         }
 
+        headerFastAdapter.deselect()
         if (headerItems.size > 0) {
             headerFastAdapter.select(0)
             selectedPosition(0)

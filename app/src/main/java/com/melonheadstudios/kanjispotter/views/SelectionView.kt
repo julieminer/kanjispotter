@@ -49,6 +49,7 @@ class SelectionView @JvmOverloads constructor(internal var context: Context, att
     var delegate: SelectionViewDelegate? = null
 
     init {
+        // TODO get colours from style
         circlePaint.isAntiAlias = true
         circlePaint.color = Color.BLUE
         circlePaint.style = Paint.Style.STROKE
@@ -103,9 +104,6 @@ class SelectionView @JvmOverloads constructor(internal var context: Context, att
         super.onDraw(canvas)
 
         canvas.drawBitmap(mBitmap, 0f, 0f, mBitmapPaint)
-        if (BuildConfig.DEBUG) {
-            canvas.drawPath(mPath, mPaint)
-        }
         canvas.drawPath(circlePath, circlePaint)
         val x = 0f
         val y = (mHeight.toFloat() * 2) / 3
@@ -120,9 +118,6 @@ class SelectionView @JvmOverloads constructor(internal var context: Context, att
                 canvas.drawText(selection.text, x + totalX, y, textPaint)
             }
             totalX += x + selection.rect.width()
-            if (BuildConfig.DEBUG) {
-//                canvas.drawRect(selection.rect, mPaint)
-            }
         }
     }
 
@@ -168,7 +163,6 @@ class SelectionView @JvmOverloads constructor(internal var context: Context, att
     private fun touch_up() {
         mPath.lineTo(mX, mY)
         circlePath.reset()
-        mCanvas.drawPath(mPath, mPaint)
         mPath.reset()
 
         val selections = selectionsList.filter { it.selected }

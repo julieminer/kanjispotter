@@ -13,7 +13,6 @@ import com.eightbitlab.rxbus.Bus
 import com.melonheadstudios.kanjispotter.R
 import com.melonheadstudios.kanjispotter.extensions.saveToClipboard
 import com.melonheadstudios.kanjispotter.models.InfoPanelSelectedWordEvent
-import com.melonheadstudios.kanjispotter.utils.Constants
 import com.melonheadstudios.kanjispotter.utils.Constants.Companion.EVENT_SWITCHED_WORDS
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.items.AbstractItem
