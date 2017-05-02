@@ -11,6 +11,7 @@ import com.crashlytics.android.answers.CustomEvent
 import com.melonheadstudios.kanjispotter.models.*
 import com.melonheadstudios.kanjispotter.utils.Constants.Companion.ATTRIBUTE_CHARACTERS
 import com.melonheadstudios.kanjispotter.utils.Constants.Companion.ATTRIBUTE_WORDS
+import com.melonheadstudios.kanjispotter.utils.Constants.Companion.EVENT_ADDED_OPTION
 import com.melonheadstudios.kanjispotter.utils.Constants.Companion.EVENT_API
 import com.melonheadstudios.kanjispotter.utils.Constants.Companion.EVENT_USED
 
@@ -69,7 +70,7 @@ class TextManager {
     }
 
     fun addSelectionOption(option: String) {
-        Answers.getInstance().logCustom(CustomEvent(EVENT_USED))
+        Answers.getInstance().logCustom(CustomEvent(EVENT_ADDED_OPTION))
         option.getReadings { reading ->
             Answers.getInstance().logCustom(CustomEvent(EVENT_API))
             Bus.send(InfoPanelEvent(chosenWord = option, json = reading))
