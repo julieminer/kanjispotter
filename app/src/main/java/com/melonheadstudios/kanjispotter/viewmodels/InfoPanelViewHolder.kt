@@ -74,8 +74,8 @@ class InfoPanelViewHolder(val context: Context, parent: View, var iabManager: IA
             override fun onStopTrackingTouch(seekBar: SeekBar) {}
             override fun onStartTrackingTouch(seekBar: SeekBar) {}
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-                val width =  (selectionView.measuredWidth * progress) / 100
-                selectionViewContainer.scrollTo(width, 0)
+                val width = (selectionView.measuredWidth.toDouble() * progress.toDouble()) / 100.0
+                selectionViewContainer.scrollTo(width.toInt(), 0)
             }
         })
 

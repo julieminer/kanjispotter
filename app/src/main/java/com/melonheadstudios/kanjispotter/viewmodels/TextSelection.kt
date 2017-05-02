@@ -12,11 +12,9 @@ class TextSelection(var text: String, var rect: Rect = Rect(), var highlightRect
         rect = Rect(
                 x.toInt(),
                 (y - textPaint.textSize).toInt(),
-                (x + textPaint.measureText(text)).toInt(),
+                (x + textPaint.measureText(text) + 16).toInt(),
                 (y + (textPaint.textSize / 2)).toInt())
         highlightRect = rect
-        highlightRect.left -= 12
-        highlightRect.right += 12
     }
 
     override fun equals(other: Any?): Boolean {
