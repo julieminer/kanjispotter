@@ -2,12 +2,15 @@ package com.melonheadstudios.kanjispotter.views
 
 import android.content.Context
 import android.graphics.*
+import android.support.annotation.ColorInt
 import android.util.AttributeSet
+import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
-import com.melonheadstudios.kanjispotter.BuildConfig
+import com.melonheadstudios.kanjispotter.R
 import com.melonheadstudios.kanjispotter.extensions.pixels
 import com.melonheadstudios.kanjispotter.viewmodels.TextSelection
+
 
 /**
  * kanjispotter
@@ -27,7 +30,6 @@ class SelectionView @JvmOverloads constructor(internal var context: Context, att
         }
 
     private val TOUCH_TOLERANCE = 4f
-    private var mPaint = Paint()
     private val textPaint = Paint()
     private val textHighlightPaint = Paint()
     private val textHighlightPaintBackground = Paint()
@@ -49,28 +51,27 @@ class SelectionView @JvmOverloads constructor(internal var context: Context, att
     var delegate: SelectionViewDelegate? = null
 
     init {
-        // TODO get colours from style
+        val typedValue = TypedValue()
+        val theme = context.theme
+        theme.resolveAttribute(R.attr.themeTextColor, typedValue, true)
+        @ColorInt val themedTextColor = typedValue.data
+
+        theme.resolveAttribute(R.attr.themeBackgroundColor, typedValue, true)
+        @ColorInt val themeBackgroundColor = typedValue.data
+
         circlePaint.isAntiAlias = true
         circlePaint.color = Color.BLUE
         circlePaint.style = Paint.Style.STROKE
         circlePaint.strokeJoin = Paint.Join.MITER
         circlePaint.strokeWidth = 4f
-        textPaint.color = Color.BLACK
+        textPaint.color = themedTextColor
         textPaint.textSize = textSize
 
-        textHighlightPaint.color = Color.GREEN
+        textHighlightPaint.color = themeBackgroundColor
         textHighlightPaint.textSize = textSize
 
         textHighlightPaintBackground.isAntiAlias = true
-        textHighlightPaintBackground.color = Color.BLUE
-
-        mPaint.isAntiAlias = true
-        mPaint.isDither = true
-        mPaint.color = Color.GREEN
-        mPaint.style = Paint.Style.STROKE
-        mPaint.strokeJoin = Paint.Join.ROUND
-        mPaint.strokeCap = Paint.Cap.ROUND
-        mPaint.strokeWidth = 12f
+        textHighlightPaintBackground.color = themedTextColor
 
         mBitmap = Bitmap.createBitmap(mWidth, mHeight, Bitmap.Config.ARGB_8888)
         mCanvas = Canvas(mBitmap)

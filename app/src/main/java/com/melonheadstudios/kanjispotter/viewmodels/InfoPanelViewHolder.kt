@@ -256,9 +256,7 @@ class InfoPanelViewHolder(val context: Context, parent: View, var iabManager: IA
         }
 
         headerFastAdapter.deselect()
-        if (headerItems.size > 0) {
-            headerFastAdapter.select(0)
-            selectedPosition(0)
-        }
+        headerFastAdapter.select(0)
+        selectedPosition(0)
     }
 }
