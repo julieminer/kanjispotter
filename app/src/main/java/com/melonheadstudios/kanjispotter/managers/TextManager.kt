@@ -34,14 +34,14 @@ class TextManager {
         return false
     }
 
-    private fun getEventText(event: AccessibilityEvent?): String {
+    private fun getEventText(event: AccessibilityEvent?, showHiragana: Boolean = false): String {
         val sb = StringBuilder()
         val sbi = StringBuilder()
         event?.text ?: return ""
 
         for (s in event.text) {
             s.forEach { e ->
-                if (JapaneseCharMatcher.isKanji(e)) {
+                if (JapaneseCharMatcher.isKanji(e) || (showHiragana && JapaneseCharMatcher.isJapanese(e))) {
                     sb.append(e)
                 } else {
                     sb.append(" ")
@@ -80,10 +80,11 @@ class TextManager {
         if (!getEventType(event)) return
         val text = getEventText(event)
         if (text.isEmpty()) return
+        val rawText = getEventText(event = event, showHiragana = true)
 
         Bus.send(InfoPanelClearEvent())
         val components = text.split(" ")
-        Bus.send(InfoPanelMultiSelectEvent(text.replace(regex = Regex("\\s+"), replacement = "").trim()))
+        Bus.send(InfoPanelMultiSelectEvent(rawText.replace(regex = Regex("\\s+"), replacement = "").trim()))
         Bus.send(InfoPanelSelectionsEvent(components))
         Answers.getInstance().logCustom(CustomEvent(EVENT_USED)
                 .putCustomAttribute(ATTRIBUTE_WORDS, components.size)
