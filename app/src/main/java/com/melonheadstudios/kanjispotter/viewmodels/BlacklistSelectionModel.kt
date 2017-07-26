@@ -41,7 +41,7 @@ class BlacklistSelectionModel(val sharedPreferences: SharedPreferences, val appN
             setItemChecked(isChecked) }
     }
 
-    @SuppressLint("CommitPrefEdits")
+    @SuppressLint("CommitPrefEdits", "ApplySharedPref")
     private fun setItemChecked(isChecked: Boolean) {
         sharedPreferences.edit().putBoolean(APP_BLACKLISTED + packageName, isChecked).commit()
     }
@@ -65,10 +65,10 @@ class BlacklistSelectionModel(val sharedPreferences: SharedPreferences, val appN
     }
 
     class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
-        var appName: TextView = view.findViewById(R.id.app_name) as TextView
-        var appIcon: ImageView = view.findViewById(R.id.app_icon) as ImageView
-        var checkBox: CheckBox = view.findViewById(R.id.app_blacklisted) as CheckBox
-        var container: LinearLayout = view.findViewById(R.id.app_container) as LinearLayout
+        var appName: TextView = view.findViewById<TextView>(R.id.app_name)
+        var appIcon: ImageView = view.findViewById<ImageView>(R.id.app_icon)
+        var checkBox: CheckBox = view.findViewById<CheckBox>(R.id.app_blacklisted)
+        var container: LinearLayout = view.findViewById<LinearLayout>(R.id.app_container)
     }
 
     class CheckButtonClickEvent: ClickEventHook<BlacklistSelectionModel>() {

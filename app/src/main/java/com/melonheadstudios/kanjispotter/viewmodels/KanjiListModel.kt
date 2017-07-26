@@ -45,10 +45,10 @@ class KanjiListModel(val kanjiText: String, private val readingText: String, val
     }
 
     class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
-        var kanjiText: TextView = view.findViewById(R.id.kanji_text) as TextView
-        var furiganaText: TextView = view.findViewById(R.id.furigana_text) as TextView
-        var englishText: TextView = view.findViewById(R.id.english_text) as TextView
-        var furiganaContainer: LinearLayout = view.findViewById(R.id.furigana_container) as LinearLayout
+        var kanjiText: TextView = view.findViewById<TextView>(R.id.kanji_text)
+        var furiganaText: TextView = view.findViewById<TextView>(R.id.furigana_text)
+        var englishText: TextView = view.findViewById<TextView>(R.id.english_text)
+        var furiganaContainer: LinearLayout = view.findViewById<LinearLayout>(R.id.furigana_container)
     }
 
     companion object {

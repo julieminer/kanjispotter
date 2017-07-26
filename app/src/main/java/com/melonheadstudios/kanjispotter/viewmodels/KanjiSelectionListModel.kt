@@ -65,10 +65,10 @@ class KanjiSelectionListModel(val selectedWord: String): AbstractItem<KanjiSelec
     }
 
     class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
-        var selectedText: TextView = view.findViewById(R.id.selected_word) as TextView
-        var radiobutton: RadioButton = view.findViewById(R.id.radiobutton) as RadioButton
-        var selectionBackground: LinearLayout = view.findViewById(R.id.selection_background) as LinearLayout
-        var underline: LinearLayout = view.findViewById(R.id.selected_underline) as LinearLayout
+        var selectedText: TextView = view.findViewById<TextView>(R.id.selected_word)
+        var radiobutton: RadioButton = view.findViewById<RadioButton>(R.id.radiobutton)
+        var selectionBackground: LinearLayout = view.findViewById<LinearLayout>(R.id.selection_background)
+        var underline: LinearLayout = view.findViewById<LinearLayout>(R.id.selected_underline)
     }
 
     class RadioButtonClickEvent: ClickEventHook<KanjiSelectionListModel>() {

@@ -45,15 +45,15 @@ class InfoPanelViewHolder(val context: Context, parent: View, var iabManager: IA
 
     private val TAG = "InfoPanelViewHolder"
 
-    val selectionScroller: SeekBar = parent.findViewById(R.id.selection_scroll) as SeekBar
-    val selectionView: SelectionView = parent.findViewById(R.id.selection_view_text) as SelectionView
-    val selectionViewContainer: NoTouchHorizontalScrollView = parent.findViewById(R.id.selection_view) as NoTouchHorizontalScrollView
-    val container: CardView = parent.findViewById(R.id.info_panel) as CardView
-    val list: RecyclerView = parent.findViewById(R.id.info) as RecyclerView
-    val button: ImageButton = parent.findViewById(R.id.info_button) as ImageButton
-    val headerList: RecyclerView = parent.findViewById(R.id.info_word) as RecyclerView
-    val progressBar: ProgressBar = parent.findViewById(R.id.progress_bar) as ProgressBar
-    val errorText: TextView = parent.findViewById(R.id.error_text) as TextView
+    val selectionScroller: SeekBar = parent.findViewById<SeekBar>(R.id.selection_scroll)
+    val selectionView: SelectionView = parent.findViewById<SelectionView>(R.id.selection_view_text)
+    val selectionViewContainer: NoTouchHorizontalScrollView = parent.findViewById<NoTouchHorizontalScrollView>(R.id.selection_view)
+    val container: CardView = parent.findViewById<CardView>(R.id.info_panel)
+    val list: RecyclerView = parent.findViewById<RecyclerView>(R.id.info)
+    val button: ImageButton = parent.findViewById<ImageButton>(R.id.info_button)
+    val headerList: RecyclerView = parent.findViewById<RecyclerView>(R.id.info_word)
+    val progressBar: ProgressBar = parent.findViewById<ProgressBar>(R.id.progress_bar)
+    val errorText: TextView = parent.findViewById<TextView>(R.id.error_text)
 
     val fastAdapter = FastAdapter<KanjiListModel>()
     val itemAdapter = ItemAdapter<KanjiListModel>()
