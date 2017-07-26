@@ -77,7 +77,8 @@ class TextManager {
         }
     }
 
-    fun parseEvent(event: AccessibilityEvent) {
+    fun parseEvent(event: AccessibilityEvent?) {
+        event ?: return
         if (!getEventType(event)) return
         val text = getEventText(event)
         if (text.isEmpty()) return
