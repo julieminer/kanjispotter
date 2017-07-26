@@ -7,10 +7,10 @@ apply plugin: 'io.fabric'
 android {
     signingConfigs {
         config {
-            keyAlias 'kanjikey'
-            keyPassword '2bzTNo61xlJiVe9l'
-            storeFile file('/Users/jake/Desktop/kanjiconfig.jks')
-            storePassword '2bzTNo61xlJiVe9l'
+            keyAlias 'kanjiupload'
+            keyPassword 'FM0$5YhPsN@If#5o'
+            storeFile file('/Users/jake/Desktop/ks/kanjiupload')
+            storePassword 'FM0$5YhPsN@If#5o'
         }
     }
     compileSdkVersion 26
