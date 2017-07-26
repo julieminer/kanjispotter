@@ -129,8 +129,8 @@ class InfoPanelViewHolder(val context: Context, parent: View, var iabManager: IA
     }
 
     fun selectedPosition(position: Int) {
-        val header = headerFastAdapter.getItem(position)
-        itemAdapter.set(items.filter {
+        val header = headerFastAdapter.getItem(position) ?: return
+        itemAdapter.set(items.filterNotNull().filter {
             Log.d(TAG, "Filtering word ${it.selectedWord} w/ ${header.selectedWord}")
             it.selectedWord == header.selectedWord
         })
