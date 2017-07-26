@@ -27,7 +27,7 @@ fun String.getFurigana(furigana: ((String) -> Unit)) {
     }
 }
 
-fun String.getReadings(readings: ((String) -> Unit)) {
+inline fun String.getReadings(crossinline readings: ((String) -> Unit)) {
     val dir = "http://jisho.org/api/v1/search/words?keyword="
     (dir + this).httpGet().responseString { _, _, result ->
         //do something with response

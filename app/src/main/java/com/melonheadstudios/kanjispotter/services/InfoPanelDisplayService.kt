@@ -76,27 +76,45 @@ class InfoPanelDisplayService: Service() {
         }
 
         Bus.observe<InfoPanelClearEvent>()
-                .subscribe { clearPanel() }
+                .subscribe {
+                    Log.d(TAG, "clearPanel")
+                    viewHolder?.clearPanel()
+                }
                 .registerInBus(this)
 
         Bus.observe<InfoPanelEvent>()
-                .subscribe { handleString(it.chosenWord, it.json) }
+                .subscribe {
+                    Log.d(TAG, "handleString: ${it.chosenWord} = ${it.json}")
+                    viewHolder?.updateView(it.chosenWord, it.json)
+                }
                 .registerInBus(this)
 
         Bus.observe<InfoPanelErrorEvent>()
-                .subscribe { handleError(it.errorText, it.showHeaders) }
+                .subscribe {
+                    Log.d(TAG, "handleError: ${it.errorText}")
+                    viewHolder?.handleError(it.errorText, it.showHeaders)
+                }
                 .registerInBus(this)
 
         Bus.observe<InfoPanelSelectionsEvent>()
-                .subscribe { handleSelections(it.selections) }
+                .subscribe {
+                    Log.d(TAG, "handleSelections: ${it.selections}")
+                    viewHolder?.updateSelections(it.selections)
+                }
                 .registerInBus(this)
 
         Bus.observe<InfoPanelMultiSelectEvent>()
-                .subscribe { handleMultiSelectEvent(it.rawString) }
+                .subscribe {
+                    Log.d(TAG, "handle multiselect event ${it.rawString}")
+                    viewHolder?.handleMultiSelectionEvent(it.rawString)
+                }
                 .registerInBus(this)
 
         Bus.observe<InfoPanelSelectedWordEvent>()
-                .subscribe { selectedPosition(it.position) }
+                .subscribe {
+                    Log.d(TAG, "selected position ${it.position}")
+                    viewHolder?.selectedPosition(it.position)
+                }
                 .registerInBus(this)
 
         Bus.observe<IABUpdateUIEvent>()
@@ -119,36 +137,6 @@ class InfoPanelDisplayService: Service() {
         super.onDestroy()
         viewHolder?.destroy()
         if (mLayout != null) windowManager?.removeView(mLayout)
-    }
-
-    private fun handleString(chosenWord: String, string: String) {
-        Log.d(TAG, "handleString: $chosenWord = $string")
-        viewHolder?.updateView(chosenWord, string)
-    }
-
-    private fun handleError(errorString: String, showHeaders: Boolean) {
-        Log.d(TAG, "handleError: $errorString")
-        viewHolder?.handleError(errorString, showHeaders)
-    }
-
-    private fun handleSelections(selections: List<String>) {
-        Log.d(TAG, "handleSelections: $selections")
-        viewHolder?.updateSelections(selections)
-    }
-
-    private fun clearPanel() {
-        Log.d(TAG, "clearPanel")
-        viewHolder?.clearPanel()
-    }
-
-    private fun selectedPosition(position: Int) {
-        Log.d(TAG, "selected position $position")
-        viewHolder?.selectedPosition(position)
-    }
-
-    private fun handleMultiSelectEvent(rawString: String) {
-        Log.d(TAG, "handle multiselect event $rawString")
-        viewHolder?.handleMultiSelectionEvent(rawString)
     }
 
     private fun updateTheme() {
