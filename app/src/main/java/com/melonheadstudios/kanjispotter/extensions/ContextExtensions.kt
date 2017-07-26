@@ -18,9 +18,9 @@ fun Context.canDrawOverlays(): Boolean {
 }
 
 fun Context.isServiceRunning(serviceClass: Class<*>): Boolean {
-    val manager = this.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+    val manager = this.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager? ?: return false
     return manager.getRunningServices(Integer.MAX_VALUE).any { serviceClass.name == it.service.className }
 }
 
 fun Context.pixels(forDP: Float) =
-    TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, forDP, resources.displayMetrics);
+    TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, forDP, resources.displayMetrics)
