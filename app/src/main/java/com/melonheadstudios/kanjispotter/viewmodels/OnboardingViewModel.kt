@@ -12,5 +12,4 @@ import android.view.View
 class OnboardingViewModel(@DrawableRes val image: Int? = null,
                           @StringRes val titleText: Int? = null,
                           @StringRes val descriptionText: Int? = null,
-                          @StringRes val buttonText: Int? = null,
-                          val click: View.OnClickListener? = null)
+                          @StringRes val buttonText: Int? = null)

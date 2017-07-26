@@ -8,28 +8,27 @@ import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.View
 import android.view.View.*
-import android.view.ViewGroup
-import android.widget.*
+import android.widget.ImageButton
+import android.widget.ProgressBar
+import android.widget.SeekBar
+import android.widget.SeekBar.OnSeekBarChangeListener
+import android.widget.TextView
 import com.eightbitlab.rxbus.Bus
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.AdView
-import com.melonheadstudios.kanjispotter.BuildConfig
 import com.melonheadstudios.kanjispotter.R
 import com.melonheadstudios.kanjispotter.managers.IABManager
+import com.melonheadstudios.kanjispotter.models.InfoPanelAddOptionEvent
 import com.melonheadstudios.kanjispotter.models.InfoPanelErrorEvent
+import com.melonheadstudios.kanjispotter.models.InfoPanelSelectionsEvent
 import com.melonheadstudios.kanjispotter.models.JishoResponse
 import com.melonheadstudios.kanjispotter.utils.Constants.Companion.PREFERENCES_KEY
 import com.melonheadstudios.kanjispotter.utils.Constants.Companion.SERVICE_STATUS_FLAG
+import com.melonheadstudios.kanjispotter.views.NoTouchHorizontalScrollView
 import com.melonheadstudios.kanjispotter.views.SelectionView
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
-import android.widget.SeekBar.OnSeekBarChangeListener
-import com.melonheadstudios.kanjispotter.models.InfoPanelAddOptionEvent
-import com.melonheadstudios.kanjispotter.models.InfoPanelSelectionsEvent
-import com.melonheadstudios.kanjispotter.views.NoTouchHorizontalScrollView
 
 
 /**
@@ -49,7 +48,6 @@ class InfoPanelViewHolder(val context: Context, parent: View, var iabManager: IA
     val selectionScroller: SeekBar = parent.findViewById(R.id.selection_scroll) as SeekBar
     val selectionView: SelectionView = parent.findViewById(R.id.selection_view_text) as SelectionView
     val selectionViewContainer: NoTouchHorizontalScrollView = parent.findViewById(R.id.selection_view) as NoTouchHorizontalScrollView
-    val adView: AdView = parent.findViewById(R.id.ad_spot) as AdView
     val container: CardView = parent.findViewById(R.id.info_panel) as CardView
     val list: RecyclerView = parent.findViewById(R.id.info) as RecyclerView
     val button: ImageButton = parent.findViewById(R.id.info_button) as ImageButton
@@ -80,8 +78,6 @@ class InfoPanelViewHolder(val context: Context, parent: View, var iabManager: IA
         })
 
         selectionView.delegate = this
-
-        updateAd()
 
         list.layoutManager = LinearLayoutManager(context)
         list.layoutManager.isAutoMeasureEnabled = true
@@ -158,18 +154,6 @@ class InfoPanelViewHolder(val context: Context, parent: View, var iabManager: IA
         itemAdapter.set(items)
         headerItems.clear()
         headerItemAdapter.set(headerItems)
-    }
-
-    fun updateAd(isPremium: Boolean = false) {
-        val shouldShowAds = !BuildConfig.DEBUG && !isPremium
-        if (shouldShowAds) {
-            val adRequest = AdRequest.Builder().build()
-            adView.loadAd(adRequest)
-        } else {
-            adView.visibility = GONE
-            val parent = adView.parent as ViewGroup? ?: return
-            parent.removeView(adView)
-        }
     }
 
     private fun clearError() {

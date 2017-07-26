@@ -23,7 +23,7 @@ import java.util.*
  * Created by jake on 2017-04-18, 5:38 PM
  */
 @Singleton
-class IABManager(val appContext: Context): IabBroadcastReceiver.IabBroadcastListener {
+class IABManager : IabBroadcastReceiver.IabBroadcastListener {
     private val TAG = "IABManager"
     private var mIsPremium = false
     private val REMOVE_ADS = "remove_ads"
@@ -121,7 +121,7 @@ class IABManager(val appContext: Context): IabBroadcastReceiver.IabBroadcastList
 
     /** Verifies the developer payload of a purchase.  */
     private fun verifyDeveloperPayload(p: Purchase): Boolean {
-        val payload = p.developerPayload
+        p.developerPayload
 
         /*
          * TODO: verify that the developer payload of the purchase is correct. It will be

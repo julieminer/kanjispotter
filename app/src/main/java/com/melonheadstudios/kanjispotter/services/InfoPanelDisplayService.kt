@@ -38,7 +38,6 @@ class InfoPanelDisplayService: Service() {
     var mLayout: FrameLayout? = null
     var viewHolder: InfoPanelViewHolder? = null
     var windowManager: WindowManager? = null
-    var isPremium = false
     override fun onBind(intent: Intent?): IBinder? {
         return null
     }
@@ -114,13 +113,6 @@ class InfoPanelDisplayService: Service() {
                 .subscribe {
                     Log.d(TAG, "selected position ${it.position}")
                     viewHolder?.selectedPosition(it.position)
-                }
-                .registerInBus(this)
-
-        Bus.observe<IABUpdateUIEvent>()
-                .subscribe {
-                    isPremium = it.isPremium
-                    viewHolder?.updateAd(isPremium)
                 }
                 .registerInBus(this)
 

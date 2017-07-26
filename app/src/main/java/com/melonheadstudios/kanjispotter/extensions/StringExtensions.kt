@@ -11,6 +11,7 @@ fun String.trimReduce(): String {
     return this.trim().replace("\\s+".toRegex(), " ")
 }
 
+@Suppress("unused")
 fun String.getFurigana(furigana: ((String) -> Unit)) {
     val dir = "https://tatoeba.org/eng/tools/furigana?query="
     (dir + this).httpGet().responseString { _, _, result ->

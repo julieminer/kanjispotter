@@ -12,9 +12,9 @@ import javax.inject.Singleton
  * kanjispotter
  * Created by jake on 2017-04-21, 11:34 PM
  */
+@SuppressLint("ApplySharedPref")
 @Singleton
 class PrefManager(appContext: Context) {
-    private val TAG = "PrefManager"
     val prefs: SharedPreferences = appContext.getSharedPreferences(Constants.PREFERENCES_KEY, Context.MODE_PRIVATE)
 
     fun darkThemeEnabled(): Boolean {

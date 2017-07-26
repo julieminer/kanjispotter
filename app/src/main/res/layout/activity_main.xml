@@ -89,13 +89,13 @@
                 android:textColor="@android:color/white" />
 
             <Button
-                android:id="@+id/remove_ads_button"
+                android:id="@+id/donate_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
                 android:layout_marginTop="8dp"
                 android:background="@color/colorPrimary"
-                android:text="Remove Ads"
+                android:text="Donate!"
                 android:textColor="@android:color/white" />
 
             <Button

@@ -1,5 +1,6 @@
 package com.melonheadstudios.kanjispotter.activities
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -59,6 +60,7 @@ class KanjiOnboardingActivity: AppCompatActivity(), OnboardingFragmentListener {
         }
     }
 
+    @SuppressLint("InlinedApi")
     override fun onPageButtonClicked(pageNumber: Int) {
         when (pageNumber) {
             0 -> {

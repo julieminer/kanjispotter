@@ -3,8 +3,6 @@ package com.melonheadstudios.kanjispotter.injection
 import android.app.Application
 import android.content.Context
 import com.crashlytics.android.Crashlytics
-import com.google.android.gms.ads.MobileAds
-import com.melonheadstudios.kanjispotter.R
 import com.melonheadstudios.kanjispotter.managers.IABManager
 import com.melonheadstudios.kanjispotter.managers.PrefManager
 import com.melonheadstudios.kanjispotter.managers.TextManager
@@ -24,7 +22,6 @@ import com.melonheadstudios.kanjispotter.BuildConfig
 class AndroidModule(private val application: Application) {
 
     init {
-        MobileAds.initialize(application, application.getString(R.string.app_ad_unit_id))
         val core = CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build()
         Fabric.with(application, Crashlytics.Builder().core(core).build())
     }
@@ -48,7 +45,7 @@ class AndroidModule(private val application: Application) {
     @Provides
     @Singleton
     fun providesIABManager(): IABManager {
-        return IABManager(application)
+        return IABManager()
     }
 
     @Provides

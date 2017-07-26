@@ -69,9 +69,9 @@ class MainActivity : AppCompatActivity() {
             reportIssue()
         }
 
-        remove_ads_button.setOnClickListener {
+        donate_button.setOnClickListener {
             AlertDialog.Builder(ContextThemeWrapper(this, R.style.DialogTheme))
-                    .setMessage("Have you tested your favourite apps? Make sure you do that before purchasing!")
+                    .setMessage("Have you tested your favourite apps? Make sure you do that before donating!")
                     .setCancelable(true)
                     .setPositiveButton("Yes", { dialog, _ ->
                         run {
@@ -125,10 +125,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateUI(isPremium: Boolean? = null) {
         if (isPremium == null && BuildConfig.DEBUG) {
-            remove_ads_button.visibility = GONE
+            donate_button.visibility = GONE
         }
         if (isPremium != null) {
-            remove_ads_button.visibility = if (isPremium) GONE else VISIBLE
+            donate_button.visibility = if (isPremium) GONE else VISIBLE
         }
         val overlayEnabled = prefManager.overlayEnabled()
         spotter_overlay_switch.isChecked = overlayEnabled
