@@ -1,8 +1,8 @@
 <component name="libraryTable">
   <library name="fuel-android-1.5.0">
     <CLASSES>
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/fuel-android-1.5.0.aar/f9d5d018246a5f0ad22adfa1d44a44f0/res" />
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/fuel-android-1.5.0.aar/f9d5d018246a5f0ad22adfa1d44a44f0/jars/classes.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/fuel-android-1.5.0.aar/2db8457bf2f999149d7d7da242d2e1ce/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/fuel-android-1.5.0.aar/2db8457bf2f999149d7d7da242d2e1ce/res" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
