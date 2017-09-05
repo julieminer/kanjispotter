@@ -59,6 +59,7 @@ class IABManager : IabBroadcastReceiver.IabBroadcastListener {
         // very important:
         if (mBroadcastReceiver != null) {
             context.unregisterReceiver(mBroadcastReceiver)
+            mBroadcastReceiver = null
         }
 
         // very important:
