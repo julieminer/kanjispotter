@@ -21,13 +21,13 @@ import kotlinx.android.synthetic.main.activity_onboarding.*
  * Created by jake on 2017-04-16, 5:23 PM
  */
 class KanjiOnboardingActivity: AppCompatActivity(), OnboardingFragmentListener {
-    val ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE: Int = 5469
-    val ACTION_ACESSIBILITY_REQUEST_CODE: Int = 5269
+    private val ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE: Int = 5469
+    private val ACTION_ACESSIBILITY_REQUEST_CODE: Int = 5269
 
-    var userSettingOverlay = false
-    var userSettingAccessibility = false
+    private var userSettingOverlay = false
+    private var userSettingAccessibility = false
 
-    val pages = arrayOf( OnboardingFragment(), OnboardingFragment(), OnboardingFragment() )
+    private val pages = arrayOf( OnboardingFragment(), OnboardingFragment(), OnboardingFragment() )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,11 +50,11 @@ class KanjiOnboardingActivity: AppCompatActivity(), OnboardingFragmentListener {
     private fun goToPage(pageIndex: Int, withTransition: Boolean = true) {
         oboarding_content_layout.post {
             var transaction = supportFragmentManager.beginTransaction()
-            if (withTransition) {
-                transaction = transaction.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left)
+            transaction = if (withTransition) {
+                transaction.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left)
                         .replace(R.id.oboarding_content_layout, pages[pageIndex])
             } else {
-                transaction = transaction.add(R.id.oboarding_content_layout, pages[pageIndex])
+                transaction.add(R.id.oboarding_content_layout, pages[pageIndex])
             }
             transaction.commitNow()
         }

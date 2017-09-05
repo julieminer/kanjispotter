@@ -36,7 +36,6 @@ class BlacklistActivity: AppCompatActivity() {
     private lateinit var items: ArrayList<BlacklistSelectionModel>
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        MainApplication.graph = DaggerApplicationComponent.builder().androidModule(AndroidModule(application)).build()
         MainApplication.graph.inject(this)
 
         title = "Blacklist Settings"

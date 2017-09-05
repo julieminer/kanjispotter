@@ -7,27 +7,25 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.support.v4.content.IntentCompat
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.view.ContextThemeWrapper
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import com.melonheadstudios.kanjispotter.BuildConfig
 import com.melonheadstudios.kanjispotter.MainApplication
 import com.melonheadstudios.kanjispotter.R
 import com.melonheadstudios.kanjispotter.extensions.isServiceRunning
-import com.melonheadstudios.kanjispotter.injection.AndroidModule
-import com.melonheadstudios.kanjispotter.injection.DaggerApplicationComponent
 import com.melonheadstudios.kanjispotter.managers.IABManager
 import com.melonheadstudios.kanjispotter.managers.PrefManager
 import com.melonheadstudios.kanjispotter.models.IABUpdateUIEvent
 import com.melonheadstudios.kanjispotter.models.InfoPanelPreferenceChanged
 import com.melonheadstudios.kanjispotter.services.InfoPanelDisplayService
 import com.melonheadstudios.kanjispotter.services.JapaneseTextGrabberService
+import com.melonheadstudios.kanjispotter.utils.MainThreadBus
+import com.squareup.otto.Subscribe
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
-import android.support.v7.app.AlertDialog
-import android.support.v7.view.ContextThemeWrapper
-import com.squareup.otto.Bus
-import com.squareup.otto.Subscribe
 
 
 class MainActivity : AppCompatActivity() {
@@ -38,11 +36,10 @@ class MainActivity : AppCompatActivity() {
     lateinit var prefManager: PrefManager
 
     @Inject
-    lateinit var bus: Bus
+    lateinit var bus: MainThreadBus
 
     @SuppressLint("RestrictedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
-        MainApplication.graph = DaggerApplicationComponent.builder().androidModule(AndroidModule(application)).build()
         MainApplication.graph.inject(this)
 
         if (!prefManager.darkThemeEnabled()) {
@@ -140,6 +137,7 @@ class MainActivity : AppCompatActivity() {
         bus.post(InfoPanelPreferenceChanged(enabled = enabled))
     }
 
+    @Suppress("DEPRECATION")
     @SuppressLint("WrongConstant")
     private fun setDarkThemeEnabled(enabled: Boolean) {
         prefManager.setDarkTheme(enabled)

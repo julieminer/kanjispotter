@@ -12,13 +12,11 @@ import android.view.WindowManager
 import android.widget.FrameLayout
 import com.melonheadstudios.kanjispotter.MainApplication
 import com.melonheadstudios.kanjispotter.R
-import com.melonheadstudios.kanjispotter.injection.AndroidModule
-import com.melonheadstudios.kanjispotter.injection.DaggerApplicationComponent
 import com.melonheadstudios.kanjispotter.managers.IABManager
 import com.melonheadstudios.kanjispotter.managers.PrefManager
 import com.melonheadstudios.kanjispotter.models.*
+import com.melonheadstudios.kanjispotter.utils.MainThreadBus
 import com.melonheadstudios.kanjispotter.viewmodels.InfoPanelViewHolder
-import com.squareup.otto.Bus
 import com.squareup.otto.Subscribe
 import javax.inject.Inject
 
@@ -36,7 +34,7 @@ class InfoPanelDisplayService: Service() {
     lateinit var prefManager: PrefManager
 
     @Inject
-    lateinit var bus: Bus
+    lateinit var bus: MainThreadBus
 
     private var mLayout: FrameLayout? = null
     private var viewHolder: InfoPanelViewHolder? = null
@@ -47,7 +45,6 @@ class InfoPanelDisplayService: Service() {
 
     @Suppress("DEPRECATION")
     override fun onCreate() {
-        MainApplication.graph = DaggerApplicationComponent.builder().androidModule(AndroidModule(application)).build()
         MainApplication.graph.inject(this)
 
         updateTheme()
@@ -79,8 +76,6 @@ class InfoPanelDisplayService: Service() {
         } catch (e: Exception) {
             Log.e(TAG, "", e)
         }
-
-
     }
 
     override fun onDestroy() {

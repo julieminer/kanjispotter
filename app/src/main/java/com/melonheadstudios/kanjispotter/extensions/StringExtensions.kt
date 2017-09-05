@@ -12,7 +12,7 @@ fun String.trimReduce(): String {
 }
 
 @Suppress("unused")
-fun String.getFurigana(furigana: ((String) -> Unit)) {
+inline fun String.getFurigana(crossinline furigana: ((String) -> Unit)) {
     val dir = "https://tatoeba.org/eng/tools/furigana?query="
     (dir + this).httpGet().responseString { _, _, result ->
         //do something with response

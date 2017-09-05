@@ -13,17 +13,17 @@ import com.melonheadstudios.kanjispotter.R
 import com.melonheadstudios.kanjispotter.extensions.saveToClipboard
 import com.melonheadstudios.kanjispotter.models.InfoPanelSelectedWordEvent
 import com.melonheadstudios.kanjispotter.utils.Constants.Companion.EVENT_SWITCHED_WORDS
+import com.melonheadstudios.kanjispotter.utils.MainThreadBus
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.items.AbstractItem
 import com.mikepenz.fastadapter.listeners.ClickEventHook
 import com.mikepenz.fastadapter.utils.ViewHolderFactory
-import com.squareup.otto.Bus
 
 /**
  * kanjispotter
  * Created by jake on 2017-04-15, 9:48 PM
  */
-class KanjiSelectionListModel(val selectedWord: String, val bus: Bus): AbstractItem<KanjiSelectionListModel, KanjiSelectionListModel.ViewHolder>() {
+class KanjiSelectionListModel(val selectedWord: String, val bus: MainThreadBus): AbstractItem<KanjiSelectionListModel, KanjiSelectionListModel.ViewHolder>() {
     override fun getType(): Int {
         return R.id.KANJI_LIST_SELECTION_MODEL
     }

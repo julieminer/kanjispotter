@@ -2,7 +2,6 @@ package com.melonheadstudios.kanjispotter.viewmodels
 
 import android.support.annotation.DrawableRes
 import android.support.annotation.StringRes
-import android.view.View
 
 /**
  * kanjispotter

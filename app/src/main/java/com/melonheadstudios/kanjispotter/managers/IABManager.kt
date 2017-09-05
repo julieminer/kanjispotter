@@ -13,9 +13,11 @@ import com.melonheadstudios.kanjispotter.utils.iap.Purchase
 import javax.inject.Singleton
 import com.crashlytics.android.answers.PurchaseEvent
 import com.crashlytics.android.answers.Answers
-import com.squareup.otto.Bus
+import com.melonheadstudios.kanjispotter.MainApplication
+import com.melonheadstudios.kanjispotter.utils.MainThreadBus
 import java.math.BigDecimal
 import java.util.*
+import javax.inject.Inject
 
 
 /**
@@ -23,13 +25,20 @@ import java.util.*
  * Created by jake on 2017-04-18, 5:38 PM
  */
 @Singleton
-class IABManager(private val bus: Bus) : IabBroadcastReceiver.IabBroadcastListener {
+class IABManager : IabBroadcastReceiver.IabBroadcastListener {
     private val TAG = "IABManager"
     private var mIsPremium = false
     private val REMOVE_ADS = "remove_ads"
     private val RC_REQUEST = 10001
     private var mHelper: IabHelper? = null
     private var mBroadcastReceiver: IabBroadcastReceiver? = null
+
+    @Inject
+    lateinit var bus: MainThreadBus
+
+    init {
+        MainApplication.graph.inject(this)
+    }
 
     fun handleResult(requestCode: Int, resultCode: Int, data: Intent, completion: ()->Unit) {
         Log.d(TAG, "onActivityResult($requestCode,$resultCode,$data")

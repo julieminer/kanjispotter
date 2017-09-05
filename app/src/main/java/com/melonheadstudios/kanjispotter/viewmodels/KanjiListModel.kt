@@ -45,10 +45,10 @@ class KanjiListModel(val kanjiText: String, private val readingText: String, val
     }
 
     class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
-        var kanjiText: TextView = view.findViewById<TextView>(R.id.kanji_text)
-        var furiganaText: TextView = view.findViewById<TextView>(R.id.furigana_text)
-        var englishText: TextView = view.findViewById<TextView>(R.id.english_text)
-        var furiganaContainer: LinearLayout = view.findViewById<LinearLayout>(R.id.furigana_container)
+        var kanjiText: TextView = view.findViewById(R.id.kanji_text)
+        var furiganaText: TextView = view.findViewById(R.id.furigana_text)
+        var englishText: TextView = view.findViewById(R.id.english_text)
+        var furiganaContainer: LinearLayout = view.findViewById(R.id.furigana_container)
     }
 
     companion object {
@@ -57,8 +57,7 @@ class KanjiListModel(val kanjiText: String, private val readingText: String, val
 
     override fun equals(other: Any?): Boolean {
         val rhs = other as? KanjiListModel ?: return false
-        val isEqual =  rhs.kanjiText == kanjiText || rhs.readingText == readingText || rhs.selectedWord == selectedWord
-        return isEqual
+        return rhs.kanjiText == kanjiText || rhs.readingText == readingText || rhs.selectedWord == selectedWord
     }
 
     override fun hashCode(): Int {

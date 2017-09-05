@@ -7,13 +7,15 @@ import com.melonheadstudios.kanjispotter.utils.JapaneseCharMatcher
 import javax.inject.Singleton
 import com.crashlytics.android.answers.Answers
 import com.crashlytics.android.answers.CustomEvent
+import com.melonheadstudios.kanjispotter.MainApplication
 import com.melonheadstudios.kanjispotter.models.*
 import com.melonheadstudios.kanjispotter.utils.Constants.Companion.ATTRIBUTE_CHARACTERS
 import com.melonheadstudios.kanjispotter.utils.Constants.Companion.ATTRIBUTE_WORDS
 import com.melonheadstudios.kanjispotter.utils.Constants.Companion.EVENT_ADDED_OPTION
 import com.melonheadstudios.kanjispotter.utils.Constants.Companion.EVENT_API
 import com.melonheadstudios.kanjispotter.utils.Constants.Companion.EVENT_USED
-import com.squareup.otto.Bus
+import com.melonheadstudios.kanjispotter.utils.MainThreadBus
+import javax.inject.Inject
 
 
 /**
@@ -21,7 +23,14 @@ import com.squareup.otto.Bus
  * Created by jake on 2017-04-15, 10:57 AM
  */
 @Singleton
-class TextManager(private val bus: Bus) {
+class TextManager {
+    @Inject
+    lateinit var bus: MainThreadBus
+
+    init {
+        MainApplication.graph.inject(this)
+    }
+
     private fun getEventType(event: AccessibilityEvent): Boolean {
         when (event.eventType) {
             AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED -> return false

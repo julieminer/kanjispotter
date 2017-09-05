@@ -65,10 +65,10 @@ class BlacklistSelectionModel(val sharedPreferences: SharedPreferences, val appN
     }
 
     class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
-        var appName: TextView = view.findViewById<TextView>(R.id.app_name)
-        var appIcon: ImageView = view.findViewById<ImageView>(R.id.app_icon)
-        var checkBox: CheckBox = view.findViewById<CheckBox>(R.id.app_blacklisted)
-        var container: LinearLayout = view.findViewById<LinearLayout>(R.id.app_container)
+        var appName: TextView = view.findViewById(R.id.app_name)
+        var appIcon: ImageView = view.findViewById(R.id.app_icon)
+        var checkBox: CheckBox = view.findViewById(R.id.app_blacklisted)
+        var container: LinearLayout = view.findViewById(R.id.app_container)
     }
 
     class CheckButtonClickEvent: ClickEventHook<BlacklistSelectionModel>() {

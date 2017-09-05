@@ -12,6 +12,7 @@ import com.melonheadstudios.kanjispotter.injection.AndroidModule
 import com.melonheadstudios.kanjispotter.injection.DaggerApplicationComponent
 import com.melonheadstudios.kanjispotter.managers.PrefManager
 import com.melonheadstudios.kanjispotter.models.InfoPanelPreferenceChanged
+import com.melonheadstudios.kanjispotter.utils.MainThreadBus
 import com.squareup.otto.Bus
 import com.squareup.otto.Subscribe
 import java.util.*
@@ -29,10 +30,9 @@ class QuickTileService: TileService() {
     lateinit var prefManager: PrefManager
 
     @Inject
-    lateinit var bus: Bus
+    lateinit var bus: MainThreadBus
 
     override fun onCreate() {
-        MainApplication.graph = DaggerApplicationComponent.builder().androidModule(AndroidModule(application)).build()
         MainApplication.graph.inject(this)
 
         super.onCreate()

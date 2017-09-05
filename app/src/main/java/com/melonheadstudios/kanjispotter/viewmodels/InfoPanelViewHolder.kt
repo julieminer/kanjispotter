@@ -22,11 +22,11 @@ import com.melonheadstudios.kanjispotter.models.InfoPanelSelectionsEvent
 import com.melonheadstudios.kanjispotter.models.JishoResponse
 import com.melonheadstudios.kanjispotter.utils.Constants.Companion.PREFERENCES_KEY
 import com.melonheadstudios.kanjispotter.utils.Constants.Companion.SERVICE_STATUS_FLAG
+import com.melonheadstudios.kanjispotter.utils.MainThreadBus
 import com.melonheadstudios.kanjispotter.views.NoTouchHorizontalScrollView
 import com.melonheadstudios.kanjispotter.views.SelectionView
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
-import com.squareup.otto.Bus
 
 
 /**
@@ -34,7 +34,7 @@ import com.squareup.otto.Bus
  * Created by jake on 2017-04-16, 2:09 PM
  */
 
-class InfoPanelViewHolder(val context: Context, parent: View, private var iabManager: IABManager, private val bus: Bus) : SelectionView.SelectionViewDelegate {
+class InfoPanelViewHolder(val context: Context, parent: View, private var iabManager: IABManager, private val bus: MainThreadBus) : SelectionView.SelectionViewDelegate {
     override fun selectedSegment(segment: String) {
         Log.d(TAG, segment)
         bus.post(InfoPanelAddOptionEvent(segment))
