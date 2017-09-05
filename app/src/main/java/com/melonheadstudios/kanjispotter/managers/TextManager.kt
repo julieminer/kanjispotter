@@ -23,7 +23,7 @@ import javax.inject.Inject
  * Created by jake on 2017-04-15, 10:57 AM
  */
 @Singleton
-class TextManager {
+class TextManager() {
     @Inject
     lateinit var bus: MainThreadBus
 
@@ -61,7 +61,7 @@ class TextManager {
 
         val text = event.source?.text ?: return sb.stringify()
         for (s in text) {
-            if (JapaneseCharMatcher.isKanji(s)) {
+            if (JapaneseCharMatcher.isKanji(s) || (showHiragana && JapaneseCharMatcher.isJapanese(s))) {
                 sbi.append(s)
             } else {
                 sbi.append(" ")

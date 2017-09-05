@@ -32,6 +32,7 @@ class IABManager : IabBroadcastReceiver.IabBroadcastListener {
     private val RC_REQUEST = 10001
     private var mHelper: IabHelper? = null
     private var mBroadcastReceiver: IabBroadcastReceiver? = null
+    private var isRegistered = false
 
     @Inject
     lateinit var bus: MainThreadBus
@@ -57,8 +58,9 @@ class IABManager : IabBroadcastReceiver.IabBroadcastListener {
 
     fun unregister(context: Context) {
         // very important:
-        if (mBroadcastReceiver != null) {
+        if (mBroadcastReceiver != null && isRegistered) {
             context.unregisterReceiver(mBroadcastReceiver)
+            isRegistered = false
             mBroadcastReceiver = null
         }
 
@@ -108,6 +110,7 @@ class IABManager : IabBroadcastReceiver.IabBroadcastListener {
             mBroadcastReceiver = IabBroadcastReceiver(this)
             val broadcastFilter = IntentFilter(IabBroadcastReceiver.ACTION)
             context.registerReceiver(mBroadcastReceiver, broadcastFilter)
+            isRegistered = true
 
             // IAB is fully set up. Now, let's get an inventory of stuff we own.
             Log.d(TAG, "Setup successful. Querying inventory.")
