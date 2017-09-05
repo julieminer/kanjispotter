@@ -1,7 +1,6 @@
 package com.melonheadstudios.kanjispotter.managers
 
 import android.view.accessibility.AccessibilityEvent
-import com.eightbitlab.rxbus.Bus
 import com.melonheadstudios.kanjispotter.extensions.getReadings
 import com.melonheadstudios.kanjispotter.extensions.stringify
 import com.melonheadstudios.kanjispotter.utils.JapaneseCharMatcher
@@ -14,6 +13,7 @@ import com.melonheadstudios.kanjispotter.utils.Constants.Companion.ATTRIBUTE_WOR
 import com.melonheadstudios.kanjispotter.utils.Constants.Companion.EVENT_ADDED_OPTION
 import com.melonheadstudios.kanjispotter.utils.Constants.Companion.EVENT_API
 import com.melonheadstudios.kanjispotter.utils.Constants.Companion.EVENT_USED
+import com.squareup.otto.Bus
 
 
 /**
@@ -21,7 +21,7 @@ import com.melonheadstudios.kanjispotter.utils.Constants.Companion.EVENT_USED
  * Created by jake on 2017-04-15, 10:57 AM
  */
 @Singleton
-class TextManager {
+class TextManager(private val bus: Bus) {
     private fun getEventType(event: AccessibilityEvent): Boolean {
         when (event.eventType) {
             AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED -> return false
@@ -62,10 +62,10 @@ class TextManager {
         val outer = sb.stringify()
         val inner = sbi.stringify()
 
-        if (outer == inner) {
-            return inner
+        return if (outer == inner) {
+            inner
         } else {
-            return "outer = $outer inner = $inner"
+            "outer = $outer inner = $inner"
         }
     }
 
@@ -73,7 +73,7 @@ class TextManager {
         Answers.getInstance().logCustom(CustomEvent(EVENT_ADDED_OPTION))
         option.getReadings { reading ->
             Answers.getInstance().logCustom(CustomEvent(EVENT_API))
-            Bus.send(InfoPanelEvent(chosenWord = option, json = reading))
+            bus.post(InfoPanelEvent(chosenWord = option, json = reading))
         }
     }
 
@@ -84,22 +84,22 @@ class TextManager {
         if (text.isEmpty()) return
         val rawText = getEventText(event = event, showHiragana = true)
 
-        Bus.send(InfoPanelClearEvent())
+        bus.post(InfoPanelClearEvent())
         val components = text.split(" ")
-        Bus.send(InfoPanelMultiSelectEvent(rawText.replace(regex = Regex("\\s+"), replacement = "").trim()))
-        Bus.send(InfoPanelSelectionsEvent(components))
+        bus.post(InfoPanelMultiSelectEvent(rawText.replace(regex = Regex("\\s+"), replacement = "").trim()))
+        bus.post(InfoPanelSelectionsEvent(components))
         Answers.getInstance().logCustom(CustomEvent(EVENT_USED)
                 .putCustomAttribute(ATTRIBUTE_WORDS, components.size)
                 .putCustomAttribute(ATTRIBUTE_CHARACTERS, text.length))
         components.forEach {
             it.getReadings { readings ->
                 if (readings.isEmpty()) {
-                    Bus.send(InfoPanelErrorEvent("No data to display. Are you connected to the internet?"))
+                    bus.post(InfoPanelErrorEvent("No data to display. Are you connected to the internet?"))
                     return@getReadings
                 }
 
                 Answers.getInstance().logCustom(CustomEvent(EVENT_API))
-                Bus.send(InfoPanelEvent(chosenWord = it, json = readings))
+                bus.post(InfoPanelEvent(chosenWord = it, json = readings))
             }
         }
     }

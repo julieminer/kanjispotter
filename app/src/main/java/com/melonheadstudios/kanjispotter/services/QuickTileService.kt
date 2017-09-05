@@ -6,14 +6,14 @@ import android.graphics.drawable.Icon
 import android.os.Build
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
-import com.eightbitlab.rxbus.Bus
-import com.eightbitlab.rxbus.registerInBus
 import com.melonheadstudios.kanjispotter.MainApplication
 import com.melonheadstudios.kanjispotter.R
 import com.melonheadstudios.kanjispotter.injection.AndroidModule
 import com.melonheadstudios.kanjispotter.injection.DaggerApplicationComponent
 import com.melonheadstudios.kanjispotter.managers.PrefManager
 import com.melonheadstudios.kanjispotter.models.InfoPanelPreferenceChanged
+import com.squareup.otto.Bus
+import com.squareup.otto.Subscribe
 import java.util.*
 import javax.inject.Inject
 
@@ -28,18 +28,19 @@ class QuickTileService: TileService() {
     @Inject
     lateinit var prefManager: PrefManager
 
+    @Inject
+    lateinit var bus: Bus
+
     override fun onCreate() {
         MainApplication.graph = DaggerApplicationComponent.builder().androidModule(AndroidModule(application)).build()
         MainApplication.graph.inject(this)
 
         super.onCreate()
-
-        Bus.observe<InfoPanelPreferenceChanged>()
-                .subscribe { updateTile() }
-                .registerInBus(this)
+        bus.register(this)
     }
 
     override fun onDestroy() {
+        bus.unregister(this)
         super.onDestroy()
     }
 
@@ -81,8 +82,13 @@ class QuickTileService: TileService() {
         var isActive = prefManager.serviceStatus()
         isActive = !isActive
         prefManager.serviceStatus(isActive)
-        Bus.send(InfoPanelPreferenceChanged(isActive))
+        bus.post(InfoPanelPreferenceChanged(isActive))
 
         return isActive
+    }
+
+    @Subscribe
+    fun onPrefChangedEvent(it: InfoPanelPreferenceChanged) {
+        updateTile()
     }
 }

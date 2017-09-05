@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.util.Log
-import com.eightbitlab.rxbus.Bus
 import com.melonheadstudios.kanjispotter.models.IABUpdateUIEvent
 import com.melonheadstudios.kanjispotter.utils.iap.IabBroadcastReceiver
 import com.melonheadstudios.kanjispotter.utils.iap.IabHelper
@@ -14,6 +13,7 @@ import com.melonheadstudios.kanjispotter.utils.iap.Purchase
 import javax.inject.Singleton
 import com.crashlytics.android.answers.PurchaseEvent
 import com.crashlytics.android.answers.Answers
+import com.squareup.otto.Bus
 import java.math.BigDecimal
 import java.util.*
 
@@ -23,7 +23,7 @@ import java.util.*
  * Created by jake on 2017-04-18, 5:38 PM
  */
 @Singleton
-class IABManager : IabBroadcastReceiver.IabBroadcastListener {
+class IABManager(private val bus: Bus) : IabBroadcastReceiver.IabBroadcastListener {
     private val TAG = "IABManager"
     private var mIsPremium = false
     private val REMOVE_ADS = "remove_ads"
@@ -149,7 +149,7 @@ class IABManager : IabBroadcastReceiver.IabBroadcastListener {
         return true
     }
 
-    var cachedInventory: Inventory? = null
+    private var cachedInventory: Inventory? = null
 
     private fun hasPurchasedPro(inventory: Inventory? = null): Boolean {
         val usableInventory: Inventory? = inventory ?: cachedInventory
@@ -186,7 +186,7 @@ class IABManager : IabBroadcastReceiver.IabBroadcastListener {
         // Do we have the premium upgrade?
         mIsPremium = hasPurchasedPro(inventory)
         Log.d(TAG, "User is " + if (mIsPremium) "PREMIUM" else "NOT PREMIUM")
-        Bus.send(IABUpdateUIEvent(mIsPremium))
+        bus.post(IABUpdateUIEvent(mIsPremium))
         Log.d(TAG, "Initial inventory query finished; enabling main UI.")
     }
 
@@ -218,7 +218,7 @@ class IABManager : IabBroadcastReceiver.IabBroadcastListener {
                         .putItemName("Premium Status")
                         .putItemId(REMOVE_ADS)
                         .putSuccess(true))
-                Bus.send(IABUpdateUIEvent(isPremium = mIsPremium))
+                bus.post(IABUpdateUIEvent(isPremium = mIsPremium))
             }
         }
     }

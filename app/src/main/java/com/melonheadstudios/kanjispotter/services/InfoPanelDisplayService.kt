@@ -10,8 +10,6 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.WindowManager
 import android.widget.FrameLayout
-import com.eightbitlab.rxbus.Bus
-import com.eightbitlab.rxbus.registerInBus
 import com.melonheadstudios.kanjispotter.MainApplication
 import com.melonheadstudios.kanjispotter.R
 import com.melonheadstudios.kanjispotter.injection.AndroidModule
@@ -20,6 +18,8 @@ import com.melonheadstudios.kanjispotter.managers.IABManager
 import com.melonheadstudios.kanjispotter.managers.PrefManager
 import com.melonheadstudios.kanjispotter.models.*
 import com.melonheadstudios.kanjispotter.viewmodels.InfoPanelViewHolder
+import com.squareup.otto.Bus
+import com.squareup.otto.Subscribe
 import javax.inject.Inject
 
 /**
@@ -27,7 +27,7 @@ import javax.inject.Inject
  * Created by jake on 2017-04-15, 9:17 AM
  */
 class InfoPanelDisplayService: Service() {
-    val TAG = "InfoPanelDisplay"
+    private val TAG = "InfoPanelDisplay"
 
     @Inject
     lateinit var iabManager: IABManager
@@ -35,19 +35,25 @@ class InfoPanelDisplayService: Service() {
     @Inject
     lateinit var prefManager: PrefManager
 
-    var mLayout: FrameLayout? = null
-    var viewHolder: InfoPanelViewHolder? = null
-    var windowManager: WindowManager? = null
+    @Inject
+    lateinit var bus: Bus
+
+    private var mLayout: FrameLayout? = null
+    private var viewHolder: InfoPanelViewHolder? = null
+    private var windowManager: WindowManager? = null
     override fun onBind(intent: Intent?): IBinder? {
         return null
     }
 
+    @Suppress("DEPRECATION")
     override fun onCreate() {
         MainApplication.graph = DaggerApplicationComponent.builder().androidModule(AndroidModule(application)).build()
         MainApplication.graph.inject(this)
 
         updateTheme()
         super.onCreate()
+
+        bus.register(this)
 
         Log.d(TAG, "Service created")
         // Create an overlay and display the action bar
@@ -67,68 +73,21 @@ class InfoPanelDisplayService: Service() {
 
         val inflater = LayoutInflater.from(this)
         val parent = inflater.inflate(R.layout.action_bar, mLayout)
-        viewHolder = InfoPanelViewHolder(applicationContext, parent, iabManager)
+        viewHolder = InfoPanelViewHolder(applicationContext, parent, iabManager, bus)
         try {
             windowManager?.addView(mLayout, params)
         } catch (e: Exception) {
             Log.e(TAG, "", e)
         }
 
-        Bus.observe<InfoPanelClearEvent>()
-                .subscribe {
-                    Log.d(TAG, "clearPanel")
-                    viewHolder?.clearPanel()
-                }
-                .registerInBus(this)
 
-        Bus.observe<InfoPanelEvent>()
-                .subscribe {
-                    Log.d(TAG, "handleString: ${it.chosenWord} = ${it.json}")
-                    viewHolder?.updateView(it.chosenWord, it.json)
-                }
-                .registerInBus(this)
-
-        Bus.observe<InfoPanelErrorEvent>()
-                .subscribe {
-                    Log.d(TAG, "handleError: ${it.errorText}")
-                    viewHolder?.handleError(it.errorText, it.showHeaders)
-                }
-                .registerInBus(this)
-
-        Bus.observe<InfoPanelSelectionsEvent>()
-                .subscribe {
-                    Log.d(TAG, "handleSelections: ${it.selections}")
-                    viewHolder?.updateSelections(it.selections)
-                }
-                .registerInBus(this)
-
-        Bus.observe<InfoPanelMultiSelectEvent>()
-                .subscribe {
-                    Log.d(TAG, "handle multiselect event ${it.rawString}")
-                    viewHolder?.handleMultiSelectionEvent(it.rawString)
-                }
-                .registerInBus(this)
-
-        Bus.observe<InfoPanelSelectedWordEvent>()
-                .subscribe {
-                    Log.d(TAG, "selected position ${it.position}")
-                    viewHolder?.selectedPosition(it.position)
-                }
-                .registerInBus(this)
-
-        Bus.observe<InfoPanelPreferenceChanged>()
-                .subscribe {
-                    if (!it.enabled) {
-                        viewHolder?.makeInvisibile(fromTile = true)
-                    }
-                }
-                .registerInBus(this)
     }
 
     override fun onDestroy() {
         super.onDestroy()
         viewHolder?.destroy()
         if (mLayout != null) windowManager?.removeView(mLayout)
+        bus.unregister(this)
     }
 
     private fun updateTheme() {
@@ -136,6 +95,49 @@ class InfoPanelDisplayService: Service() {
             setTheme(R.style.AppTheme)
         } else {
             setTheme(R.style.AppThemeLight)
+        }
+    }
+
+    @Subscribe
+    fun onInfoClearEvent(e: InfoPanelClearEvent) {
+        Log.d(TAG, "clearPanel")
+        viewHolder?.clearPanel()
+    }
+
+    @Subscribe
+    fun onInfoPanelEvent(e: InfoPanelEvent) {
+        Log.d(TAG, "handleString: ${e.chosenWord} = ${e.json}")
+        viewHolder?.updateView(e.chosenWord, e.json)
+    }
+
+    @Subscribe
+    fun onErrorEvent(e: InfoPanelErrorEvent) {
+        Log.d(TAG, "handleError: ${e.errorText}")
+        viewHolder?.handleError(e.errorText, e.showHeaders)
+    }
+
+    @Subscribe
+    fun onSelectEvent(it: InfoPanelSelectionsEvent) {
+        Log.d(TAG, "handleSelections: ${it.selections}")
+        viewHolder?.updateSelections(it.selections)
+    }
+
+    @Subscribe
+    fun onMultiSelectEvent(it: InfoPanelMultiSelectEvent) {
+        Log.d(TAG, "handle multiselect event ${it.rawString}")
+        viewHolder?.handleMultiSelectionEvent(it.rawString)
+    }
+
+    @Subscribe
+    fun onSelectedWordEvent(it: InfoPanelSelectedWordEvent) {
+        Log.d(TAG, "selected position ${it.position}")
+        viewHolder?.selectedPosition(it.position)
+    }
+
+    @Subscribe
+    fun onPrefChangedEvent(it: InfoPanelPreferenceChanged) {
+        if (!it.enabled) {
+            viewHolder?.makeInvisibile(fromTile = true)
         }
     }
 }

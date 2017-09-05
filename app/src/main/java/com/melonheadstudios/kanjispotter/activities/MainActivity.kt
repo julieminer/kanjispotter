@@ -8,11 +8,8 @@ import android.os.Bundle
 import android.provider.Settings
 import android.support.v4.content.IntentCompat
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.view.View.GONE
 import android.view.View.VISIBLE
-import com.eightbitlab.rxbus.Bus
-import com.eightbitlab.rxbus.registerInBus
 import com.melonheadstudios.kanjispotter.BuildConfig
 import com.melonheadstudios.kanjispotter.MainApplication
 import com.melonheadstudios.kanjispotter.R
@@ -29,6 +26,8 @@ import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
 import android.support.v7.app.AlertDialog
 import android.support.v7.view.ContextThemeWrapper
+import com.squareup.otto.Bus
+import com.squareup.otto.Subscribe
 
 
 class MainActivity : AppCompatActivity() {
@@ -38,6 +37,10 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var prefManager: PrefManager
 
+    @Inject
+    lateinit var bus: Bus
+
+    @SuppressLint("RestrictedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         MainApplication.graph = DaggerApplicationComponent.builder().androidModule(AndroidModule(application)).build()
         MainApplication.graph.inject(this)
@@ -53,17 +56,6 @@ class MainActivity : AppCompatActivity() {
         if (shouldLaunchOnboarding()) {
             startActivity(Intent(this, KanjiOnboardingActivity::class.java))
         }
-
-        Bus.observe<InfoPanelPreferenceChanged>()
-                .subscribe { updateUI() }
-                .registerInBus(this)
-
-        Bus.observe<IABUpdateUIEvent>()
-                .subscribe {
-                    Log.d("IABManager", "premium status update ${it.isPremium}")
-                    updateUI(isPremium = it.isPremium || BuildConfig.DEBUG)
-                }
-                .registerInBus(this)
 
         report_issue_button.setOnClickListener {
             reportIssue()
@@ -109,7 +101,13 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        bus.register(this)
         updateUI()
+    }
+
+    override fun onPause() {
+        bus.unregister(this)
+        super.onPause()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
@@ -139,9 +137,10 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("CommitPrefEdits")
     private fun setOverlayEnabled(enabled: Boolean) {
         prefManager.setOverlay(enabled)
-        Bus.send(InfoPanelPreferenceChanged(enabled = enabled))
+        bus.post(InfoPanelPreferenceChanged(enabled = enabled))
     }
 
+    @SuppressLint("WrongConstant")
     private fun setDarkThemeEnabled(enabled: Boolean) {
         prefManager.setDarkTheme(enabled)
 
@@ -178,5 +177,16 @@ class MainActivity : AppCompatActivity() {
                 "API Version: ${Build.VERSION.SDK_INT}\n Android Version ${Build.VERSION.RELEASE}\n "
         emailIntent.putExtra(Intent.EXTRA_TEXT, userInfo)
         startActivity(Intent.createChooser(emailIntent, "Send email..."))
+    }
+
+
+    @Subscribe
+    fun onInfoPanelEvent(e: InfoPanelPreferenceChanged) {
+        updateUI()
+    }
+
+    @Subscribe
+    fun onIABUpdateEvent(e: IABUpdateUIEvent) {
+        updateUI(e.isPremium || BuildConfig.DEBUG)
     }
 }

@@ -9,7 +9,6 @@ import android.widget.RadioButton
 import android.widget.TextView
 import com.crashlytics.android.answers.Answers
 import com.crashlytics.android.answers.CustomEvent
-import com.eightbitlab.rxbus.Bus
 import com.melonheadstudios.kanjispotter.R
 import com.melonheadstudios.kanjispotter.extensions.saveToClipboard
 import com.melonheadstudios.kanjispotter.models.InfoPanelSelectedWordEvent
@@ -18,12 +17,13 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.items.AbstractItem
 import com.mikepenz.fastadapter.listeners.ClickEventHook
 import com.mikepenz.fastadapter.utils.ViewHolderFactory
+import com.squareup.otto.Bus
 
 /**
  * kanjispotter
  * Created by jake on 2017-04-15, 9:48 PM
  */
-class KanjiSelectionListModel(val selectedWord: String): AbstractItem<KanjiSelectionListModel, KanjiSelectionListModel.ViewHolder>() {
+class KanjiSelectionListModel(val selectedWord: String, val bus: Bus): AbstractItem<KanjiSelectionListModel, KanjiSelectionListModel.ViewHolder>() {
     override fun getType(): Int {
         return R.id.KANJI_LIST_SELECTION_MODEL
     }
@@ -65,10 +65,10 @@ class KanjiSelectionListModel(val selectedWord: String): AbstractItem<KanjiSelec
     }
 
     class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
-        var selectedText: TextView = view.findViewById<TextView>(R.id.selected_word)
-        var radiobutton: RadioButton = view.findViewById<RadioButton>(R.id.radiobutton)
-        var selectionBackground: LinearLayout = view.findViewById<LinearLayout>(R.id.selection_background)
-        var underline: LinearLayout = view.findViewById<LinearLayout>(R.id.selected_underline)
+        var selectedText: TextView = view.findViewById(R.id.selected_word)
+        var radiobutton: RadioButton = view.findViewById(R.id.radiobutton)
+        var selectionBackground: LinearLayout = view.findViewById(R.id.selection_background)
+        var underline: LinearLayout = view.findViewById(R.id.selected_underline)
     }
 
     class RadioButtonClickEvent: ClickEventHook<KanjiSelectionListModel>() {
@@ -87,7 +87,7 @@ class KanjiSelectionListModel(val selectedWord: String): AbstractItem<KanjiSelec
                     fastAdapter.notifyItemChanged(selectedPosition)
                 }
                 fastAdapter.select(position)
-                Bus.send(InfoPanelSelectedWordEvent(position))
+                item.bus.post(InfoPanelSelectedWordEvent(position))
                 Answers.getInstance().logCustom(CustomEvent(EVENT_SWITCHED_WORDS))
             }
         }

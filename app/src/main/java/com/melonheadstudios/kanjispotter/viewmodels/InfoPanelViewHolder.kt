@@ -13,10 +13,7 @@ import android.widget.ProgressBar
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.TextView
-import com.eightbitlab.rxbus.Bus
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
+import com.google.gson.Gson
 import com.melonheadstudios.kanjispotter.R
 import com.melonheadstudios.kanjispotter.managers.IABManager
 import com.melonheadstudios.kanjispotter.models.InfoPanelAddOptionEvent
@@ -29,6 +26,7 @@ import com.melonheadstudios.kanjispotter.views.NoTouchHorizontalScrollView
 import com.melonheadstudios.kanjispotter.views.SelectionView
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
+import com.squareup.otto.Bus
 
 
 /**
@@ -36,32 +34,32 @@ import com.mikepenz.fastadapter.adapters.ItemAdapter
  * Created by jake on 2017-04-16, 2:09 PM
  */
 
-class InfoPanelViewHolder(val context: Context, parent: View, var iabManager: IABManager) : SelectionView.SelectionViewDelegate {
+class InfoPanelViewHolder(val context: Context, parent: View, private var iabManager: IABManager, private val bus: Bus) : SelectionView.SelectionViewDelegate {
     override fun selectedSegment(segment: String) {
         Log.d(TAG, segment)
-        Bus.send(InfoPanelAddOptionEvent(segment))
-        Bus.send(InfoPanelSelectionsEvent(listOf(segment)))
+        bus.post(InfoPanelAddOptionEvent(segment))
+        bus.post(InfoPanelSelectionsEvent(listOf(segment)))
     }
 
     private val TAG = "InfoPanelViewHolder"
 
-    val selectionScroller: SeekBar = parent.findViewById<SeekBar>(R.id.selection_scroll)
-    val selectionView: SelectionView = parent.findViewById<SelectionView>(R.id.selection_view_text)
-    val selectionViewContainer: NoTouchHorizontalScrollView = parent.findViewById<NoTouchHorizontalScrollView>(R.id.selection_view)
-    val container: CardView = parent.findViewById<CardView>(R.id.info_panel)
-    val list: RecyclerView = parent.findViewById<RecyclerView>(R.id.info)
-    val button: ImageButton = parent.findViewById<ImageButton>(R.id.info_button)
-    val headerList: RecyclerView = parent.findViewById<RecyclerView>(R.id.info_word)
-    val progressBar: ProgressBar = parent.findViewById<ProgressBar>(R.id.progress_bar)
-    val errorText: TextView = parent.findViewById<TextView>(R.id.error_text)
+    private val selectionScroller: SeekBar = parent.findViewById(R.id.selection_scroll)
+    val selectionView: SelectionView = parent.findViewById(R.id.selection_view_text)
+    val selectionViewContainer: NoTouchHorizontalScrollView = parent.findViewById(R.id.selection_view)
+    private val container: CardView = parent.findViewById(R.id.info_panel)
+    private val list: RecyclerView = parent.findViewById(R.id.info)
+    private val button: ImageButton = parent.findViewById(R.id.info_button)
+    private val headerList: RecyclerView = parent.findViewById(R.id.info_word)
+    private val progressBar: ProgressBar = parent.findViewById(R.id.progress_bar)
+    private val errorText: TextView = parent.findViewById(R.id.error_text)
 
-    val fastAdapter = FastAdapter<KanjiListModel>()
-    val itemAdapter = ItemAdapter<KanjiListModel>()
-    var items = ArrayList<KanjiListModel>()
+    private val fastAdapter = FastAdapter<KanjiListModel>()
+    private val itemAdapter = ItemAdapter<KanjiListModel>()
+    private var items = ArrayList<KanjiListModel>()
 
-    val headerFastAdapter = FastAdapter<KanjiSelectionListModel>()
-    val headerItemAdapter = ItemAdapter<KanjiSelectionListModel>()
-    var headerItems = ArrayList<KanjiSelectionListModel>()
+    private val headerFastAdapter = FastAdapter<KanjiSelectionListModel>()
+    private val headerItemAdapter = ItemAdapter<KanjiSelectionListModel>()
+    private var headerItems = ArrayList<KanjiSelectionListModel>()
 
     init {
         button.setOnClickListener {
@@ -114,7 +112,7 @@ class InfoPanelViewHolder(val context: Context, parent: View, var iabManager: IA
 
     fun updateSelections(selections: List<String>) {
         selections.forEach {
-            val item = KanjiSelectionListModel(it)
+            val item = KanjiSelectionListModel(it, bus)
             if (!headerItems.contains(item)) {
                 headerItems.add(item)
                 headerItems = ArrayList(LinkedHashSet(headerItems))
@@ -124,6 +122,7 @@ class InfoPanelViewHolder(val context: Context, parent: View, var iabManager: IA
         }
     }
 
+    @Suppress("UselessCallOnCollection")
     fun selectedPosition(position: Int) {
         val header = headerFastAdapter.getItem(position) ?: return
         itemAdapter.set(items.filterNotNull().filter {
@@ -206,10 +205,7 @@ class InfoPanelViewHolder(val context: Context, parent: View, var iabManager: IA
     }
 
     private fun parseJsonString(string: String, selectedWord: String) {
-        val mapper = jacksonObjectMapper()
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-        val jishoResponse = mapper.readValue<JishoResponse>(string)
-
+        val jishoResponse = Gson().fromJson<JishoResponse>(string, JishoResponse::class.java)
         val dataArray = jishoResponse.data ?: return
         for ((_, japanese, senses) in dataArray) {
 
@@ -236,7 +232,7 @@ class InfoPanelViewHolder(val context: Context, parent: View, var iabManager: IA
         itemAdapter.set(items)
 
         if (items.isEmpty()) {
-            Bus.send(InfoPanelErrorEvent(errorText = "No data for this selection", showHeaders = true))
+            bus.post(InfoPanelErrorEvent(errorText = "No data for this selection", showHeaders = true))
         }
 
         headerFastAdapter.deselect()

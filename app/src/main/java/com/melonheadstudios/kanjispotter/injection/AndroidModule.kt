@@ -12,6 +12,7 @@ import io.fabric.sdk.android.Fabric
 import javax.inject.Singleton
 import com.crashlytics.android.core.CrashlyticsCore
 import com.melonheadstudios.kanjispotter.BuildConfig
+import com.squareup.otto.Bus
 
 
 /**
@@ -39,19 +40,25 @@ class AndroidModule(private val application: Application) {
     @Provides
     @Singleton
     fun providesTextManager(): TextManager {
-        return TextManager()
+        return TextManager(providesBus())
     }
 
     @Provides
     @Singleton
     fun providesIABManager(): IABManager {
-        return IABManager()
+        return IABManager(providesBus())
     }
 
     @Provides
     @Singleton
     fun providesPrefManager(): PrefManager {
         return PrefManager(application)
+    }
+
+    @Provides
+    @Singleton
+    fun providesBus(): Bus {
+        return Bus()
     }
 
 //    @Provides
