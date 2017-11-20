@@ -205,7 +205,7 @@ class InfoPanelViewHolder(val context: Context, parent: View, private var iabMan
     }
 
     private fun parseJsonString(string: String, selectedWord: String) {
-        val jishoResponse = Gson().fromJson<JishoResponse>(string, JishoResponse::class.java)
+        val jishoResponse = Gson().fromJson<JishoResponse>(string, JishoResponse::class.java) ?: return
         val dataArray = jishoResponse.data ?: return
         for ((_, japanese, senses) in dataArray) {
 
