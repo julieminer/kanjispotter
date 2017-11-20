@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 
 class JapaneseTextGrabberService : AccessibilityService() {
-    private val TAG = "JapaneseTextGrabber"
+    private val tag = "JapaneseTextGrabber"
 
     @Inject
     lateinit var prefManager: PrefManager
@@ -33,7 +33,7 @@ class JapaneseTextGrabberService : AccessibilityService() {
         MainApplication.graph.inject(this)
         bus.register(this)
 
-        Log.d(TAG, "Service connected")
+        Log.d(tag, "Service connected")
 
         val info = AccessibilityServiceInfo()
         info.flags = AccessibilityServiceInfo.DEFAULT

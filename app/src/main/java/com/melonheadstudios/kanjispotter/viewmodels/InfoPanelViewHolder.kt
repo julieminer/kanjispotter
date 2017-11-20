@@ -36,12 +36,12 @@ import com.mikepenz.fastadapter.adapters.ItemAdapter
 
 class InfoPanelViewHolder(val context: Context, parent: View, private var iabManager: IABManager, private val bus: MainThreadBus) : SelectionView.SelectionViewDelegate {
     override fun selectedSegment(segment: String) {
-        Log.d(TAG, segment)
+        Log.d(tag, segment)
         bus.post(InfoPanelAddOptionEvent(segment))
         bus.post(InfoPanelSelectionsEvent(listOf(segment)))
     }
 
-    private val TAG = "InfoPanelViewHolder"
+    private val tag = "InfoPanelViewHolder"
 
     private val selectionScroller: SeekBar = parent.findViewById(R.id.selection_scroll)
     val selectionView: SelectionView = parent.findViewById(R.id.selection_view_text)
@@ -126,7 +126,7 @@ class InfoPanelViewHolder(val context: Context, parent: View, private var iabMan
     fun selectedPosition(position: Int) {
         val header = headerFastAdapter.getItem(position) ?: return
         itemAdapter.set(items.filterNotNull().filter {
-            Log.d(TAG, "Filtering word ${it.selectedWord} w/ ${header.selectedWord}")
+            Log.d(tag, "Filtering word ${it.selectedWord} w/ ${header.selectedWord}")
             it.selectedWord == header.selectedWord
         })
     }

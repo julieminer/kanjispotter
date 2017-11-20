@@ -4,6 +4,7 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.graphics.PixelFormat
+import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import android.view.Gravity
@@ -25,7 +26,7 @@ import javax.inject.Inject
  * Created by jake on 2017-04-15, 9:17 AM
  */
 class InfoPanelDisplayService: Service() {
-    private val TAG = "InfoPanelDisplay"
+    private val tag = "InfoPanelDisplay"
 
     @Inject
     lateinit var iabManager: IABManager
@@ -39,9 +40,7 @@ class InfoPanelDisplayService: Service() {
     private var mLayout: FrameLayout? = null
     private var viewHolder: InfoPanelViewHolder? = null
     private var windowManager: WindowManager? = null
-    override fun onBind(intent: Intent?): IBinder? {
-        return null
-    }
+    override fun onBind(intent: Intent?): IBinder? = null
 
     @Suppress("DEPRECATION")
     override fun onCreate() {
@@ -52,15 +51,21 @@ class InfoPanelDisplayService: Service() {
 
         bus.register(this)
 
-        Log.d(TAG, "Service created")
+        Log.d(tag, "Service created")
         // Create an overlay and display the action bar
         windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
         mLayout = FrameLayout(this)
 
+        val layoutFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+        } else {
+            WindowManager.LayoutParams.TYPE_PHONE
+        }
+
         val params = WindowManager.LayoutParams(
                 WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.TYPE_PHONE,
+                layoutFlag,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
                 PixelFormat.TRANSLUCENT)
 
@@ -74,7 +79,7 @@ class InfoPanelDisplayService: Service() {
         try {
             windowManager?.addView(mLayout, params)
         } catch (e: Exception) {
-            Log.e(TAG, "", e)
+            Log.e(tag, "", e)
         }
     }
 
@@ -95,37 +100,37 @@ class InfoPanelDisplayService: Service() {
 
     @Subscribe
     fun onInfoClearEvent(e: InfoPanelClearEvent) {
-        Log.d(TAG, "clearPanel")
+        Log.d(tag, "clearPanel")
         viewHolder?.clearPanel()
     }
 
     @Subscribe
     fun onInfoPanelEvent(e: InfoPanelEvent) {
-        Log.d(TAG, "handleString: ${e.chosenWord} = ${e.json}")
+        Log.d(tag, "handleString: ${e.chosenWord} = ${e.json}")
         viewHolder?.updateView(e.chosenWord, e.json)
     }
 
     @Subscribe
     fun onErrorEvent(e: InfoPanelErrorEvent) {
-        Log.d(TAG, "handleError: ${e.errorText}")
+        Log.d(tag, "handleError: ${e.errorText}")
         viewHolder?.handleError(e.errorText, e.showHeaders)
     }
 
     @Subscribe
     fun onSelectEvent(it: InfoPanelSelectionsEvent) {
-        Log.d(TAG, "handleSelections: ${it.selections}")
+        Log.d(tag, "handleSelections: ${it.selections}")
         viewHolder?.updateSelections(it.selections)
     }
 
     @Subscribe
     fun onMultiSelectEvent(it: InfoPanelMultiSelectEvent) {
-        Log.d(TAG, "handle multiselect event ${it.rawString}")
+        Log.d(tag, "handle multiselect event ${it.rawString}")
         viewHolder?.handleMultiSelectionEvent(it.rawString)
     }
 
     @Subscribe
     fun onSelectedWordEvent(it: InfoPanelSelectedWordEvent) {
-        Log.d(TAG, "selected position ${it.position}")
+        Log.d(tag, "selected position ${it.position}")
         viewHolder?.selectedPosition(it.position)
     }
 
