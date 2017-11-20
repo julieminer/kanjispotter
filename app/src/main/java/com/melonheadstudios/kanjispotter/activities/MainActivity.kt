@@ -93,7 +93,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         iabManager.setupIAB(context = this)
-        updateUI()
     }
 
     override fun onResume() {
@@ -103,19 +102,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onPause() {
-        bus.unregister(this)
         super.onPause()
+        bus.unregister(this)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        iabManager.unregister(this)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
         iabManager.handleResult(requestCode, resultCode, data) {
             super.onActivityResult(requestCode, resultCode, data)
         }
-    }
-
-    override fun onDestroy() {
-        iabManager.unregister(this)
-        super.onDestroy()
     }
 
     private fun updateUI(isPremium: Boolean? = null) {
@@ -176,7 +175,6 @@ class MainActivity : AppCompatActivity() {
         emailIntent.putExtra(Intent.EXTRA_TEXT, userInfo)
         startActivity(Intent.createChooser(emailIntent, "Send email..."))
     }
-
 
     @Subscribe
     fun onInfoPanelEvent(e: InfoPanelPreferenceChanged) {

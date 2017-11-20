@@ -5,19 +5,19 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.util.Log
+import com.crashlytics.android.answers.Answers
+import com.crashlytics.android.answers.PurchaseEvent
+import com.melonheadstudios.kanjispotter.MainApplication
 import com.melonheadstudios.kanjispotter.models.IABUpdateUIEvent
+import com.melonheadstudios.kanjispotter.utils.MainThreadBus
 import com.melonheadstudios.kanjispotter.utils.iap.IabBroadcastReceiver
 import com.melonheadstudios.kanjispotter.utils.iap.IabHelper
 import com.melonheadstudios.kanjispotter.utils.iap.Inventory
 import com.melonheadstudios.kanjispotter.utils.iap.Purchase
-import javax.inject.Singleton
-import com.crashlytics.android.answers.PurchaseEvent
-import com.crashlytics.android.answers.Answers
-import com.melonheadstudios.kanjispotter.MainApplication
-import com.melonheadstudios.kanjispotter.utils.MainThreadBus
 import java.math.BigDecimal
 import java.util.*
 import javax.inject.Inject
+import javax.inject.Singleton
 
 
 /**
@@ -41,7 +41,7 @@ class IABManager : IabBroadcastReceiver.IabBroadcastListener {
         MainApplication.graph.inject(this)
     }
 
-    fun handleResult(requestCode: Int, resultCode: Int, data: Intent, completion: ()->Unit) {
+    fun handleResult(requestCode: Int, resultCode: Int, data: Intent, completion: () -> Unit) {
         Log.d(TAG, "onActivityResult($requestCode,$resultCode,$data")
         mHelper ?: return
 
@@ -77,6 +77,8 @@ class IABManager : IabBroadcastReceiver.IabBroadcastListener {
     }
 
     fun setupIAB(context: Context) {
+        if (isRegistered) return
+
         val base64EncodedPublicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzePrg0Qw/zZOsO6z7zJOdqU9x2OXhQjwMFPVE05GAlsogF/RedT7rsWN9khinBC1P2iy7c6iwX/21a6JU+0zksRtnpEM18Aqa6xXIfW0e85njaW7oG9sEkNOyXGrUptajAKjMQK/TAqrtqowLJuCu/EnbN9hznPDenggRkNAI1RxvFt6jB7ytXHgBA194/VkIKXfY+AcUcYTxehNfexNdcHMfN99NH/KsW7swuGZVUo0SMqEeIuEHk1LMnG367PWemn7b78q825LtLXixr+yTa0CyYIi8yIV9N7jkXLsgjxMJ54Pj/uB1YcxuAcJ9csBKPKwqfB7VbnH9MmjANb4CQIDAQAB"
 
         Log.d(TAG, "Creating IAB helper.")
