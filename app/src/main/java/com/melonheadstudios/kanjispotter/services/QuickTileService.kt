@@ -44,6 +44,11 @@ class QuickTileService: TileService() {
         super.onDestroy()
     }
 
+    override fun onStartListening() {
+        super.onStartListening()
+        updateTile()
+    }
+
     override fun onClick() {
         toggleServiceStatus()
     }
