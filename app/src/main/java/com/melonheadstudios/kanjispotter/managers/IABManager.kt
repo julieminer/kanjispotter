@@ -59,7 +59,11 @@ class IABManager : IabBroadcastReceiver.IabBroadcastListener {
     fun unregister(context: Context) {
         // very important:
         if (mBroadcastReceiver != null && isRegistered) {
-            context.unregisterReceiver(mBroadcastReceiver)
+            try {
+                context.unregisterReceiver(mBroadcastReceiver)
+            } catch (e: IllegalArgumentException) {
+                // do nothing, this is dumb
+            }
             isRegistered = false
             mBroadcastReceiver = null
         }
