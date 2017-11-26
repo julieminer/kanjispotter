@@ -14,10 +14,10 @@ import kotlinx.android.synthetic.main.oboarding_page.*
  * Created by jake on 2017-04-18, 8:13 PM
  */
 class OnboardingFragment: Fragment() {
-    lateinit var delegate: OnboardingFragmentListener
-    var viewModel: OnboardingViewModel? = null
-    var pageNumber: Int? = null
-    var viewCreated = false
+    private lateinit var delegate: OnboardingFragmentListener
+    private var viewModel: OnboardingViewModel? = null
+    private var pageNumber: Int? = null
+    private var viewCreated = false
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater?.inflate(R.layout.oboarding_page, container, false)
