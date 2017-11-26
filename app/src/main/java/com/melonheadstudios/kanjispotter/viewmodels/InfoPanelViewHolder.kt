@@ -13,6 +13,7 @@ import android.widget.ProgressBar
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.TextView
+import com.atilika.kuromoji.ipadic.Tokenizer
 import com.google.gson.Gson
 import com.melonheadstudios.kanjispotter.R
 import com.melonheadstudios.kanjispotter.managers.IABManager
@@ -133,9 +134,8 @@ class InfoPanelViewHolder(val context: Context, parent: View, private var iabMan
 
     fun handleMultiSelectionEvent(rawString: String) {
         val selectionList = ArrayList<TextSelection>()
-        for (s in rawString) {
-            selectionList.add(TextSelection(s.toString()))
-        }
+        val tokens = Tokenizer().tokenize(rawString)
+        tokens.mapTo(selectionList) { TextSelection(it.surface) }
         selectionViewContainer.visibility = if (selectionList.count() <= 1) GONE else VISIBLE
         selectionView.viewTreeObserver.addOnGlobalLayoutListener {
             val hasManySelections = selectionList.count() > 0

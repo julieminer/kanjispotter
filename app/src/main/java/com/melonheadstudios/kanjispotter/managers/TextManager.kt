@@ -1,6 +1,7 @@
 package com.melonheadstudios.kanjispotter.managers
 
 import android.view.accessibility.AccessibilityEvent
+import com.atilika.kuromoji.ipadic.Tokenizer
 import com.melonheadstudios.kanjispotter.extensions.getReadings
 import com.melonheadstudios.kanjispotter.extensions.stringify
 import com.melonheadstudios.kanjispotter.utils.JapaneseCharMatcher
@@ -44,7 +45,7 @@ class TextManager() {
         return false
     }
 
-    private fun getEventText(event: AccessibilityEvent?, showHiragana: Boolean = false): String {
+    private fun getEventText(event: AccessibilityEvent?, showHiragana: Boolean = true): String {
         val sb = StringBuilder()
         val sbi = StringBuilder()
         event?.text ?: return ""
