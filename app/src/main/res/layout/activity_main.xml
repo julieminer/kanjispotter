@@ -78,6 +78,16 @@
                 android:layout_margin="8dp"
                 android:src="@drawable/theme_preview"/>
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:textAlignment="center"
+                android:textColor="?attr/themeTextColor"
+                android:text="@string/page_3_desc"/>
+
             <Button
                 android:id="@+id/blacklist_settings_button"
                 android:layout_width="match_parent"
