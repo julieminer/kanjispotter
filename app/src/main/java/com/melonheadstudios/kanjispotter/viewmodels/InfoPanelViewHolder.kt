@@ -35,7 +35,11 @@ import com.mikepenz.fastadapter.adapters.ItemAdapter
  * Created by jake on 2017-04-16, 2:09 PM
  */
 
-class InfoPanelViewHolder(val context: Context, parent: View, private var iabManager: IABManager, private val bus: MainThreadBus) : SelectionView.SelectionViewDelegate {
+class InfoPanelViewHolder(val context: Context,
+                          parent: View,
+                          private var iabManager: IABManager,
+                          private val bus: MainThreadBus,
+                          private val tokenizer: Tokenizer) : SelectionView.SelectionViewDelegate {
     override fun selectedSegment(segment: String) {
         Log.d(tag, segment)
         bus.post(InfoPanelAddOptionEvent(segment))
@@ -134,7 +138,7 @@ class InfoPanelViewHolder(val context: Context, parent: View, private var iabMan
 
     fun handleMultiSelectionEvent(rawString: String) {
         val selectionList = ArrayList<TextSelection>()
-        val tokens = Tokenizer().tokenize(rawString)
+        val tokens = tokenizer.tokenize(rawString)
         tokens.mapTo(selectionList) { TextSelection(it.surface) }
         selectionViewContainer.visibility = if (selectionList.count() <= 1) GONE else VISIBLE
         selectionView.viewTreeObserver.addOnGlobalLayoutListener {

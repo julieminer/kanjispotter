@@ -2,6 +2,7 @@ package com.melonheadstudios.kanjispotter.injection
 
 import android.app.Application
 import android.content.Context
+import com.atilika.kuromoji.ipadic.Tokenizer
 import com.crashlytics.android.Crashlytics
 import com.crashlytics.android.core.CrashlyticsCore
 import com.melonheadstudios.kanjispotter.BuildConfig
@@ -23,6 +24,7 @@ import javax.inject.Singleton
 class AndroidModule(private val application: Application) {
 
     private val bus = MainThreadBus()
+    private val tokenizer = Tokenizer()
 
     init {
         val core = CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build()
@@ -35,33 +37,27 @@ class AndroidModule(private val application: Application) {
     @Provides
     @Singleton
     @ForApplication
-    fun provideApplicationContext(): Context {
-        return application
-    }
+    fun provideApplicationContext(): Context = application
 
     @Provides
     @Singleton
-    fun providesTextManager(): TextManager {
-        return TextManager()
-    }
+    fun providesTextManager(): TextManager = TextManager()
 
     @Provides
     @Singleton
-    fun providesIABManager(): IABManager {
-        return IABManager()
-    }
+    fun providesIABManager(): IABManager = IABManager()
 
     @Provides
     @Singleton
-    fun providesPrefManager(): PrefManager {
-        return PrefManager(application)
-    }
+    fun providesPrefManager(): PrefManager = PrefManager(application)
 
     @Provides
     @Singleton
-    fun providesBus(): MainThreadBus {
-        return bus
-    }
+    fun providesBus(): MainThreadBus = bus
+
+    @Provides
+    @Singleton
+    fun providesTokenizer(): Tokenizer = tokenizer
 
 //    @Provides
 //    @Singleton

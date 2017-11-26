@@ -11,6 +11,7 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.WindowManager
 import android.widget.FrameLayout
+import com.atilika.kuromoji.ipadic.Tokenizer
 import com.melonheadstudios.kanjispotter.MainApplication
 import com.melonheadstudios.kanjispotter.R
 import com.melonheadstudios.kanjispotter.managers.IABManager
@@ -36,6 +37,9 @@ class InfoPanelDisplayService: Service() {
 
     @Inject
     lateinit var bus: MainThreadBus
+
+    @Inject
+    lateinit var tokenizer: Tokenizer
 
     private var mLayout: FrameLayout? = null
     private var viewHolder: InfoPanelViewHolder? = null
@@ -75,7 +79,7 @@ class InfoPanelDisplayService: Service() {
 
         val inflater = LayoutInflater.from(this)
         val parent = inflater.inflate(R.layout.action_bar, mLayout)
-        viewHolder = InfoPanelViewHolder(applicationContext, parent, iabManager, bus)
+        viewHolder = InfoPanelViewHolder(applicationContext, parent, iabManager, bus, tokenizer)
         try {
             windowManager?.addView(mLayout, params)
         } catch (e: Exception) {
