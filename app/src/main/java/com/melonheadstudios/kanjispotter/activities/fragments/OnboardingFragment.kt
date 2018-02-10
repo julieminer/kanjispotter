@@ -19,20 +19,16 @@ class OnboardingFragment: Fragment() {
     private var pageNumber: Int? = null
     private var viewCreated = false
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater?.inflate(R.layout.oboarding_page, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.oboarding_page, container, false)
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         viewCreated = true
         updatePage(viewModel ?: return)
     }
 
-    override fun onResume() {
-        super.onResume()
-    }
-
-    fun updatePage(viewModel: OnboardingViewModel) {
+    private fun updatePage(viewModel: OnboardingViewModel) {
         if (!viewCreated) return
         onboarding_title.setText(viewModel.titleText!!)
         onboarding_description.setText(viewModel.descriptionText!!)
