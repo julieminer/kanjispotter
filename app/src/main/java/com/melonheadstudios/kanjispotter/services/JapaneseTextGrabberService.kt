@@ -5,6 +5,7 @@ import android.accessibilityservice.AccessibilityServiceInfo
 import android.content.Intent
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
+import com.crashlytics.android.Crashlytics
 import com.melonheadstudios.kanjispotter.MainApplication
 import com.melonheadstudios.kanjispotter.extensions.isServiceRunning
 import com.melonheadstudios.kanjispotter.managers.PrefManager
@@ -49,16 +50,20 @@ class JapaneseTextGrabberService : AccessibilityService() {
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
-        event?.packageName ?: return
-        val blackListEnabled = prefManager.blacklistEnabled()
-        if (blackListEnabled) {
-            if (prefManager.blacklisted(event.packageName)) return
+        try {
+            event?.packageName ?: return
+            val blackListEnabled = prefManager.blacklistEnabled()
+            if (blackListEnabled) {
+                if (prefManager.blacklisted(event.packageName)) return
+            }
+            if (!isServiceRunning(InfoPanelDisplayService::class.java)) {
+                val service = Intent(applicationContext, InfoPanelDisplayService::class.java)
+                startService(service)
+            }
+            textManager.parseEvent(event)
+        } catch (e: Exception) {
+            Crashlytics.logException(e)
         }
-        if (!isServiceRunning(InfoPanelDisplayService::class.java)) {
-            val service = Intent(applicationContext, InfoPanelDisplayService::class.java)
-            startService(service)
-        }
-        textManager.parseEvent(event)
     }
 
     override fun onInterrupt() {

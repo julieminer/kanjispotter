@@ -16,6 +16,7 @@ import android.widget.TextView
 import com.atilika.kuromoji.ipadic.Tokenizer
 import com.google.gson.Gson
 import com.melonheadstudios.kanjispotter.R
+import com.melonheadstudios.kanjispotter.extensions.from
 import com.melonheadstudios.kanjispotter.managers.IABManager
 import com.melonheadstudios.kanjispotter.models.InfoPanelAddOptionEvent
 import com.melonheadstudios.kanjispotter.models.InfoPanelErrorEvent
@@ -209,7 +210,7 @@ class InfoPanelViewHolder(val context: Context,
     }
 
     private fun parseJsonString(string: String, selectedWord: String) {
-        val jishoResponse = Gson().fromJson<JishoResponse>(string, JishoResponse::class.java) ?: return
+        val jishoResponse: JishoResponse = Gson().from(string, JishoResponse::class.java) ?: return
         val dataArray = jishoResponse.data ?: return
         for ((_, japanese, senses) in dataArray) {
 

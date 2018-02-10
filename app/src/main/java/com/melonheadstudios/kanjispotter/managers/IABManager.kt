@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.util.Log
+import com.crashlytics.android.Crashlytics
 import com.crashlytics.android.answers.Answers
 import com.crashlytics.android.answers.PurchaseEvent
 import com.melonheadstudios.kanjispotter.MainApplication
@@ -57,26 +58,30 @@ class IABManager : IabBroadcastReceiver.IabBroadcastListener {
     }
 
     fun unregister(context: Context) {
-        // very important:
-        if (mBroadcastReceiver != null && isRegistered) {
-            try {
-                context.unregisterReceiver(mBroadcastReceiver)
-            } catch (e: IllegalArgumentException) {
-                // do nothing, this is dumb
+        try {
+            // very important:
+            if (mBroadcastReceiver != null && isRegistered) {
+                try {
+                    context.unregisterReceiver(mBroadcastReceiver)
+                } catch (e: IllegalArgumentException) {
+                    // do nothing, this is dumb
+                }
+                isRegistered = false
+                mBroadcastReceiver = null
             }
-            isRegistered = false
-            mBroadcastReceiver = null
-        }
 
-        // very important:
-        Log.d(TAG, "Destroying helper.")
-        if (mHelper != null) {
-            try {
-                mHelper?.disposeWhenFinished()
-                mHelper = null
-            } catch (e: Exception) {
-                Log.d(TAG, "Exception while disposing.")
+            // very important:
+            Log.d(TAG, "Destroying helper.")
+            if (mHelper != null) {
+                try {
+                    mHelper?.disposeWhenFinished()
+                    mHelper = null
+                } catch (e: Exception) {
+                    Log.d(TAG, "Exception while disposing.")
+                }
             }
+        } catch (e: Exception) {
+            Crashlytics.logException(e)
         }
     }
 
@@ -254,6 +259,9 @@ class IABManager : IabBroadcastReceiver.IabBroadcastListener {
             mHelper?.launchPurchaseFlow(activity, REMOVE_ADS, RC_REQUEST, mPurchaseFinishedListener, payload)
         } catch (e: IabHelper.IabAsyncInProgressException) {
             alert("Error launching purchase flow. Another async operation in progress.")
+        } catch (e: Exception) {
+            alert(e.localizedMessage)
+            Crashlytics.logException(e)
         }
     }
 
