@@ -27,8 +27,9 @@ import javax.inject.Singleton
  */
 @Singleton
 class IABManager : IabBroadcastReceiver.IabBroadcastListener {
+    var isPremium = false
+        private set
     private val TAG = "IABManager"
-    private var mIsPremium = false
     private val REMOVE_ADS = "remove_ads"
     private val RC_REQUEST = 10001
     private var mHelper: IabHelper? = null
@@ -208,10 +209,8 @@ class IABManager : IabBroadcastReceiver.IabBroadcastListener {
          */
 
         // Do we have the premium upgrade?
-        mIsPremium = hasPurchasedPro(inventory)
-        Log.d(TAG, "User is " + if (mIsPremium) "PREMIUM" else "NOT PREMIUM")
-        bus.post(IABUpdateUIEvent(mIsPremium))
-        Log.d(TAG, "Initial inventory query finished; enabling main UI.")
+        isPremium = hasPurchasedPro(inventory)
+        Log.d(TAG, "User is " + if (isPremium) "PREMIUM" else "NOT PREMIUM")
     }
 
     private var mPurchaseFinishedListener: IabHelper.OnIabPurchaseFinishedListener = IabHelper.OnIabPurchaseFinishedListener { result, purchase ->
@@ -235,14 +234,14 @@ class IABManager : IabBroadcastReceiver.IabBroadcastListener {
             REMOVE_ADS -> {
                 Log.d(TAG, "Purchase is premium upgrade. Congratulating user.")
                 alert("Thank you for upgrading to premium!")
-                mIsPremium = true
+                isPremium = true
                 Answers.getInstance().logPurchase(PurchaseEvent()
                         .putItemPrice(BigDecimal.valueOf(3.00))
                         .putCurrency(Currency.getInstance("CAD"))
                         .putItemName("Premium Status")
                         .putItemId(REMOVE_ADS)
                         .putSuccess(true))
-                bus.post(IABUpdateUIEvent(isPremium = mIsPremium))
+                bus.post(IABUpdateUIEvent())
             }
         }
     }

@@ -8,12 +8,9 @@ import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import com.melonheadstudios.kanjispotter.MainApplication
 import com.melonheadstudios.kanjispotter.R
-import com.melonheadstudios.kanjispotter.injection.AndroidModule
-import com.melonheadstudios.kanjispotter.injection.DaggerApplicationComponent
 import com.melonheadstudios.kanjispotter.managers.PrefManager
 import com.melonheadstudios.kanjispotter.models.InfoPanelPreferenceChanged
 import com.melonheadstudios.kanjispotter.utils.MainThreadBus
-import com.squareup.otto.Bus
 import com.squareup.otto.Subscribe
 import java.util.*
 import javax.inject.Inject

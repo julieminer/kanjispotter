@@ -116,13 +116,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateUI(isPremium: Boolean? = null) {
-        if (isPremium == null && BuildConfig.DEBUG) {
-            donate_button.visibility = GONE
-        }
-        if (isPremium != null) {
-            donate_button.visibility = if (isPremium) GONE else VISIBLE
-        }
+    private fun updateUI() {
+        val isPremium = iabManager.isPremium
+
+        donate_button.visibility = if (isPremium) GONE else VISIBLE
         val overlayEnabled = prefManager.overlayEnabled()
         spotter_overlay_switch.isChecked = overlayEnabled
         theme_dark_switch.isChecked = prefManager.darkThemeEnabled()
@@ -182,6 +179,6 @@ class MainActivity : AppCompatActivity() {
 
     @Subscribe
     fun onIABUpdateEvent(e: IABUpdateUIEvent) {
-        updateUI(e.isPremium || BuildConfig.DEBUG)
+        updateUI()
     }
 }
