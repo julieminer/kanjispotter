@@ -9,14 +9,14 @@ android {
         pickFirst 'META-INF/CONTRIBUTORS.md'
         pickFirst 'META-INF/LICENSE.md'
     }
-    signingConfigs {
-        config {
-            keyAlias 'kanjiupload'
-            keyPassword 'FM0$5YhPsN@If#5o'
-            storeFile file('/Users/jake/Desktop/ks/kanjiupload')
-            storePassword 'FM0$5YhPsN@If#5o'
-        }
-    }
+//    signingConfigs {
+//        config {
+//            keyAlias 'kanjiupload'
+//            keyPassword 'FM0$5YhPsN@If#5o'
+//            storeFile file('/Users/jake/Desktop/ks/kanjiupload')
+//            storePassword 'FM0$5YhPsN@If#5o'
+//        }
+//    }
     compileSdkVersion 27
     buildToolsVersion '27.0.3'
     dexOptions {
