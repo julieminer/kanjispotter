@@ -13,14 +13,12 @@ import android.view.View.VISIBLE
 import co.metalab.asyncawait.async
 import com.melonheadstudios.kanjispotter.MainApplication
 import com.melonheadstudios.kanjispotter.R
-import com.melonheadstudios.kanjispotter.injection.AndroidModule
-import com.melonheadstudios.kanjispotter.injection.DaggerApplicationComponent
 import com.melonheadstudios.kanjispotter.managers.PrefManager
 import com.melonheadstudios.kanjispotter.viewmodels.BlacklistSelectionModel
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import kotlinx.android.synthetic.main.actvity_blacklist.*
-import java.util.ArrayList
+import java.util.*
 import javax.inject.Inject
 
 /**
@@ -47,9 +45,9 @@ class BlacklistActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.actvity_blacklist)
 
-        items = ArrayList<BlacklistSelectionModel>()
-        fastAdapter = FastAdapter<BlacklistSelectionModel>()
-        itemAdapter = ItemAdapter<BlacklistSelectionModel>()
+        items = ArrayList()
+        fastAdapter = FastAdapter()
+        itemAdapter = ItemAdapter()
 
         blacklist_progress.visibility = VISIBLE
 
