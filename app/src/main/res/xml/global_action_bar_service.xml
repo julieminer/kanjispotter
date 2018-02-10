@@ -15,7 +15,10 @@
  limitations under the License.
 -->
 
-<accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
-    android:accessibilityFeedbackType="feedbackGeneric"
+<accessibility-service
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:accessibilityEventTypes="typeViewClicked|typeViewFocused"
+    android:accessibilityFeedbackType="feedbackVisual"
     android:accessibilityFlags="flagDefault"
+    android:notificationTimeout="100"
     android:canRetrieveWindowContent="true" />

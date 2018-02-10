@@ -13,6 +13,7 @@ import android.widget.ProgressBar
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.TextView
+import androidx.view.doOnLayout
 import com.atilika.kuromoji.ipadic.Tokenizer
 import com.google.gson.Gson
 import com.melonheadstudios.kanjispotter.R
@@ -142,7 +143,7 @@ class InfoPanelViewHolder(val context: Context,
         val tokens = tokenizer.tokenize(rawString)
         tokens.mapTo(selectionList) { TextSelection(it.surface) }
         selectionViewContainer.visibility = if (selectionList.count() <= 1) GONE else VISIBLE
-        selectionView.viewTreeObserver.addOnGlobalLayoutListener {
+        selectionView.doOnLayout {
             val hasManySelections = selectionList.count() > 0
             val needsScroll = selectionView.measuredWidth >= selectionScroller.measuredWidth
             val hasItems = selectionList.count() > 1
