@@ -1,8 +1,8 @@
 package com.melonheadstudios.kanjispotter.services
 
 import android.accessibilityservice.AccessibilityService
-import android.accessibilityservice.AccessibilityServiceInfo
 import android.content.Intent
+import android.content.ServiceConnection
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import com.crashlytics.android.Crashlytics
@@ -35,18 +35,6 @@ class JapaneseTextGrabberService : AccessibilityService() {
         bus.register(this)
 
         Log.d(tag, "Service connected")
-
-        val info = AccessibilityServiceInfo()
-        info.flags = AccessibilityServiceInfo.DEFAULT
-        info.eventTypes = AccessibilityEvent.TYPES_ALL_MASK
-        info.feedbackType = AccessibilityServiceInfo.FEEDBACK_GENERIC
-        serviceInfo = info
-
-        val service = Intent(applicationContext, InfoPanelDisplayService::class.java)
-        if (isServiceRunning(InfoPanelDisplayService::class.java)) {
-            stopService(service)
-        }
-        startService(service)
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {

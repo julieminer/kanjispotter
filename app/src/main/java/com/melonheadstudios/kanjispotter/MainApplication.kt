@@ -22,7 +22,4 @@ class MainApplication: Application() {
         graph.inject(this)
     }
 
-    override fun onTerminate() {
-        super.onTerminate()
-    }
 }

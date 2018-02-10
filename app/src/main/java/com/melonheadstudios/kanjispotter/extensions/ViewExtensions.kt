@@ -3,7 +3,12 @@ package com.melonheadstudios.kanjispotter.extensions
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.method.LinkMovementMethod
+import android.text.style.ClickableSpan
 import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import com.crashlytics.android.answers.Answers
 import com.crashlytics.android.answers.CustomEvent
@@ -23,4 +28,12 @@ fun View.saveToClipboard(text: String) {
         Answers.getInstance().logCustom(CustomEvent(Constants.EVENT_CLIPBOARD))
         true
     }
+}
+
+fun TextView.addLink(link: String, clickableSpan: ClickableSpan) {
+    val spannableString = SpannableString(text)
+    val startIndexOfLink = text.toString().indexOf(link)
+    spannableString.setSpan(clickableSpan, startIndexOfLink, startIndexOfLink + link.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+    movementMethod = LinkMovementMethod.getInstance()
+    setText(spannableString, TextView.BufferType.SPANNABLE)
 }

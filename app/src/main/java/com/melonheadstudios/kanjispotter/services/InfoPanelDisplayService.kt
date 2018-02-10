@@ -4,6 +4,7 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.graphics.PixelFormat
+import android.os.Binder
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
@@ -44,7 +45,7 @@ class InfoPanelDisplayService: Service() {
     private var mLayout: FrameLayout? = null
     private var viewHolder: InfoPanelViewHolder? = null
     private var windowManager: WindowManager? = null
-    override fun onBind(intent: Intent?): IBinder? = null
+    override fun onBind(intent: Intent?): IBinder? = Binder()
 
     @Suppress("DEPRECATION")
     override fun onCreate() {
