@@ -11,10 +11,14 @@ android {
     }
     signingConfigs {
         config {
-            keyAlias 'kanjiupload'
-            keyPassword 'FM0$5YhPsN@If#5o'
-            storeFile file('./keystores/kanjiupload.jks')
-            storePassword 'FM0$5YhPsN@If#5o'
+//            keyAlias 'kanjiupload'
+//            keyPassword 'FM0$5YhPsN@If#5o'
+//            storeFile file('./keystores/kanjiupload.jks')
+//            storePassword 'FM0$5YhPsN@If#5o'
+            keyAlias System.getenv("BITRISEIO_ANDROID_KEYSTORE_ALIAS")
+            keyPassword System.getenv("BITRISEIO_ANDROID_KEYSTORE_PRIVATE_KEY_PASSWORD")
+            storeFile file(System.getenv("HOME") + "/keystores/kanjiupload.jks")
+            storePassword System.getenv("BITRISEIO_ANDROID_KEYSTORE_PASSWORD")
         }
     }
     compileSdkVersion 27
