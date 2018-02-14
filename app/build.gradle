@@ -13,7 +13,7 @@ android {
         config {
             keyAlias 'kanjiupload'
             keyPassword 'FM0$5YhPsN@If#5o'
-            storeFile file('/Users/jake/Desktop/ks/kanjiupload')
+            storeFile file('../kanjiupload')
             storePassword 'FM0$5YhPsN@If#5o'
         }
     }
