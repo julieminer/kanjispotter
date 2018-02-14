@@ -154,7 +154,7 @@ jobs:
           path: app/build/test-results/
           destination: /test-results/
   # Deploy release APK
-  deploy:
+  # deploy:
     # ...
 workflows:
   version: 2
