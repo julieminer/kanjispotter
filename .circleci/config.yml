@@ -107,30 +107,31 @@ jobs:
       - store_artifacts:
           path: app/build/outputs/apk/
           destination: /apk/
+  
   # Build release APK
-    build_release:
-      <<: *android_config
-      steps:
-        - checkout
-        - *restore_cache
-        - run:
-            name: Download dependencies
-            command: ./gradlew androidDependencies
-        - *save_cache
-        # - *export_android_key
-        # - *decode_android_key
-        # - *export_fabric_key
-        # - *decode_fabric_key
-        - run:
-            name: Gradle build (release)
-            command: ./gradlew -PciBuild=true :app:assembleRelease
-        - *persist_release_workspace
-        - store_artifacts:
-            path: app/build/outputs/apk/
-            destination: /apk/
-        - store_artifacts:
-            path: app/build/outputs/mapping/
-            destination: /mapping/
+  build_release:
+    <<: *android_config
+    steps:
+      - checkout
+      - *restore_cache
+      - run:
+          name: Download dependencies
+          command: ./gradlew androidDependencies
+      - *save_cache
+      # - *export_android_key
+      # - *decode_android_key
+      # - *export_fabric_key
+      # - *decode_fabric_key
+      - run:
+          name: Gradle build (release)
+          command: ./gradlew -PciBuild=true :app:assembleRelease
+      - *persist_release_workspace
+      - store_artifacts:
+          path: app/build/outputs/apk/
+          destination: /apk/
+      - store_artifacts:
+          path: app/build/outputs/mapping/
+          destination: /mapping/
   # Run unit tests
   test_unit:
     <<: *android_config
@@ -163,12 +164,6 @@ workflows:
       - build_debug
       - build_release
       - test_unit
-      - test_instrumented:
-          requires:
-            - build_debug
-      - report_coverage:
-          requires:
-            - test_unit
       - deploy:
           filters:
             branches:
