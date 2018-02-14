@@ -1,33 +1,179 @@
 version: 2
-jobs:
-  build:
-    working_directory: ~/code
+references:
+
+  cache_key: &cache_key
+    key: cache-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-{{ checksum "build.gradle" }}-{{ checksum "mobile/build.gradle" }}
+  restore_cache: &restore_cache
+    restore_cache:
+      <<: *cache_key
+  save_cache: &save_cache
+    save_cache:
+      <<: *cache_key
+      paths:
+        - ~/.gradle
+        - ~/.m2
+
+
+  workspace: &workspace
+    ~/workspace
+  attach_debug_workspace: &attach_debug_workspace
+    attach_workspace:
+      at: *workspace
+  attach_release_workspace: &attach_release_workspace
+    attach_workspace:
+      at: *workspace
+  persist_debug_workspace: &persist_debug_workspace
+    persist_to_workspace:
+      root: *workspace
+      paths:
+        - mobile/build/outputs/androidTest-results
+        - mobile/build/outputs/apk
+        - mobile/build/outputs/code-coverage
+        - mobile/build/test-results
+  persist_release_workspace: &persist_release_workspace
+    persist_to_workspace:
+      root: *workspace
+      paths:
+        - mobile/build
+  attach_firebase_workspace: &attach_firebase_workspace
+    attach_workspace:
+      at: *workspace
+  persist_firebase_workspace: &persist_firebase_workspace
+    persist_to_workspace:
+      root: *workspace
+      paths:
+        - firebase
+
+  android_config: &android_config
+    working_directory: *workspace
     docker:
       - image: circleci/android:api-27-alpha
     environment:
-      JVM_OPTS: -Xmx3200m
+      TERM: dumb
+      _JAVA_OPTIONS: "-Xmx2048m -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
+      GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx2048m"'
+
+ # Android Key Store
+
+  export_android_key: &export_android_key
+    run:
+      name: Export Android key store environment variable
+      command: echo 'export ANDROID_KEY_STORE="$ANDROID_KEY_STORE"' >> $BASH_ENV
+  decode_android_key: &decode_android_key
+    run:
+      name: Decode Android key store
+      command: echo $ANDROID_KEY_STORE | base64 -di > key-store.jks
+
+  # Google Services
+
+  export_gservices_key: &export_gservices_key
+    run:
+      name: Export Google Services key environment variable
+      command: echo 'export GOOGLE_SERVICES_KEY="$GOOGLE_SERVICES_KEY"' >> $BASH_ENV
+  decode_gservices_key: &decode_gservices_key
+    run:
+      name: Decode Google Services key
+      command: echo $GOOGLE_SERVICES_KEY | base64 -di > mobile/google-services.json
+
+   # Fabric
+
+  export_fabric_key: &export_fabric_key
+    run:
+      name: Export Fabric key
+      command: echo 'export FABRIC_KEY="$FABRIC_KEY"' >> $BASH_ENV
+  decode_fabric_key: &decode_fabric_key
+    run:
+      name: Decode Fabric key
+      command: echo $FABRIC_KEY | base64 -di > mobile/fabric.properties
+
+
+jobs:
+  # Build debug APK for unit tests and an instrumented test APK
+  build_debug:
+    <<: *android_config
     steps:
       - checkout
-      - restore_cache:
-          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
-#      - run:
-#         name: Chmod permissions #if permission for Gradlew Dependencies fail, use this. 
-#         command: sudo chmod +x ./gradlew
+      - *restore_cache
       - run:
-          name: Download Dependencies
+          name: Download dependencies
           command: ./gradlew androidDependencies
+      - *save_cache
+      - *export_gservices_key
+      - *decode_gservices_key
       - run:
-          name: Build app
-          command: ./gradlew assembleDebug
-      - save_cache:
-          paths:
-            - ~/.gradle
-          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
-      - run:
-          name: Run Tests
-          command: ./gradlew lint test
+          name: Gradle build (debug)
+          command: ./gradlew -PciBuild=true :app:assembleDebug :app:assembleAndroidTest
+      - *persist_debug_workspace
       - store_artifacts:
-          path: app/build/reports
-          destination: reports
+          path: app/build/outputs/apk/
+          destination: /apk/
+  # Build release APK
+    build_release:
+    <<: *android_config
+    steps:
+      - checkout
+      - *restore_cache
+      - run:
+          name: Download dependencies
+          command: ./gradlew androidDependencies
+      - *save_cache
+      - *export_android_key
+      - *decode_android_key
+      - *export_fabric_key
+      - *decode_fabric_key
+      - run:
+          name: Gradle build (release)
+          command: ./gradlew -PciBuild=true :mobile:assembleRelease
+      - *persist_release_workspace
+      - store_artifacts:
+          path: app/build/outputs/apk/
+          destination: /apk/
+      - store_artifacts:
+          path: app/build/outputs/mapping/
+          destination: /mapping/
+  # Run unit tests
+  test_unit:
+    <<: *android_config
+    steps:
+      - checkout
+      - *restore_cache
+      - run:
+          name: Download dependencies
+          command: ./gradlew androidDependencies
+      - *save_cache
+      - *export_gservices_key
+      - *decode_gservices_key
+      - run:
+          name: Run unit tests
+          command: ./gradlew -PciBuild=true :mobile:testDebugUnitTest
+      - *persist_debug_workspace
+      - store_artifacts:
+          path: app/build/reports/
+          destination: /reports/
       - store_test_results:
-          path: app/build/test-results
+          path: app/build/test-results/
+          destination: /test-results/
+  # Deploy release APK
+  deploy:
+    # ...
+workflows:
+  version: 2
+  workflow:
+    jobs:
+      - build_debug
+      - build_release
+      - test_unit
+      - test_instrumented:
+          requires:
+            - build_debug
+      - report_coverage:
+          requires:
+            - test_unit
+      - deploy:
+          filters:
+            branches:
+              only:
+                - master
+          requires:
+            - build_release
+            - test_unit
