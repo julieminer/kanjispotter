@@ -36,7 +36,13 @@ android {
         applicationId "com.melonheadstudios.apps.kanjispotter"
         minSdkVersion 19
         targetSdkVersion 27
-        versionCode 6
+        def nevercodeBuild = System.getenv()["NEVERCODE_BUILD"]
+        if (nevercodeBuild) {
+            def buildNumber = System.getenv()["NEVERCODE_BUILD_NUMBER"]
+            versionCode = 57 + Integer.valueOf(buildNumber)
+        } else {
+            versionCode 6
+        }
         versionName "1.3"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
