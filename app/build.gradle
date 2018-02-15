@@ -11,10 +11,17 @@ android {
     }
     signingConfigs {
         config {
-            keyAlias 'kanjiupload'
-            keyPassword 'FM0$5YhPsN@If#5o'
-            storeFile file('../kanjiupload')
-            storePassword 'FM0$5YhPsN@If#5o'
+            if (System.getenv()["CI"]) {
+                keyAlias 'kanjiupload'
+                keyPassword 'FM0$5YhPsN@If#5o'
+                storeFile file(System.getenv()["SIGNING_KEY_FILE"])
+                storePassword 'FM0$5YhPsN@If#5o'
+            } else {
+                keyAlias 'kanjiupload'
+                keyPassword 'FM0$5YhPsN@If#5o'
+                storeFile file('../kanjiupload')
+                storePassword 'FM0$5YhPsN@If#5o'
+            }
         }
     }
     compileSdkVersion 27
