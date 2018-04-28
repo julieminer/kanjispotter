@@ -37,6 +37,7 @@
         <service
             android:name=".services.InfoPanelDisplayService"
             android:label="@string/app_name_info" />
+        <service android:name=".services.HoverPanelService" />
 
         <activity android:name=".activities.MainActivity"
             android:theme="@style/AppTheme">
