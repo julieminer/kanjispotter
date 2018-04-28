@@ -77,7 +77,18 @@ dependencies {
     implementation 'co.metalab.asyncawait:asyncawait:1.0.0'
     implementation 'com.github.atilika.kuromoji:kuromoji-ipadic:0.9.0'
     implementation 'androidx.core:core-ktx:0.3'
-    implementation 'io.mattcarroll.hover:hover:0.9.8'
+    implementation('io.mattcarroll.hover:hover:0.9.8') {
+        exclude group: 'com.android.support', module: 'cardview-v7'
+        exclude group: 'com.android.support', module: 'recyclerview-v7'
+        exclude group: 'com.android.support', module: 'appcompat-v7'
+        exclude group: 'com.android.support', module: 'support-annotations'
+        exclude group: 'com.android.support', module: 'support-v4'
+        exclude group: 'com.android.support', module: 'support-compat'
+        exclude group: 'com.android.support', module: 'support-core-ui'
+        exclude group: 'com.android.support', module: 'support-core-utils'
+        exclude group: 'com.android.support', module: 'support-fragment'
+        exclude group: 'com.android.support', module: 'support-media-compat'
+    }
 
 }
 
