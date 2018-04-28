@@ -13,7 +13,7 @@ import android.widget.ProgressBar
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.TextView
-import androidx.view.doOnLayout
+import androidx.core.view.doOnLayout
 import com.atilika.kuromoji.ipadic.Tokenizer
 import com.google.gson.Gson
 import com.melonheadstudios.kanjispotter.R
@@ -85,12 +85,10 @@ class InfoPanelViewHolder(val context: Context,
         selectionView.delegate = this
 
         list.layoutManager = LinearLayoutManager(context)
-        list.layoutManager.isAutoMeasureEnabled = true
         list.itemAnimator = DefaultItemAnimator()
         list.adapter = itemAdapter.wrap(fastAdapter)
 
         headerList.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-        headerList.layoutManager.isAutoMeasureEnabled = true
         headerList.itemAnimator = DefaultItemAnimator()
         headerList.adapter = headerItemAdapter.wrap(headerFastAdapter)
 

@@ -64,7 +64,6 @@ class BlacklistActivity: AppCompatActivity() {
         }
 
         blacklist_list.layoutManager = LinearLayoutManager(this)
-        blacklist_list.layoutManager.isAutoMeasureEnabled = true
         blacklist_list.itemAnimator = DefaultItemAnimator()
         blacklist_list.adapter = itemAdapter.wrap(fastAdapter)
 
