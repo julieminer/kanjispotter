@@ -2,7 +2,6 @@ package com.melonheadstudios.kanjispotter.services
 
 import android.accessibilityservice.AccessibilityService
 import android.content.Intent
-import android.content.ServiceConnection
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import com.crashlytics.android.Crashlytics
@@ -14,7 +13,6 @@ import com.melonheadstudios.kanjispotter.models.InfoPanelAddOptionEvent
 import com.melonheadstudios.kanjispotter.utils.MainThreadBus
 import com.squareup.otto.Subscribe
 import javax.inject.Inject
-
 
 class JapaneseTextGrabberService : AccessibilityService() {
     private val tag = "JapaneseTextGrabber"
@@ -44,9 +42,9 @@ class JapaneseTextGrabberService : AccessibilityService() {
             if (blackListEnabled) {
                 if (prefManager.blacklisted(event.packageName)) return
             }
-            if (!isServiceRunning(InfoPanelDisplayService::class.java)) {
-                val service = Intent(applicationContext, InfoPanelDisplayService::class.java)
-                startService(service)
+            if (!isServiceRunning(HoverPanelService::class.java)) {
+                val startHoverIntent = Intent(applicationContext, HoverPanelService::class.java)
+                startService(startHoverIntent)
             }
             textManager.parseEvent(event)
         } catch (e: Exception) {
