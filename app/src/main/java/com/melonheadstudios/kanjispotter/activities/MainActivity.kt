@@ -20,7 +20,6 @@ import com.melonheadstudios.kanjispotter.managers.PrefManager
 import com.melonheadstudios.kanjispotter.models.IABUpdateUIEvent
 import com.melonheadstudios.kanjispotter.models.InfoPanelPreferenceChanged
 import com.melonheadstudios.kanjispotter.services.HoverPanelService
-import com.melonheadstudios.kanjispotter.services.InfoPanelDisplayService
 import com.melonheadstudios.kanjispotter.services.JapaneseTextGrabberService
 import com.melonheadstudios.kanjispotter.utils.MainThreadBus
 import com.squareup.otto.Subscribe

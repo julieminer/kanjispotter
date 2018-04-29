@@ -6,7 +6,6 @@ import com.melonheadstudios.kanjispotter.activities.MainActivity
 import com.melonheadstudios.kanjispotter.managers.IABManager
 import com.melonheadstudios.kanjispotter.managers.TextManager
 import com.melonheadstudios.kanjispotter.services.HoverPanelService
-import com.melonheadstudios.kanjispotter.services.InfoPanelDisplayService
 import com.melonheadstudios.kanjispotter.services.JapaneseTextGrabberService
 import com.melonheadstudios.kanjispotter.services.QuickTileService
 import com.melonheadstudios.kanjispotter.views.HoverMenuScreen
@@ -24,7 +23,6 @@ interface ApplicationComponent {
     fun inject(activity: BlacklistActivity)
     fun inject(application: MainApplication)
     fun inject(textGrabberService: JapaneseTextGrabberService)
-    fun inject(infoPanelDisplayService: InfoPanelDisplayService)
     fun inject(hoverPanelService: HoverPanelService)
     fun inject(tileService: QuickTileService)
     fun inject(textManager: TextManager)

@@ -1,31 +1,21 @@
 package com.melonheadstudios.kanjispotter.viewmodels
 
 import android.content.Context
-import android.support.v7.widget.CardView
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.View
 import android.view.View.*
-import android.widget.ImageButton
 import android.widget.ProgressBar
-import android.widget.SeekBar
-import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.TextView
-import androidx.core.view.doOnLayout
 import com.atilika.kuromoji.ipadic.Token
-import com.atilika.kuromoji.ipadic.Tokenizer
 import com.google.gson.Gson
 import com.melonheadstudios.kanjispotter.R
 import com.melonheadstudios.kanjispotter.extensions.from
 import com.melonheadstudios.kanjispotter.managers.IABManager
 import com.melonheadstudios.kanjispotter.models.*
-import com.melonheadstudios.kanjispotter.utils.Constants.Companion.PREFERENCES_KEY
-import com.melonheadstudios.kanjispotter.utils.Constants.Companion.SERVICE_STATUS_FLAG
 import com.melonheadstudios.kanjispotter.utils.MainThreadBus
-import com.melonheadstudios.kanjispotter.views.NoTouchHorizontalScrollView
-import com.melonheadstudios.kanjispotter.views.SelectionView
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import kotlinx.coroutines.experimental.android.UI
@@ -40,22 +30,10 @@ import kotlinx.coroutines.experimental.async
 class InfoPanelViewHolder(val context: Context,
                           parent: View,
                           private var iabManager: IABManager,
-                          private val bus: MainThreadBus,
-                          private val tokenizer: Tokenizer) : SelectionView.SelectionViewDelegate {
-    override fun selectedSegment(segment: String) {
-        Log.d(tag, segment)
-        bus.post(InfoPanelAddOptionEvent(segment))
-        bus.post(InfoPanelSelectionsEvent(listOf(segment)))
-    }
-
+                          private val bus: MainThreadBus) {
     private val tag = "InfoPanelViewHolder"
 
-    private val selectionScroller: SeekBar = parent.findViewById(R.id.selection_scroll)
-    val selectionView: SelectionView = parent.findViewById(R.id.selection_view_text)
-    val selectionViewContainer: NoTouchHorizontalScrollView = parent.findViewById(R.id.selection_view)
-    private val container: CardView? = parent.findViewById(R.id.info_panel)
     private val list: RecyclerView = parent.findViewById(R.id.info)
-    private val button: ImageButton = parent.findViewById(R.id.info_button)
     private val headerList: RecyclerView = parent.findViewById(R.id.info_word)
     private val progressBar: ProgressBar = parent.findViewById(R.id.progress_bar)
     private val errorText: TextView = parent.findViewById(R.id.error_text)
@@ -69,21 +47,6 @@ class InfoPanelViewHolder(val context: Context,
     private var headerItems = ArrayList<KanjiSelectionListModel>()
 
     init {
-        button.setOnClickListener {
-            makeInvisibile()
-        }
-
-        selectionScroller.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
-            override fun onStopTrackingTouch(seekBar: SeekBar) {}
-            override fun onStartTrackingTouch(seekBar: SeekBar) {}
-            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-                val width = (selectionView.measuredWidth.toDouble() * progress.toDouble()) / 100.0
-                selectionViewContainer.scrollTo(width.toInt(), 0)
-            }
-        })
-
-        selectionView.delegate = this
-
         list.layoutManager = LinearLayoutManager(context)
         list.itemAnimator = DefaultItemAnimator()
         list.adapter = itemAdapter.wrap(fastAdapter)
@@ -136,23 +99,8 @@ class InfoPanelViewHolder(val context: Context,
         })
     }
 
-    fun handleMultiSelectionEvent(rawString: String) {
-        val selectionList = ArrayList<TextSelection>()
-        val tokens = tokenizer.tokenize(rawString)
-        tokens.mapTo(selectionList) { TextSelection(it.surface) }
-        selectionViewContainer.visibility = if (selectionList.count() <= 1) GONE else VISIBLE
-        selectionView.doOnLayout {
-            val hasManySelections = selectionList.count() > 0
-            val needsScroll = selectionView.measuredWidth >= selectionScroller.measuredWidth
-            val hasItems = selectionList.count() > 1
-            selectionScroller.visibility = if (hasItems && hasManySelections && needsScroll) VISIBLE else GONE
-        }
-        selectionView.selectionsList = selectionList
-    }
-
     fun clearPanel() {
         showProgress()
-        makeVisible()
         items.clear()
         itemAdapter.set(items)
         headerItems.clear()
@@ -174,39 +122,6 @@ class InfoPanelViewHolder(val context: Context,
         progressBar.visibility = GONE
         headerList.visibility = VISIBLE
         list.visibility = VISIBLE
-    }
-
-    private fun makeVisible() {
-        val prefs = context.getSharedPreferences(PREFERENCES_KEY, Context.MODE_PRIVATE)
-        val isActive = prefs.getBoolean(SERVICE_STATUS_FLAG, true)
-        container?.visibility = if (isActive) VISIBLE else GONE
-        animateVisibility(from = 0f, to = 1f)
-    }
-
-    fun makeInvisibile(fromTile: Boolean = false) {
-        clearPanel()
-        if (!fromTile) {
-            animateVisibility(from = 1f, to = 0f)
-        } else {
-            container?.visibility = GONE
-        }
-
-    }
-
-    private fun animateVisibility(from: Float, to: Float) {
-        container ?: return
-        if (container.alpha == to) return
-
-        container.alpha = from
-        container.scaleX = from
-        container.scaleY = from
-        container.animate()
-                .alpha(to)
-                .scaleX(to)
-                .scaleY(to)
-                .setDuration(300)
-                .withEndAction { container.visibility = if (to == 0f) GONE else container.visibility }
-                .start()
     }
 
     private fun parseJsonString(string: String, selectedWord: String) {

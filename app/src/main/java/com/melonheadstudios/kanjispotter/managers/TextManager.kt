@@ -96,19 +96,11 @@ class TextManager(private val applicationContext: Context) {
         }
     }
 
-    fun addSelectionOption(option: String) {
-        Answers.getInstance().logCustom(CustomEvent(EVENT_ADDED_OPTION))
-        option.getReadings { reading ->
-            Answers.getInstance().logCustom(CustomEvent(EVENT_API))
-            bus.post(InfoPanelEvent(chosenWord = option, json = reading))
-        }
-    }
-
     fun handleEventText(text: String) = async(UI) {
         bus.post(InfoPanelClearEvent())
 
         val tokens = tokenizer.tokenize(text) ?: return@async
-        bus.post(InfoPanelMultiSelectEvent(text.replace(regex = Regex("\\s+"), replacement = "").trim()))
+//        bus.post(InfoPanelMultiSelectEvent(text.replace(regex = Regex("\\s+"), replacement = "").trim()))
         bus.post(InfoPanelSelectionsEvent(tokens.map { it.baseForm }))
 
         if (tokens.isNotEmpty() && !applicationContext.isServiceRunning(HoverPanelService::class.java)) {
@@ -150,10 +142,9 @@ class TextManager(private val applicationContext: Context) {
     }
 
     @Deprecated(message = "Use handleEventText")
-    fun handleEventTextOld(text: String) {
+    private fun handleEventTextOld(text: String) {
         bus.post(InfoPanelClearEvent())
         val components = text.split(" ")
-        bus.post(InfoPanelMultiSelectEvent(text.replace(regex = Regex("\\s+"), replacement = "").trim()))
         bus.post(InfoPanelSelectionsEvent(components))
         Answers.getInstance().logCustom(CustomEvent(EVENT_USED)
                 .putCustomAttribute(ATTRIBUTE_WORDS, components.size)

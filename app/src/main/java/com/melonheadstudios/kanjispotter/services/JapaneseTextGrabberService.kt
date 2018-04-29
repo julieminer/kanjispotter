@@ -1,17 +1,12 @@
 package com.melonheadstudios.kanjispotter.services
 
 import android.accessibilityservice.AccessibilityService
-import android.content.Intent
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import com.crashlytics.android.Crashlytics
 import com.melonheadstudios.kanjispotter.MainApplication
-import com.melonheadstudios.kanjispotter.extensions.isServiceRunning
 import com.melonheadstudios.kanjispotter.managers.PrefManager
 import com.melonheadstudios.kanjispotter.managers.TextManager
-import com.melonheadstudios.kanjispotter.models.InfoPanelAddOptionEvent
-import com.melonheadstudios.kanjispotter.utils.MainThreadBus
-import com.squareup.otto.Subscribe
 import javax.inject.Inject
 
 class JapaneseTextGrabberService : AccessibilityService() {
@@ -23,15 +18,10 @@ class JapaneseTextGrabberService : AccessibilityService() {
     @Inject
     lateinit var textManager: TextManager
 
-    @Inject
-    lateinit var bus: MainThreadBus
-
     override fun onServiceConnected() {
         super.onServiceConnected()
 
         MainApplication.graph.inject(this)
-        bus.register(this)
-
         Log.d(tag, "Service connected")
     }
 
@@ -49,15 +39,5 @@ class JapaneseTextGrabberService : AccessibilityService() {
     }
 
     override fun onInterrupt() {
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        bus.unregister(this)
-    }
-
-    @Subscribe
-    fun onAddOptionEvent(it: InfoPanelAddOptionEvent) {
-        textManager.addSelectionOption(it.option)
     }
 }

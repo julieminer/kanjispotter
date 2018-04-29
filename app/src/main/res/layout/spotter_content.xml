@@ -10,47 +10,6 @@
     android:background="?attr/themeBackgroundColor"
     android:orientation="vertical">
 
-    <SeekBar
-        android:id="@+id/selection_scroll"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:padding="4dp"
-        android:visibility="gone"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="8dp"
-        tools:layout_editor_absoluteY="196dp"
-        tools:visibility="visible" />
-
-    <com.melonheadstudios.kanjispotter.views.NoTouchHorizontalScrollView
-        android:id="@+id/selection_view"
-        android:layout_width="0dp"
-        android:layout_height="50dp"
-        android:orientation="horizontal"
-        android:visibility="gone"
-        android:scrollbars="none"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/selection_scroll"
-        tools:visibility="visible">
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
-
-            <com.melonheadstudios.kanjispotter.views.SelectionView
-                android:id="@+id/selection_view_text"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_margin="8dp"
-                android:minHeight="32dp" />
-
-        </LinearLayout>
-    </com.melonheadstudios.kanjispotter.views.NoTouchHorizontalScrollView>
-
     <TextView
         android:id="@+id/error_text"
         android:layout_width="wrap_content"
@@ -76,29 +35,16 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:visibility="gone" />
 
-    <ImageButton
-        android:id="@+id/info_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        android:minHeight="0dp"
-        android:minWidth="0dp"
-        android:padding="4dp"
-        android:src="?attr/themeCloseDrawable"
-        app:layout_constraintTop_toBottomOf="@id/selection_view"
-        app:layout_constraintRight_toRightOf="parent" />
-
     <android.support.v7.widget.RecyclerView
         android:id="@+id/info_word"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="40dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/info_button"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/info_button"
-        app:layout_constraintTop_toTopOf="@+id/info_button"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         tools:listitem="@layout/list_selection_item" />
 
     <android.support.v7.widget.RecyclerView
@@ -109,6 +55,6 @@
         android:layout_marginStart="8dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/info_button"
+        app:layout_constraintTop_toBottomOf="@+id/info_word"
         tools:listitem="@layout/list_item" />
 </android.support.constraint.ConstraintLayout>

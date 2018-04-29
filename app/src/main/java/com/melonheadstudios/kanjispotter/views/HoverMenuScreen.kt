@@ -24,8 +24,6 @@ import javax.inject.Inject
  */
 
 class HoverMenuScreen(val context: Context) : Content {
-
-
     val tag = HoverMenuScreen::class.java.simpleName
 
     @Inject
@@ -62,7 +60,7 @@ class HoverMenuScreen(val context: Context) : Content {
 
     private fun createScreenView(): View {
         val view = View.inflate(mContext, R.layout.spotter_content, null)
-        viewHolder = InfoPanelViewHolder(mContext, view, iabManager, bus, tokenizer)
+        viewHolder = InfoPanelViewHolder(mContext, view, iabManager, bus)
         return view
     }
 
@@ -101,22 +99,9 @@ class HoverMenuScreen(val context: Context) : Content {
     }
 
     @Subscribe
-    fun onMultiSelectEvent(it: InfoPanelMultiSelectEvent) {
-        Log.d(tag, "handle multiselect event ${it.rawString}")
-        viewHolder?.handleMultiSelectionEvent(it.rawString)
-    }
-
-    @Subscribe
     fun onSelectedWordEvent(it: InfoPanelSelectedWordEvent) {
         Log.d(tag, "selected position ${it.position}")
         viewHolder?.selectedPosition(it.position)
-    }
-
-    @Subscribe
-    fun onPrefChangedEvent(it: InfoPanelPreferenceChanged) {
-        if (!it.enabled) {
-            viewHolder?.makeInvisibile(fromTile = true)
-        }
     }
 
     @Subscribe
