@@ -53,7 +53,7 @@ class InfoPanelViewHolder(val context: Context,
     private val selectionScroller: SeekBar = parent.findViewById(R.id.selection_scroll)
     val selectionView: SelectionView = parent.findViewById(R.id.selection_view_text)
     val selectionViewContainer: NoTouchHorizontalScrollView = parent.findViewById(R.id.selection_view)
-    private val container: CardView = parent.findViewById(R.id.info_panel)
+    private val container: CardView? = parent.findViewById(R.id.info_panel)
     private val list: RecyclerView = parent.findViewById(R.id.info)
     private val button: ImageButton = parent.findViewById(R.id.info_button)
     private val headerList: RecyclerView = parent.findViewById(R.id.info_word)
@@ -177,9 +177,9 @@ class InfoPanelViewHolder(val context: Context,
     }
 
     private fun makeVisible() {
-        val prefs = container.context.getSharedPreferences(PREFERENCES_KEY, Context.MODE_PRIVATE)
+        val prefs = context.getSharedPreferences(PREFERENCES_KEY, Context.MODE_PRIVATE)
         val isActive = prefs.getBoolean(SERVICE_STATUS_FLAG, true)
-        container.visibility = if (isActive) VISIBLE else GONE
+        container?.visibility = if (isActive) VISIBLE else GONE
         animateVisibility(from = 0f, to = 1f)
     }
 
@@ -188,12 +188,13 @@ class InfoPanelViewHolder(val context: Context,
         if (!fromTile) {
             animateVisibility(from = 1f, to = 0f)
         } else {
-            container.visibility = GONE
+            container?.visibility = GONE
         }
 
     }
 
     private fun animateVisibility(from: Float, to: Float) {
+        container ?: return
         if (container.alpha == to) return
 
         container.alpha = from
