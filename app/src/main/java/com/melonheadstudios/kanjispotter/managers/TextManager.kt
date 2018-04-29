@@ -92,16 +92,10 @@ class TextManager(private val applicationContext: Context) {
         }
     }
 
-    fun parseEvent(event: AccessibilityEvent?) {
-        event ?: return
-        if (!getEventType(event)) return
-        val text = getEventText(event)
-        if (text.isEmpty()) return
-        val rawText = getEventText(event = event, showHiragana = true)
-
+    fun handleEventText(text: String) {
         bus.post(InfoPanelClearEvent())
         val components = text.split(" ")
-        bus.post(InfoPanelMultiSelectEvent(rawText.replace(regex = Regex("\\s+"), replacement = "").trim()))
+        bus.post(InfoPanelMultiSelectEvent(text.replace(regex = Regex("\\s+"), replacement = "").trim()))
         bus.post(InfoPanelSelectionsEvent(components))
         Answers.getInstance().logCustom(CustomEvent(EVENT_USED)
                 .putCustomAttribute(ATTRIBUTE_WORDS, components.size)
@@ -123,5 +117,14 @@ class TextManager(private val applicationContext: Context) {
                 bus.post(InfoPanelEvent(chosenWord = it, json = readings))
             }
         }
+    }
+
+    fun parseEvent(event: AccessibilityEvent?) {
+        event ?: return
+        if (!getEventType(event)) return
+        val text = getEventText(event)
+        if (text.isEmpty()) return
+        val rawText = getEventText(event = event, showHiragana = true)
+        handleEventText(rawText)
     }
 }
