@@ -42,10 +42,6 @@ class JapaneseTextGrabberService : AccessibilityService() {
             if (blackListEnabled) {
                 if (prefManager.blacklisted(event.packageName)) return
             }
-            if (!isServiceRunning(HoverPanelService::class.java)) {
-                val startHoverIntent = Intent(applicationContext, HoverPanelService::class.java)
-                startService(startHoverIntent)
-            }
             textManager.parseEvent(event)
         } catch (e: Exception) {
             Crashlytics.logException(e)

@@ -1,5 +1,7 @@
 package com.melonheadstudios.kanjispotter.managers
 
+import android.content.Context
+import android.content.Intent
 import android.view.accessibility.AccessibilityEvent
 import com.atilika.kuromoji.ipadic.Tokenizer
 import com.melonheadstudios.kanjispotter.extensions.getReadings
@@ -9,7 +11,10 @@ import javax.inject.Singleton
 import com.crashlytics.android.answers.Answers
 import com.crashlytics.android.answers.CustomEvent
 import com.melonheadstudios.kanjispotter.MainApplication
+import com.melonheadstudios.kanjispotter.extensions.isServiceRunning
+import com.melonheadstudios.kanjispotter.injection.ForApplication
 import com.melonheadstudios.kanjispotter.models.*
+import com.melonheadstudios.kanjispotter.services.HoverPanelService
 import com.melonheadstudios.kanjispotter.utils.Constants.Companion.ATTRIBUTE_CHARACTERS
 import com.melonheadstudios.kanjispotter.utils.Constants.Companion.ATTRIBUTE_WORDS
 import com.melonheadstudios.kanjispotter.utils.Constants.Companion.EVENT_ADDED_OPTION
@@ -24,7 +29,7 @@ import javax.inject.Inject
  * Created by jake on 2017-04-15, 10:57 AM
  */
 @Singleton
-class TextManager() {
+class TextManager(private val applicationContext: Context) {
     @Inject
     lateinit var bus: MainThreadBus
 
@@ -103,6 +108,12 @@ class TextManager() {
                 .putCustomAttribute(ATTRIBUTE_CHARACTERS, text.length))
         components.forEach {
             it.getReadings { readings ->
+                if (!applicationContext.isServiceRunning(HoverPanelService::class.java)) {
+                    val startHoverIntent = Intent(applicationContext, HoverPanelService::class.java)
+                    startHoverIntent.putExtra("reading", readings)
+                    applicationContext.startService(startHoverIntent)
+                }
+
                 if (readings.isEmpty()) {
                     bus.post(InfoPanelErrorEvent("No data to display. Are you connected to the internet?"))
                     return@getReadings
