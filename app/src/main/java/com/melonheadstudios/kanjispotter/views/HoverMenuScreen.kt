@@ -61,7 +61,7 @@ class HoverMenuScreen(val context: Context) : Content {
 
     override fun onShown() {
         if (BuildConfig.DEBUG) {
-            textManager.handleEventText("2173721837hdsfh^%^&%^&%^&%&^hello world 食べる this is neat見る犬rrrr")
+            textManager.handleEventText("[Test out the app by clicking the kanji below!\n 食べる\n 男の人\n ご主人]")
         }
     }
 
