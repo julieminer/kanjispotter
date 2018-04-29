@@ -89,7 +89,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         debug_button.setOnClickListener {
-
+            val startHoverIntent = Intent(this, HoverPanelService::class.java)
+            startService(startHoverIntent)
         }
 
         iabManager.setupIAB(context = this)
