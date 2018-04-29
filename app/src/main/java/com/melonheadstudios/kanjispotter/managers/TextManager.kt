@@ -4,14 +4,15 @@ import android.content.Context
 import android.content.Intent
 import android.view.accessibility.AccessibilityEvent
 import com.atilika.kuromoji.ipadic.Tokenizer
-import com.melonheadstudios.kanjispotter.extensions.getReadings
-import com.melonheadstudios.kanjispotter.extensions.stringify
-import com.melonheadstudios.kanjispotter.utils.JapaneseCharMatcher
-import javax.inject.Singleton
+import com.crashlytics.android.Crashlytics
 import com.crashlytics.android.answers.Answers
 import com.crashlytics.android.answers.CustomEvent
+import com.github.kittinunf.fuel.httpGet
+import com.github.kittinunf.result.Result
 import com.melonheadstudios.kanjispotter.MainApplication
+import com.melonheadstudios.kanjispotter.extensions.getReadings
 import com.melonheadstudios.kanjispotter.extensions.isServiceRunning
+import com.melonheadstudios.kanjispotter.extensions.stringify
 import com.melonheadstudios.kanjispotter.models.*
 import com.melonheadstudios.kanjispotter.services.HoverPanelService
 import com.melonheadstudios.kanjispotter.utils.Constants.Companion.ATTRIBUTE_CHARACTERS
@@ -19,8 +20,14 @@ import com.melonheadstudios.kanjispotter.utils.Constants.Companion.ATTRIBUTE_WOR
 import com.melonheadstudios.kanjispotter.utils.Constants.Companion.EVENT_ADDED_OPTION
 import com.melonheadstudios.kanjispotter.utils.Constants.Companion.EVENT_API
 import com.melonheadstudios.kanjispotter.utils.Constants.Companion.EVENT_USED
+import com.melonheadstudios.kanjispotter.utils.JapaneseCharMatcher
 import com.melonheadstudios.kanjispotter.utils.MainThreadBus
+import com.squareup.moshi.Moshi
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.async
 import javax.inject.Inject
+import javax.inject.Singleton
+import kotlin.coroutines.experimental.suspendCoroutine
 
 
 /**
@@ -34,6 +41,9 @@ class TextManager(private val applicationContext: Context) {
 
     @Inject
     lateinit var tokenizer: Tokenizer
+
+    @Inject
+    lateinit var moshi: Moshi
 
     init {
         MainApplication.graph.inject(this)
@@ -94,10 +104,10 @@ class TextManager(private val applicationContext: Context) {
         }
     }
 
-    fun handleEventText(text: String) {
+    fun handleEventText(text: String) = async(UI) {
         bus.post(InfoPanelClearEvent())
 
-        val tokens = tokenizer.tokenize(text) ?: return
+        val tokens = tokenizer.tokenize(text) ?: return@async
         bus.post(InfoPanelMultiSelectEvent(text.replace(regex = Regex("\\s+"), replacement = "").trim()))
         bus.post(InfoPanelSelectionsEvent(tokens.map { it.baseForm }))
 
@@ -108,16 +118,35 @@ class TextManager(private val applicationContext: Context) {
         }
 
         tokens.forEach {
-            bus.post(TokenizedEvent(token = it))
+            bus.post(TokenizedEvent(token = it, jishoModel = getJishoModel(it.baseForm)))
         }
-
-//        if (readings.isEmpty()) {
-//            bus.post(InfoPanelErrorEvent("No data to display. Are you connected to the internet?"))
-//            return@getReadings
-//        }
 
         Answers.getInstance().logCustom(CustomEvent(EVENT_API))
 
+    }
+
+    private suspend fun getJishoModel(text: String): JishoModel? = suspendCoroutine { continuation ->
+        val dir = "http://jisho.org/api/v1/search/words?keyword="
+        (dir + text).httpGet().responseString { _, _, result ->
+            //do something with response
+            when (result) {
+                is Result.Failure -> {
+                    continuation.resume(null)
+                }
+                is Result.Success -> {
+                    try {
+                        val data = result.get()
+                        val jsonAdapter = moshi.adapter(JishoModel::class.java)
+                        val response = jsonAdapter.fromJson(data)
+                        continuation.resume(response)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        Crashlytics.logException(e)
+                        continuation.resume(null)
+                    }
+                }
+            }
+        }
     }
 
     @Deprecated(message = "Use handleEventText")
@@ -148,7 +177,6 @@ class TextManager(private val applicationContext: Context) {
         }
     }
 
-    @Deprecated(message = "Replace with function that calls handleEventText")
     fun parseEvent(event: AccessibilityEvent?) {
         event ?: return
         if (!getEventType(event)) return

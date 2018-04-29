@@ -9,7 +9,7 @@ import com.atilika.kuromoji.ipadic.Token
 
 class InfoPanelClearEvent
 class InfoPanelEvent(val chosenWord: String, val json: String)
-class TokenizedEvent(val token: Token)
+class TokenizedEvent(val token: Token, val jishoModel: JishoModel?)
 class InfoPanelMultiSelectEvent(val rawString: String)
 class InfoPanelSelectionsEvent(val selections: List<String>)
 class InfoPanelSelectedWordEvent(val position: Int)

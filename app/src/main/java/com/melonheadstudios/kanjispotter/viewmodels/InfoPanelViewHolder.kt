@@ -20,10 +20,7 @@ import com.google.gson.Gson
 import com.melonheadstudios.kanjispotter.R
 import com.melonheadstudios.kanjispotter.extensions.from
 import com.melonheadstudios.kanjispotter.managers.IABManager
-import com.melonheadstudios.kanjispotter.models.InfoPanelAddOptionEvent
-import com.melonheadstudios.kanjispotter.models.InfoPanelErrorEvent
-import com.melonheadstudios.kanjispotter.models.InfoPanelSelectionsEvent
-import com.melonheadstudios.kanjispotter.models.JishoResponse
+import com.melonheadstudios.kanjispotter.models.*
 import com.melonheadstudios.kanjispotter.utils.Constants.Companion.PREFERENCES_KEY
 import com.melonheadstudios.kanjispotter.utils.Constants.Companion.SERVICE_STATUS_FLAG
 import com.melonheadstudios.kanjispotter.utils.MainThreadBus
@@ -31,6 +28,8 @@ import com.melonheadstudios.kanjispotter.views.NoTouchHorizontalScrollView
 import com.melonheadstudios.kanjispotter.views.SelectionView
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.async
 
 
 /**
@@ -246,8 +245,8 @@ class InfoPanelViewHolder(val context: Context,
         selectedPosition(0)
     }
 
-    private fun parseToken(token: Token) {
-        items.add(KanjiListModel(token.baseForm, token.reading, token.baseForm, token.partOfSpeechLevel1))
+    private fun parseToken(token: Token, jishoModel: JishoModel?) = async(UI) {
+        items.add(KanjiListModel(token.baseForm, token.reading, token.baseForm, jishoModel?.englishDefinition()))
 
         items = ArrayList(LinkedHashSet(items))
         items.sortBy { it.kanjiText }
@@ -262,9 +261,9 @@ class InfoPanelViewHolder(val context: Context,
         selectedPosition(0)
     }
 
-    fun handleToken(token: Token) {
+    fun handleToken(token: Token, jishoModel: JishoModel?) {
         clearError()
         hideProgress()
-        parseToken(token)
+        parseToken(token, jishoModel)
     }
 }

@@ -30,4 +30,5 @@ task clean(type: Delete) {
 
 ext {
     appcompat = '27.1.1'
+    moshiVersion = "1.5.0"
 }

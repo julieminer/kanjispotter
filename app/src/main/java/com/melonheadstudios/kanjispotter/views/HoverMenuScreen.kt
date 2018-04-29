@@ -122,6 +122,6 @@ class HoverMenuScreen(val context: Context) : Content {
     @Subscribe
     fun onTokenizedEvent(e: TokenizedEvent) {
         Log.d(tag, "handle tokenized event")
-        viewHolder?.handleToken(e.token)
+        viewHolder?.handleToken(e.token, e.jishoModel)
     }
 }
