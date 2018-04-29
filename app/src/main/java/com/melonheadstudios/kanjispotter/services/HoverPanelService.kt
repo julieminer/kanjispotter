@@ -5,13 +5,16 @@ import android.content.Intent
 import android.support.annotation.Nullable
 import android.view.View
 import android.widget.ImageView
+import com.melonheadstudios.kanjispotter.MainApplication
 import com.melonheadstudios.kanjispotter.R
+import com.melonheadstudios.kanjispotter.managers.PrefManager
 import com.melonheadstudios.kanjispotter.views.HoverMenuScreen
 import io.mattcarroll.hover.Content
 import io.mattcarroll.hover.HoverMenu
 import io.mattcarroll.hover.HoverView
 import io.mattcarroll.hover.window.HoverMenuService
 import java.util.*
+import javax.inject.Inject
 
 
 /**
@@ -19,6 +22,15 @@ import java.util.*
  * Created by jake on 2018-04-28, 3:51 PM
  */
 class HoverPanelService: HoverMenuService() {
+    @Inject
+    lateinit var prefManager: PrefManager
+
+    override fun onCreate() {
+        MainApplication.graph.inject(this)
+        updateTheme()
+        super.onCreate()
+    }
+
     override fun onHoverMenuLaunched(intent: Intent, hoverView: HoverView) {
         hoverView.setMenu(createHoverMenu())
         hoverView.collapse()
@@ -26,6 +38,14 @@ class HoverPanelService: HoverMenuService() {
 
     private fun createHoverMenu(): HoverMenu {
         return SingleSectionHoverMenu(applicationContext)
+    }
+
+    private fun updateTheme() {
+        if (prefManager.darkThemeEnabled()) {
+            setTheme(R.style.AppTheme)
+        } else {
+            setTheme(R.style.AppThemeLight)
+        }
     }
 
     private class SingleSectionHoverMenu(private val context: Context) : HoverMenu() {
@@ -47,7 +67,7 @@ class HoverPanelService: HoverMenuService() {
         }
 
         private fun createScreen(): Content {
-            return HoverMenuScreen(context, "Screen 1")
+            return HoverMenuScreen(context)
         }
 
         override fun getId(): String {
