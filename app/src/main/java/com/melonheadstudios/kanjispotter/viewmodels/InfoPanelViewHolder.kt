@@ -14,6 +14,7 @@ import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.TextView
 import androidx.core.view.doOnLayout
+import com.atilika.kuromoji.ipadic.Token
 import com.atilika.kuromoji.ipadic.Tokenizer
 import com.google.gson.Gson
 import com.melonheadstudios.kanjispotter.R
@@ -243,5 +244,27 @@ class InfoPanelViewHolder(val context: Context,
         headerFastAdapter.deselect()
         headerFastAdapter.select(0)
         selectedPosition(0)
+    }
+
+    private fun parseToken(token: Token) {
+        items.add(KanjiListModel(token.baseForm, token.reading, token.baseForm, token.partOfSpeechLevel1))
+
+        items = ArrayList(LinkedHashSet(items))
+        items.sortBy { it.kanjiText }
+        itemAdapter.set(items)
+
+        if (items.isEmpty()) {
+            bus.post(InfoPanelErrorEvent(errorText = "No data for this selection", showHeaders = true))
+        }
+
+        headerFastAdapter.deselect()
+        headerFastAdapter.select(0)
+        selectedPosition(0)
+    }
+
+    fun handleToken(token: Token) {
+        clearError()
+        hideProgress()
+        parseToken(token)
     }
 }

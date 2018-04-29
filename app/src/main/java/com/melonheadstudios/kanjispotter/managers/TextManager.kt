@@ -12,7 +12,6 @@ import com.crashlytics.android.answers.Answers
 import com.crashlytics.android.answers.CustomEvent
 import com.melonheadstudios.kanjispotter.MainApplication
 import com.melonheadstudios.kanjispotter.extensions.isServiceRunning
-import com.melonheadstudios.kanjispotter.injection.ForApplication
 import com.melonheadstudios.kanjispotter.models.*
 import com.melonheadstudios.kanjispotter.services.HoverPanelService
 import com.melonheadstudios.kanjispotter.utils.Constants.Companion.ATTRIBUTE_CHARACTERS
@@ -32,6 +31,9 @@ import javax.inject.Inject
 class TextManager(private val applicationContext: Context) {
     @Inject
     lateinit var bus: MainThreadBus
+
+    @Inject
+    lateinit var tokenizer: Tokenizer
 
     init {
         MainApplication.graph.inject(this)
@@ -94,6 +96,33 @@ class TextManager(private val applicationContext: Context) {
 
     fun handleEventText(text: String) {
         bus.post(InfoPanelClearEvent())
+
+        val tokens = tokenizer.tokenize(text) ?: return
+        bus.post(InfoPanelMultiSelectEvent(text.replace(regex = Regex("\\s+"), replacement = "").trim()))
+        bus.post(InfoPanelSelectionsEvent(tokens.map { it.baseForm }))
+
+        if (tokens.isNotEmpty() && !applicationContext.isServiceRunning(HoverPanelService::class.java)) {
+            val startHoverIntent = Intent(applicationContext, HoverPanelService::class.java)
+//            startHoverIntent.putExtra("reading", readings)
+            applicationContext.startService(startHoverIntent)
+        }
+
+        tokens.forEach {
+            bus.post(TokenizedEvent(token = it))
+        }
+
+//        if (readings.isEmpty()) {
+//            bus.post(InfoPanelErrorEvent("No data to display. Are you connected to the internet?"))
+//            return@getReadings
+//        }
+
+        Answers.getInstance().logCustom(CustomEvent(EVENT_API))
+
+    }
+
+    @Deprecated(message = "Use handleEventText")
+    fun handleEventTextOld(text: String) {
+        bus.post(InfoPanelClearEvent())
         val components = text.split(" ")
         bus.post(InfoPanelMultiSelectEvent(text.replace(regex = Regex("\\s+"), replacement = "").trim()))
         bus.post(InfoPanelSelectionsEvent(components))
@@ -119,12 +148,13 @@ class TextManager(private val applicationContext: Context) {
         }
     }
 
+    @Deprecated(message = "Replace with function that calls handleEventText")
     fun parseEvent(event: AccessibilityEvent?) {
         event ?: return
         if (!getEventType(event)) return
         val text = getEventText(event)
         if (text.isEmpty()) return
         val rawText = getEventText(event = event, showHiragana = true)
-        handleEventText(rawText)
+        handleEventTextOld(rawText)
     }
 }

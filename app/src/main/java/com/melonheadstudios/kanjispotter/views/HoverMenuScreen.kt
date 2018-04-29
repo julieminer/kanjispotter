@@ -68,7 +68,7 @@ class HoverMenuScreen(val context: Context) : Content {
 
     override fun onShown() {
         if (BuildConfig.DEBUG) {
-            textManager.handleEventText("食べる 見る 犬")
+            textManager.handleEventText("食べる見る犬")
         }
     }
 
@@ -117,5 +117,11 @@ class HoverMenuScreen(val context: Context) : Content {
         if (!it.enabled) {
             viewHolder?.makeInvisibile(fromTile = true)
         }
+    }
+
+    @Subscribe
+    fun onTokenizedEvent(e: TokenizedEvent) {
+        Log.d(tag, "handle tokenized event")
+        viewHolder?.handleToken(e.token)
     }
 }

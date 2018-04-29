@@ -1,5 +1,7 @@
 package com.melonheadstudios.kanjispotter.models
 
+import com.atilika.kuromoji.ipadic.Token
+
 /**
  * KanjiSpotter
  * Created by jake on 2017-04-15, 4:19 PM
@@ -7,6 +9,7 @@ package com.melonheadstudios.kanjispotter.models
 
 class InfoPanelClearEvent
 class InfoPanelEvent(val chosenWord: String, val json: String)
+class TokenizedEvent(val token: Token)
 class InfoPanelMultiSelectEvent(val rawString: String)
 class InfoPanelSelectionsEvent(val selections: List<String>)
 class InfoPanelSelectedWordEvent(val position: Int)
