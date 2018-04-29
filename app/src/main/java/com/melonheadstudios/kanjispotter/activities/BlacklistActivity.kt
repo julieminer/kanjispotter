@@ -71,10 +71,6 @@ class BlacklistActivity: AppCompatActivity() {
         fastAdapter.withItemEvent(BlacklistSelectionModel.CheckButtonClickEvent())
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-    }
-
     override fun onResume() {
         super.onResume()
         updateUI(forceRepopulate = true)

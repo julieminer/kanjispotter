@@ -196,7 +196,7 @@ class IABManager : IabBroadcastReceiver.IabBroadcastListener {
 
         // Is it a failure?
         if (result.isFailure) {
-            alert("Failed to query inventory: " + result)
+            alert("Failed to query inventory: $result")
             return@QueryInventoryFinishedListener
         }
 
@@ -265,7 +265,7 @@ class IABManager : IabBroadcastReceiver.IabBroadcastListener {
     }
 
     private fun alert(message: String) {
-        Log.d(TAG, "Showing alert dialog: " + message)
+        Log.d(TAG, "Showing alert dialog: $message")
 //        val bld = AlertDialog.Builder(appContext, R.style.DialogTheme)
 //        bld.setMessage(message)
 //        bld.setNeutralButton("OK", null)

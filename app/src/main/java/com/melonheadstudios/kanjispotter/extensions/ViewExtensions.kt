@@ -30,10 +30,3 @@ fun View.saveToClipboard(text: String) {
     }
 }
 
-fun TextView.addLink(link: String, clickableSpan: ClickableSpan) {
-    val spannableString = SpannableString(text)
-    val startIndexOfLink = text.toString().indexOf(link)
-    spannableString.setSpan(clickableSpan, startIndexOfLink, startIndexOfLink + link.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-    movementMethod = LinkMovementMethod.getInstance()
-    setText(spannableString, TextView.BufferType.SPANNABLE)
-}

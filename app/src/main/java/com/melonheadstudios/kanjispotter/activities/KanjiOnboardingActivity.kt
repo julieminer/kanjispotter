@@ -16,7 +16,6 @@ import com.melonheadstudios.kanjispotter.viewmodels.OnboardingViewModel
 import io.mattcarroll.hover.overlay.OverlayPermission
 import kotlinx.android.synthetic.main.activity_onboarding.*
 
-
 /**
  * kanjispotter
  * Created by jake on 2017-04-16, 5:23 PM

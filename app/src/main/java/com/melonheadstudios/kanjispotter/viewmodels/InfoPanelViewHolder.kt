@@ -10,11 +10,11 @@ import android.view.View.*
 import android.widget.ProgressBar
 import android.widget.TextView
 import com.atilika.kuromoji.ipadic.Token
-import com.google.gson.Gson
 import com.melonheadstudios.kanjispotter.R
-import com.melonheadstudios.kanjispotter.extensions.from
 import com.melonheadstudios.kanjispotter.managers.IABManager
-import com.melonheadstudios.kanjispotter.models.*
+import com.melonheadstudios.kanjispotter.models.InfoPanelErrorEvent
+import com.melonheadstudios.kanjispotter.models.JishoModel
+import com.melonheadstudios.kanjispotter.models.englishDefinition
 import com.melonheadstudios.kanjispotter.utils.MainThreadBus
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
@@ -29,7 +29,7 @@ import kotlinx.coroutines.experimental.async
 
 class InfoPanelViewHolder(val context: Context,
                           parent: View,
-                          private var iabManager: IABManager,
+                          iabManager: IABManager,
                           private val bus: MainThreadBus) {
     private val tag = "InfoPanelViewHolder"
 
@@ -58,16 +58,6 @@ class InfoPanelViewHolder(val context: Context,
         headerFastAdapter.withItemEvent(KanjiSelectionListModel.RadioButtonClickEvent())
 
         iabManager.setupIAB(context)
-    }
-
-    fun destroy() {
-        iabManager.unregister(context)
-    }
-
-    fun updateView(word: String, string: String) {
-        clearError()
-        hideProgress()
-        parseJsonString(string, word)
     }
 
     fun handleError(error: String, showHeader: Boolean) {
@@ -99,65 +89,15 @@ class InfoPanelViewHolder(val context: Context,
         })
     }
 
-    fun clearPanel() {
-        showProgress()
-        items.clear()
-        itemAdapter.set(items)
-        headerItems.clear()
-        headerItemAdapter.set(headerItems)
-    }
-
     private fun clearError() {
         errorText.visibility = GONE
         errorText.text = ""
-    }
-
-    private fun showProgress() {
-        progressBar.visibility = VISIBLE
-        headerList.visibility = INVISIBLE
-        list.visibility = INVISIBLE
     }
 
     private fun hideProgress() {
         progressBar.visibility = GONE
         headerList.visibility = VISIBLE
         list.visibility = VISIBLE
-    }
-
-    private fun parseJsonString(string: String, selectedWord: String) {
-        val jishoResponse: JishoResponse = Gson().from(string, JishoResponse::class.java) ?: return
-        val dataArray = jishoResponse.data ?: return
-        for ((_, japanese, senses) in dataArray) {
-
-            val japaneseData = japanese ?: continue
-            val sensesData = senses ?: continue
-
-            for ((english_definitions) in sensesData) {
-                val definition = english_definitions?.joinToString(", ")
-                for ((reading1, word) in japaneseData) {
-                    val reading = reading1 ?: ""
-                    val wordData = word ?: ""
-
-                    if (wordData.isEmpty() || reading.isEmpty()) {
-                        continue
-                    }
-
-                    items.add(KanjiListModel(wordData, reading, selectedWord, definition))
-                }
-            }
-        }
-
-        items = ArrayList(LinkedHashSet(items))
-        items.sortBy { it.kanjiText }
-        itemAdapter.set(items)
-
-        if (items.isEmpty()) {
-            bus.post(InfoPanelErrorEvent(errorText = "No data for this selection", showHeaders = true))
-        }
-
-        headerFastAdapter.deselect()
-        headerFastAdapter.select(0)
-        selectedPosition(0)
     }
 
     private fun parseToken(token: Token, jishoModel: JishoModel?) = async(UI) {

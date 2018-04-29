@@ -3,7 +3,6 @@ package com.melonheadstudios.kanjispotter.views
 import android.content.Context
 import android.util.Log
 import android.view.View
-import com.atilika.kuromoji.ipadic.Tokenizer
 import com.melonheadstudios.kanjispotter.BuildConfig
 import com.melonheadstudios.kanjispotter.MainApplication
 import com.melonheadstudios.kanjispotter.R
@@ -17,14 +16,13 @@ import com.squareup.otto.Subscribe
 import io.mattcarroll.hover.Content
 import javax.inject.Inject
 
-
 /**
  * kanjispotter
  * Created by jake on 2018-04-28, 3:53 PM
  */
 
 class HoverMenuScreen(val context: Context) : Content {
-    val tag = HoverMenuScreen::class.java.simpleName
+    private val tag: String = HoverMenuScreen::class.java.simpleName
 
     @Inject
     lateinit var iabManager: IABManager
@@ -34,9 +32,6 @@ class HoverMenuScreen(val context: Context) : Content {
 
     @Inject
     lateinit var bus: MainThreadBus
-
-    @Inject
-    lateinit var tokenizer: Tokenizer
 
     @Inject
     lateinit var textManager: TextManager
@@ -66,24 +61,12 @@ class HoverMenuScreen(val context: Context) : Content {
 
     override fun onShown() {
         if (BuildConfig.DEBUG) {
-            textManager.handleEventText("食べる見る犬")
+            textManager.handleEventText("2173721837hdsfh^%^&%^&%^&%&^hello world 食べる this is neat見る犬rrrr")
         }
     }
 
     override fun onHidden() {
         // no-op
-    }
-
-    @Subscribe
-    fun onInfoClearEvent(e: InfoPanelClearEvent) {
-        Log.d(tag, "clearPanel")
-        viewHolder?.clearPanel()
-    }
-
-    @Subscribe
-    fun onInfoPanelEvent(e: InfoPanelEvent) {
-        Log.d(tag, "handleString: ${e.chosenWord} = ${e.json}")
-        viewHolder?.updateView(e.chosenWord, e.json)
     }
 
     @Subscribe

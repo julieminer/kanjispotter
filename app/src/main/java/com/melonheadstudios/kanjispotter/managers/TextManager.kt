@@ -10,17 +10,12 @@ import com.crashlytics.android.answers.CustomEvent
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
 import com.melonheadstudios.kanjispotter.MainApplication
-import com.melonheadstudios.kanjispotter.extensions.getReadings
 import com.melonheadstudios.kanjispotter.extensions.isServiceRunning
-import com.melonheadstudios.kanjispotter.extensions.stringify
-import com.melonheadstudios.kanjispotter.models.*
+import com.melonheadstudios.kanjispotter.models.InfoPanelSelectionsEvent
+import com.melonheadstudios.kanjispotter.models.JishoModel
+import com.melonheadstudios.kanjispotter.models.TokenizedEvent
 import com.melonheadstudios.kanjispotter.services.HoverPanelService
-import com.melonheadstudios.kanjispotter.utils.Constants.Companion.ATTRIBUTE_CHARACTERS
-import com.melonheadstudios.kanjispotter.utils.Constants.Companion.ATTRIBUTE_WORDS
-import com.melonheadstudios.kanjispotter.utils.Constants.Companion.EVENT_ADDED_OPTION
 import com.melonheadstudios.kanjispotter.utils.Constants.Companion.EVENT_API
-import com.melonheadstudios.kanjispotter.utils.Constants.Companion.EVENT_USED
-import com.melonheadstudios.kanjispotter.utils.JapaneseCharMatcher
 import com.melonheadstudios.kanjispotter.utils.MainThreadBus
 import com.squareup.moshi.Moshi
 import kotlinx.coroutines.experimental.android.UI
@@ -28,7 +23,6 @@ import kotlinx.coroutines.experimental.async
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.coroutines.experimental.suspendCoroutine
-
 
 /**
  * KanjiSpotter
@@ -62,54 +56,18 @@ class TextManager(private val applicationContext: Context) {
         return false
     }
 
-    private fun getEventText(event: AccessibilityEvent?, showHiragana: Boolean = true): String {
-        val sb = StringBuilder()
-        val sbi = StringBuilder()
-        event?.text ?: return ""
-
-        for (s in event.text) {
-            s.forEach { e ->
-                if (JapaneseCharMatcher.isKanji(e) || (showHiragana && JapaneseCharMatcher.isJapanese(e))) {
-                    sb.append(e)
-                } else {
-                    sb.append(" ")
-                }
-            }
-        }
-
-        val text = event.source?.text ?: return sb.stringify()
-        for (s in text) {
-            if (JapaneseCharMatcher.isKanji(s) || (showHiragana && JapaneseCharMatcher.isJapanese(s))) {
-                sbi.append(s)
-            } else {
-                sbi.append(" ")
-            }
-        }
-
-        val outer = sb.stringify()
-        val inner = sbi.stringify()
-
-        return if (outer == inner) {
-            inner
-        } else {
-            "outer = $outer inner = $inner"
-        }
-    }
-
     fun handleEventText(text: String) = async(UI) {
-        bus.post(InfoPanelClearEvent())
-
         val tokens = tokenizer.tokenize(text) ?: return@async
-//        bus.post(InfoPanelMultiSelectEvent(text.replace(regex = Regex("\\s+"), replacement = "").trim()))
-        bus.post(InfoPanelSelectionsEvent(tokens.map { it.baseForm }))
+        val knownTokens = tokens.filter { it.isKnown }
+        bus.post(InfoPanelSelectionsEvent(knownTokens.map { it.baseForm }))
 
-        if (tokens.isNotEmpty() && !applicationContext.isServiceRunning(HoverPanelService::class.java)) {
+        if (knownTokens.isNotEmpty() && !applicationContext.isServiceRunning(HoverPanelService::class.java)) {
             val startHoverIntent = Intent(applicationContext, HoverPanelService::class.java)
 //            startHoverIntent.putExtra("reading", readings)
             applicationContext.startService(startHoverIntent)
         }
 
-        tokens.forEach {
+        knownTokens.forEach {
             bus.post(TokenizedEvent(token = it, jishoModel = getJishoModel(it.baseForm)))
         }
 
@@ -141,39 +99,9 @@ class TextManager(private val applicationContext: Context) {
         }
     }
 
-    @Deprecated(message = "Use handleEventText")
-    private fun handleEventTextOld(text: String) {
-        bus.post(InfoPanelClearEvent())
-        val components = text.split(" ")
-        bus.post(InfoPanelSelectionsEvent(components))
-        Answers.getInstance().logCustom(CustomEvent(EVENT_USED)
-                .putCustomAttribute(ATTRIBUTE_WORDS, components.size)
-                .putCustomAttribute(ATTRIBUTE_CHARACTERS, text.length))
-        components.forEach {
-            it.getReadings { readings ->
-                if (!applicationContext.isServiceRunning(HoverPanelService::class.java)) {
-                    val startHoverIntent = Intent(applicationContext, HoverPanelService::class.java)
-                    startHoverIntent.putExtra("reading", readings)
-                    applicationContext.startService(startHoverIntent)
-                }
-
-                if (readings.isEmpty()) {
-                    bus.post(InfoPanelErrorEvent("No data to display. Are you connected to the internet?"))
-                    return@getReadings
-                }
-
-                Answers.getInstance().logCustom(CustomEvent(EVENT_API))
-                bus.post(InfoPanelEvent(chosenWord = it, json = readings))
-            }
-        }
-    }
-
     fun parseEvent(event: AccessibilityEvent?) {
         event ?: return
         if (!getEventType(event)) return
-        val text = getEventText(event)
-        if (text.isEmpty()) return
-        val rawText = getEventText(event = event, showHiragana = true)
-        handleEventTextOld(rawText)
+        handleEventText(event.text.toString())
     }
 }
