@@ -9,6 +9,7 @@ import com.melonheadstudios.kanjispotter.services.HoverPanelService
 import com.melonheadstudios.kanjispotter.services.InfoPanelDisplayService
 import com.melonheadstudios.kanjispotter.services.JapaneseTextGrabberService
 import com.melonheadstudios.kanjispotter.services.QuickTileService
+import com.melonheadstudios.kanjispotter.views.HoverMenuScreen
 import dagger.Component
 import javax.inject.Singleton
 
@@ -28,4 +29,5 @@ interface ApplicationComponent {
     fun inject(tileService: QuickTileService)
     fun inject(textManager: TextManager)
     fun inject(iabManager: IABManager)
+    fun inject(hoverMenuScreen: HoverMenuScreen)
 }
