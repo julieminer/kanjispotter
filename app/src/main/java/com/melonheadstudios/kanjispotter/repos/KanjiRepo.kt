@@ -51,11 +51,11 @@ class KanjiRepo(private val applicationContext: Context) {
     }
 
     fun allKanji(): List<KanjiInstance> {
-        return kanjiAppDictionary.values.flatMap { it }.sortedBy { it.dateSearched.time }
+        return kanjiAppDictionary.values.flatMap { it }.sortedByDescending { it.dateSearched.time }
     }
 
     fun kanji(forApp: String): List<KanjiInstance> {
-        return kanjiAppDictionary[forApp]?.sortedBy { it.dateSearched.time } ?: listOf()
+        return kanjiAppDictionary[forApp]?.sortedByDescending { it.dateSearched.time } ?: listOf()
     }
 
     fun add(kanji: Token, forApp: String) = async(UI) {

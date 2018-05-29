@@ -55,8 +55,6 @@ class InfoPanelViewHolder(val context: Context,
             val item = KanjiSelectionListModel(it, bus)
             if (!headerItems.contains(item)) {
                 headerItems.add(item)
-                headerItems = ArrayList(LinkedHashSet(headerItems))
-                headerItems.sortBy { it.selectedWord }
                 headerItemAdapter.set(headerItems)
             }
         }
