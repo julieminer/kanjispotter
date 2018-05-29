@@ -3,13 +3,11 @@ package com.melonheadstudios.kanjispotter.views
 import android.content.Context
 import android.util.Log
 import android.view.View
-import com.melonheadstudios.kanjispotter.BuildConfig
 import com.melonheadstudios.kanjispotter.MainApplication
 import com.melonheadstudios.kanjispotter.R
 import com.melonheadstudios.kanjispotter.managers.IABManager
-import com.melonheadstudios.kanjispotter.managers.PrefManager
-import com.melonheadstudios.kanjispotter.managers.TextManager
-import com.melonheadstudios.kanjispotter.models.*
+import com.melonheadstudios.kanjispotter.models.InfoPanelSelectedWordEvent
+import com.melonheadstudios.kanjispotter.repos.KanjiRepo
 import com.melonheadstudios.kanjispotter.utils.MainThreadBus
 import com.melonheadstudios.kanjispotter.viewmodels.InfoPanelViewHolder
 import com.squareup.otto.Subscribe
@@ -28,19 +26,15 @@ class HoverMenuScreen(val context: Context) : Content {
     lateinit var iabManager: IABManager
 
     @Inject
-    lateinit var prefManager: PrefManager
-
-    @Inject
     lateinit var bus: MainThreadBus
 
     @Inject
-    lateinit var textManager: TextManager
+    lateinit var kanjiRepo: KanjiRepo
 
     init {
         MainApplication.graph.inject(this)
         bus.register(this)
     }
-
 
     private val mContext: Context = context.applicationContext
     private var viewHolder: InfoPanelViewHolder? = null
@@ -60,9 +54,7 @@ class HoverMenuScreen(val context: Context) : Content {
     }
 
     override fun onShown() {
-        if (BuildConfig.DEBUG) {
-            textManager.handleEventText("[Test out the app by clicking the kanji below!\n 食べる\n 男の人\n ご主人]")
-        }
+        viewHolder?.displayKanji(kanjiRepo.allKanji())
     }
 
     override fun onHidden() {
@@ -70,26 +62,8 @@ class HoverMenuScreen(val context: Context) : Content {
     }
 
     @Subscribe
-    fun onErrorEvent(e: InfoPanelErrorEvent) {
-        Log.d(tag, "handleError: ${e.errorText}")
-        viewHolder?.handleError(e.errorText, e.showHeaders)
-    }
-
-    @Subscribe
-    fun onSelectEvent(it: InfoPanelSelectionsEvent) {
-        Log.d(tag, "handleSelections: ${it.selections}")
-        viewHolder?.updateSelections(it.selections)
-    }
-
-    @Subscribe
     fun onSelectedWordEvent(it: InfoPanelSelectedWordEvent) {
         Log.d(tag, "selected position ${it.position}")
         viewHolder?.selectedPosition(it.position)
-    }
-
-    @Subscribe
-    fun onTokenizedEvent(e: TokenizedEvent) {
-        Log.d(tag, "handle tokenized event")
-        viewHolder?.handleToken(e.token, e.jishoModel)
     }
 }

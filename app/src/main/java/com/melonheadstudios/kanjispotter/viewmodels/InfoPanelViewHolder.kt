@@ -6,20 +6,12 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.View
-import android.view.View.*
-import android.widget.ProgressBar
-import android.widget.TextView
-import com.atilika.kuromoji.ipadic.Token
 import com.melonheadstudios.kanjispotter.R
 import com.melonheadstudios.kanjispotter.managers.IABManager
-import com.melonheadstudios.kanjispotter.models.InfoPanelErrorEvent
-import com.melonheadstudios.kanjispotter.models.JishoModel
-import com.melonheadstudios.kanjispotter.models.englishDefinition
+import com.melonheadstudios.kanjispotter.models.KanjiInstance
 import com.melonheadstudios.kanjispotter.utils.MainThreadBus
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.async
 
 
 /**
@@ -35,8 +27,6 @@ class InfoPanelViewHolder(val context: Context,
 
     private val list: RecyclerView = parent.findViewById(R.id.info)
     private val headerList: RecyclerView = parent.findViewById(R.id.info_word)
-    private val progressBar: ProgressBar = parent.findViewById(R.id.progress_bar)
-    private val errorText: TextView = parent.findViewById(R.id.error_text)
 
     private val fastAdapter = FastAdapter<KanjiListModel>()
     private val itemAdapter = ItemAdapter<KanjiListModel>()
@@ -60,15 +50,7 @@ class InfoPanelViewHolder(val context: Context,
         iabManager.setupIAB(context)
     }
 
-    fun handleError(error: String, showHeader: Boolean) {
-        headerList.visibility = if (showHeader) VISIBLE else INVISIBLE
-        list.visibility = INVISIBLE
-        progressBar.visibility = GONE
-        errorText.visibility = VISIBLE
-        errorText.text = error
-    }
-
-    fun updateSelections(selections: List<String>) {
+    private fun updateSelections(selections: List<String>) {
         selections.forEach {
             val item = KanjiSelectionListModel(it, bus)
             if (!headerItems.contains(item)) {
@@ -89,36 +71,14 @@ class InfoPanelViewHolder(val context: Context,
         })
     }
 
-    private fun clearError() {
-        errorText.visibility = GONE
-        errorText.text = ""
-    }
-
-    private fun hideProgress() {
-        progressBar.visibility = GONE
-        headerList.visibility = VISIBLE
-        list.visibility = VISIBLE
-    }
-
-    private fun parseToken(token: Token, jishoModel: JishoModel?) = async(UI) {
-        items.add(KanjiListModel(token.baseForm, token.reading, token.baseForm, jishoModel?.englishDefinition()))
-
-        items = ArrayList(LinkedHashSet(items))
-        items.sortBy { it.kanjiText }
-        itemAdapter.set(items)
-
-        if (items.isEmpty()) {
-            bus.post(InfoPanelErrorEvent(errorText = "No data for this selection", showHeaders = true))
+    fun displayKanji(kanji: List<KanjiInstance>) {
+        updateSelections(kanji.map { it.token.baseForm })
+        kanji.forEach {
+            items.add(KanjiListModel(it.token.baseForm, it.token.reading, it.token.baseForm))
         }
-
+        itemAdapter.set(items)
         headerFastAdapter.deselect()
         headerFastAdapter.select(0)
         selectedPosition(0)
-    }
-
-    fun handleToken(token: Token, jishoModel: JishoModel?) {
-        clearError()
-        hideProgress()
-        parseToken(token, jishoModel)
     }
 }

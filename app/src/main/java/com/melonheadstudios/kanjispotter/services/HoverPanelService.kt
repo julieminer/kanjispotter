@@ -8,6 +8,7 @@ import android.widget.ImageView
 import com.melonheadstudios.kanjispotter.MainApplication
 import com.melonheadstudios.kanjispotter.R
 import com.melonheadstudios.kanjispotter.managers.PrefManager
+import com.melonheadstudios.kanjispotter.repos.KanjiRepo
 import com.melonheadstudios.kanjispotter.views.HoverMenuScreen
 import io.mattcarroll.hover.Content
 import io.mattcarroll.hover.HoverMenu
@@ -25,10 +26,18 @@ class HoverPanelService: HoverMenuService() {
     @Inject
     lateinit var prefManager: PrefManager
 
+    @Inject
+    lateinit var kanjiRepo: KanjiRepo
+
     override fun onCreate() {
         MainApplication.graph.inject(this)
         updateTheme()
         super.onCreate()
+    }
+
+    override fun onDestroy() {
+        kanjiRepo.clearAll()
+        super.onDestroy()
     }
 
     override fun onHoverMenuLaunched(intent: Intent, hoverView: HoverView) {

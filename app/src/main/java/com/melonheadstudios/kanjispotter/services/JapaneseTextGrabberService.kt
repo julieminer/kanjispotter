@@ -5,8 +5,9 @@ import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import com.crashlytics.android.Crashlytics
 import com.melonheadstudios.kanjispotter.MainApplication
+import com.melonheadstudios.kanjispotter.extensions.shouldParse
 import com.melonheadstudios.kanjispotter.managers.PrefManager
-import com.melonheadstudios.kanjispotter.managers.TextManager
+import com.melonheadstudios.kanjispotter.repos.KanjiRepo
 import javax.inject.Inject
 
 class JapaneseTextGrabberService : AccessibilityService() {
@@ -16,7 +17,7 @@ class JapaneseTextGrabberService : AccessibilityService() {
     lateinit var prefManager: PrefManager
 
     @Inject
-    lateinit var textManager: TextManager
+    lateinit var kanjiRepo: KanjiRepo
 
     override fun onServiceConnected() {
         super.onServiceConnected()
@@ -28,13 +29,14 @@ class JapaneseTextGrabberService : AccessibilityService() {
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         try {
             event?.packageName ?: return
-            val blackListEnabled = prefManager.blacklistEnabled()
-            val parsingEnabled = prefManager.overlayEnabled()
-            if (!parsingEnabled) return
-            if (blackListEnabled) {
-                if (prefManager.blacklisted(event.packageName)) return
+            event.text ?: return
+            if (!event.shouldParse()) return
+            if (!prefManager.overlayEnabled()) return
+            if (prefManager.blacklistEnabled() &&
+                    prefManager.blacklisted(event.packageName)) {
+                return
             }
-            textManager.parseEvent(event)
+            kanjiRepo.parse(AccessibilityEventHolder(event.packageName.toString(), event.text.toString()))
         } catch (e: Exception) {
             Crashlytics.logException(e)
         }
@@ -43,3 +45,5 @@ class JapaneseTextGrabberService : AccessibilityService() {
     override fun onInterrupt() {
     }
 }
+
+data class AccessibilityEventHolder(val packageName: String, val text: String)
