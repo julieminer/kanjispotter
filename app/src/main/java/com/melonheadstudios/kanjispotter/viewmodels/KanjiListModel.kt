@@ -13,6 +13,7 @@ import com.melonheadstudios.kanjispotter.MainApplication
 import com.melonheadstudios.kanjispotter.R
 import com.melonheadstudios.kanjispotter.extensions.saveToClipboard
 import com.melonheadstudios.kanjispotter.models.JishoModel
+import com.melonheadstudios.kanjispotter.models.KanjiInstance
 import com.melonheadstudios.kanjispotter.models.englishDefinition
 import com.mikepenz.fastadapter.items.AbstractItem
 import com.mikepenz.fastadapter.utils.ViewHolderFactory
@@ -26,8 +27,15 @@ import kotlin.coroutines.experimental.suspendCoroutine
  * kanjispotter
  * Created by jake on 2017-04-15, 9:48 PM
  */
-class KanjiListModel(private val kanjiText: String, private val readingText: String, val selectedWord: String): AbstractItem<KanjiListModel, KanjiListModel.ViewHolder>() {
-    var englishReading: String? = null
+class KanjiListModel(val kanjiInstance: KanjiInstance): AbstractItem<KanjiListModel, KanjiListModel.ViewHolder>() {
+//    private val kanjiText: String, private val readingText: String, val selectedWord: String
+//    it.token.baseForm, it.token.reading, it.token.baseForm
+
+    val kanjiText: String
+        get() = kanjiInstance.token.baseForm
+
+    val readingText: String
+        get() = kanjiInstance.token.reading
 
     override fun getType(): Int {
         return R.id.KANJI_LIST_MODEL
@@ -43,8 +51,8 @@ class KanjiListModel(private val kanjiText: String, private val readingText: Str
         holder.furiganaText.text = readingText
         holder.kanjiText.saveToClipboard(text = holder.kanjiText.text as String)
         holder.furiganaContainer.saveToClipboard(text = holder.furiganaText.text as String)
-        holder.englishReading = englishReading
-        if (englishReading == null) {
+        holder.englishReading = kanjiInstance.englishReading
+        if (kanjiInstance.englishReading == null) {
             getDefinition(holder)
         }
     }
@@ -83,7 +91,7 @@ class KanjiListModel(private val kanjiText: String, private val readingText: Str
 
     override fun equals(other: Any?): Boolean {
         val rhs = other as? KanjiListModel ?: return false
-        return rhs.kanjiText == kanjiText || rhs.readingText == readingText || rhs.selectedWord == selectedWord
+        return rhs.kanjiText == kanjiText || rhs.readingText == readingText
     }
 
     override fun hashCode(): Int {
@@ -91,9 +99,9 @@ class KanjiListModel(private val kanjiText: String, private val readingText: Str
     }
 
     private fun getDefinition(holder: ViewHolder) = async(UI) {
-        val english = getJishoModel(kanjiText, holder)?.englishDefinition()
-        englishReading = english
-        holder.englishReading = englishReading
+        val english = getJishoModel(kanjiText, holder)?.englishDefinition() ?: return@async
+        kanjiInstance.englishReading = english
+        holder.englishReading = english
     }
 
     private suspend fun getJishoModel(forKanji: String, holder: ViewHolder): JishoModel? = suspendCoroutine { continuation ->

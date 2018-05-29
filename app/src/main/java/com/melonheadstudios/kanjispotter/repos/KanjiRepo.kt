@@ -2,20 +2,13 @@ package com.melonheadstudios.kanjispotter.repos
 
 import android.content.Context
 import android.content.Intent
-import android.view.accessibility.AccessibilityEvent
 import com.atilika.kuromoji.ipadic.Token
 import com.atilika.kuromoji.ipadic.Tokenizer
-import com.crashlytics.android.Crashlytics
 import com.crashlytics.android.answers.Answers
 import com.crashlytics.android.answers.CustomEvent
-import com.github.kittinunf.fuel.httpGet
-import com.github.kittinunf.result.Result
 import com.melonheadstudios.kanjispotter.MainApplication
 import com.melonheadstudios.kanjispotter.extensions.isServiceRunning
-import com.melonheadstudios.kanjispotter.extensions.shouldParse
-import com.melonheadstudios.kanjispotter.models.JishoModel
 import com.melonheadstudios.kanjispotter.models.KanjiInstance
-import com.melonheadstudios.kanjispotter.models.englishDefinition
 import com.melonheadstudios.kanjispotter.services.AccessibilityEventHolder
 import com.melonheadstudios.kanjispotter.services.HoverPanelService
 import com.melonheadstudios.kanjispotter.utils.Constants
@@ -26,7 +19,6 @@ import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.collections.HashMap
-import kotlin.coroutines.experimental.suspendCoroutine
 
 /**
  * kanjispotter
@@ -44,9 +36,9 @@ class KanjiRepo(private val applicationContext: Context) {
         MainApplication.graph.inject(this)
     }
 
-    var kanjiAppDictionary = HashMap<String, MutableList<KanjiInstance>>()
+    private var kanjiAppDictionary = HashMap<String, MutableList<KanjiInstance>>()
 
-    fun has(kanji: String): Boolean {
+    private fun has(kanji: String): Boolean {
         return allKanji().map { it.token.baseForm }.contains(kanji)
     }
 

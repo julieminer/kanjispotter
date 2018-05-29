@@ -64,15 +64,15 @@ class InfoPanelViewHolder(val context: Context,
     fun selectedPosition(position: Int) {
         val header = headerFastAdapter.getItem(position) ?: return
         itemAdapter.set(items.filterNotNull().filter {
-            Log.d(tag, "Filtering word ${it.selectedWord} w/ ${header.selectedWord}")
-            it.selectedWord == header.selectedWord
+            Log.d(tag, "Filtering word ${it.kanjiText} w/ ${header.selectedWord}")
+            it.kanjiText == header.selectedWord
         })
     }
 
     fun displayKanji(kanji: List<KanjiInstance>) {
         updateSelections(kanji.map { it.token.baseForm })
         kanji.forEach {
-            items.add(KanjiListModel(it.token.baseForm, it.token.reading, it.token.baseForm))
+            items.add(KanjiListModel(it))
         }
         itemAdapter.set(items)
         headerFastAdapter.deselect()
