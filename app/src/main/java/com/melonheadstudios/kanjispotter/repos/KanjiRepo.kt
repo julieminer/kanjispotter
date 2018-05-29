@@ -47,7 +47,7 @@ class KanjiRepo(private val applicationContext: Context) {
     var kanjiAppDictionary = HashMap<String, MutableList<KanjiInstance>>()
 
     fun has(kanji: String): Boolean {
-        return kanjiAppDictionary.mapValues { it.value.filter { it.token.baseForm == kanji } }.isNotEmpty()
+        return allKanji().map { it.token.baseForm }.contains(kanji)
     }
 
     fun allKanji(): List<KanjiInstance> {
