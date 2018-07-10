@@ -19,13 +19,12 @@ import com.melonheadstudios.kanjispotter.managers.IABManager
 import com.melonheadstudios.kanjispotter.managers.PrefManager
 import com.melonheadstudios.kanjispotter.models.IABUpdateUIEvent
 import com.melonheadstudios.kanjispotter.models.InfoPanelPreferenceChanged
-import com.melonheadstudios.kanjispotter.services.InfoPanelDisplayService
+import com.melonheadstudios.kanjispotter.services.HoverPanelService
 import com.melonheadstudios.kanjispotter.services.JapaneseTextGrabberService
 import com.melonheadstudios.kanjispotter.utils.MainThreadBus
 import com.squareup.otto.Subscribe
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
-
 
 class MainActivity : AppCompatActivity() {
     @Inject
@@ -88,7 +87,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         debug_button.setOnClickListener {
-
+            val startHoverIntent = Intent(this, HoverPanelService::class.java)
+            startService(startHoverIntent)
         }
 
         iabManager.setupIAB(context = this)
@@ -137,8 +137,8 @@ class MainActivity : AppCompatActivity() {
     private fun setDarkThemeEnabled(enabled: Boolean) {
         prefManager.setDarkTheme(enabled)
 
-        if (isServiceRunning(InfoPanelDisplayService::class.java)) {
-            val service = Intent(applicationContext, InfoPanelDisplayService::class.java)
+        if (isServiceRunning(HoverPanelService::class.java)) {
+            val service = Intent(applicationContext, HoverPanelService::class.java)
             stopService(service)
         }
         this.finish()

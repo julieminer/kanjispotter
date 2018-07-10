@@ -2,9 +2,8 @@ package com.melonheadstudios.kanjispotter.activities
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.net.Uri
+import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
 import android.support.v7.app.AppCompatActivity
 import com.melonheadstudios.kanjispotter.BuildConfig
 import com.melonheadstudios.kanjispotter.R
@@ -14,6 +13,7 @@ import com.melonheadstudios.kanjispotter.extensions.canDrawOverlays
 import com.melonheadstudios.kanjispotter.extensions.isServiceRunning
 import com.melonheadstudios.kanjispotter.services.JapaneseTextGrabberService
 import com.melonheadstudios.kanjispotter.viewmodels.OnboardingViewModel
+import io.mattcarroll.hover.overlay.OverlayPermission
 import kotlinx.android.synthetic.main.activity_onboarding.*
 
 /**
@@ -66,8 +66,10 @@ class KanjiOnboardingActivity: AppCompatActivity(), OnboardingFragmentListener {
             0 -> {
                 if (!canDrawOverlays()) {
                     userSettingOverlay = true
-                    val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + packageName))
-                    startActivityForResult(intent, ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE)
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        val intent = OverlayPermission.createIntentToRequestOverlayPermission(this)
+                        startActivityForResult(intent, ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE)
+                    }
                 } else {
                     goToPage(1)
                 }

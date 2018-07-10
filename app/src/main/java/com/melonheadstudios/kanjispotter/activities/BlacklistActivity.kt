@@ -10,7 +10,6 @@ import android.view.MenuItem
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
-import co.metalab.asyncawait.async
 import com.melonheadstudios.kanjispotter.MainApplication
 import com.melonheadstudios.kanjispotter.R
 import com.melonheadstudios.kanjispotter.managers.PrefManager
@@ -18,6 +17,8 @@ import com.melonheadstudios.kanjispotter.viewmodels.BlacklistSelectionModel
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import kotlinx.android.synthetic.main.actvity_blacklist.*
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.async
 import java.util.*
 import javax.inject.Inject
 
@@ -64,16 +65,10 @@ class BlacklistActivity: AppCompatActivity() {
         }
 
         blacklist_list.layoutManager = LinearLayoutManager(this)
-        blacklist_list.layoutManager.isAutoMeasureEnabled = true
         blacklist_list.itemAnimator = DefaultItemAnimator()
         blacklist_list.adapter = itemAdapter.wrap(fastAdapter)
 
         fastAdapter.withItemEvent(BlacklistSelectionModel.CheckButtonClickEvent())
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        async.cancelAll()
     }
 
     override fun onResume() {
@@ -89,31 +84,27 @@ class BlacklistActivity: AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    private fun populateBlacklist(forceRepopulate: Boolean = false) {
-        async {
-            blacklist_progress.visibility = VISIBLE
-            val mainIntent = Intent(Intent.ACTION_MAIN, null)
-            mainIntent.addCategory(Intent.CATEGORY_LAUNCHER)
-            val pkgAppsList = packageManager.queryIntentActivities(mainIntent, 0)
+    private fun populateBlacklist(forceRepopulate: Boolean = false) = async(UI) {
+        blacklist_progress.visibility = VISIBLE
+        val mainIntent = Intent(Intent.ACTION_MAIN, null)
+        mainIntent.addCategory(Intent.CATEGORY_LAUNCHER)
+        val pkgAppsList = packageManager.queryIntentActivities(mainIntent, 0)
 
-            if (!forceRepopulate && items.isNotEmpty()) {
-                blacklist_progress.visibility = GONE
-            } else {
-                items = await {
-                    items.clear()
-                    for (app in pkgAppsList) {
-                        val appLabel = app.loadLabel(packageManager).toString()
-                        val packageName = app.activityInfo.taskAffinity ?: continue
-                        val packageIcon = app.loadIcon(packageManager)
-                        items.add(BlacklistSelectionModel(sharedPreferences = prefManager.prefs, appName = appLabel, packageName = packageName, icon = packageIcon))
-                    }
-                    items.sortBy { it.appName }
-                    items
-                }
-                itemAdapter.set(items)
-                blacklist_progress.visibility = GONE
+        if (!forceRepopulate && items.isNotEmpty()) {
+            blacklist_progress.visibility = GONE
+        } else {
+            items.clear()
+            for (app in pkgAppsList) {
+                val appLabel = app.loadLabel(packageManager).toString()
+                val packageName = app.activityInfo.taskAffinity ?: continue
+                val packageIcon = app.loadIcon(packageManager)
+                items.add(BlacklistSelectionModel(sharedPreferences = prefManager.prefs, appName = appLabel, packageName = packageName, icon = packageIcon))
             }
+            items.sortBy { it.appName }
+            itemAdapter.set(items)
+            blacklist_progress.visibility = GONE
         }
+
     }
 
     private fun updateUI(forceRepopulate: Boolean = false) {
@@ -137,16 +128,11 @@ class BlacklistActivity: AppCompatActivity() {
     }
 
     @SuppressLint("CommitPrefEdits")
-    private fun selectAllBlacklist(selectedAll: Boolean) {
+    private fun selectAllBlacklist(selectedAll: Boolean) = async(UI) {
         prefManager.setAllBlackListChecked(selectedAll)
-        async {
-            blacklist_progress.visibility = VISIBLE
-            prefManager.setAllAppsBlackilist(selectedAll, items)
-            items = await {
-                items
-            }
-            itemAdapter.set(items)
-            blacklist_progress.visibility = GONE
-        }
+        blacklist_progress.visibility = VISIBLE
+        prefManager.setAllAppsBlackilist(selectedAll, items)
+        itemAdapter.set(items)
+        blacklist_progress.visibility = GONE
     }
 }

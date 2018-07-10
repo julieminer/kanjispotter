@@ -85,7 +85,6 @@ class QuickTileService: TileService() {
         isActive = !isActive
         prefManager.serviceStatus(isActive)
         bus.post(InfoPanelPreferenceChanged(isActive))
-
         return isActive
     }
 

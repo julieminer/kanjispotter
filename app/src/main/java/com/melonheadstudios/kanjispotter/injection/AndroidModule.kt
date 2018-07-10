@@ -8,8 +8,10 @@ import com.crashlytics.android.core.CrashlyticsCore
 import com.melonheadstudios.kanjispotter.BuildConfig
 import com.melonheadstudios.kanjispotter.managers.IABManager
 import com.melonheadstudios.kanjispotter.managers.PrefManager
-import com.melonheadstudios.kanjispotter.managers.TextManager
+import com.melonheadstudios.kanjispotter.models.ApplicationJsonAdapterFactory
+import com.melonheadstudios.kanjispotter.repos.KanjiRepo
 import com.melonheadstudios.kanjispotter.utils.MainThreadBus
+import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
 import io.fabric.sdk.android.Fabric
@@ -41,10 +43,6 @@ class AndroidModule(private val application: Application) {
 
     @Provides
     @Singleton
-    fun providesTextManager(): TextManager = TextManager()
-
-    @Provides
-    @Singleton
     fun providesIABManager(): IABManager = IABManager()
 
     @Provides
@@ -58,6 +56,14 @@ class AndroidModule(private val application: Application) {
     @Provides
     @Singleton
     fun providesTokenizer(): Tokenizer = tokenizer
+
+    @Provides
+    @Singleton
+    fun providesMoshi(): Moshi = Moshi.Builder().add(ApplicationJsonAdapterFactory.INSTANCE).build()
+
+    @Provides
+    @Singleton
+    fun providesKanjiRepo(): KanjiRepo = KanjiRepo(application)
 
 //    @Provides
 //    @Singleton

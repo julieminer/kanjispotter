@@ -6,16 +6,37 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.LinearLayout
 import android.widget.TextView
+import com.crashlytics.android.Crashlytics
+import com.github.kittinunf.fuel.httpGet
+import com.github.kittinunf.result.Result
+import com.melonheadstudios.kanjispotter.MainApplication
 import com.melonheadstudios.kanjispotter.R
 import com.melonheadstudios.kanjispotter.extensions.saveToClipboard
+import com.melonheadstudios.kanjispotter.models.JishoModel
+import com.melonheadstudios.kanjispotter.models.KanjiInstance
+import com.melonheadstudios.kanjispotter.models.englishDefinition
 import com.mikepenz.fastadapter.items.AbstractItem
 import com.mikepenz.fastadapter.utils.ViewHolderFactory
+import com.squareup.moshi.Moshi
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.async
+import javax.inject.Inject
+import kotlin.coroutines.experimental.suspendCoroutine
 
 /**
  * kanjispotter
  * Created by jake on 2017-04-15, 9:48 PM
  */
-class KanjiListModel(val kanjiText: String, private val readingText: String, val selectedWord: String, val english: String?): AbstractItem<KanjiListModel, KanjiListModel.ViewHolder>() {
+class KanjiListModel(val kanjiInstance: KanjiInstance): AbstractItem<KanjiListModel, KanjiListModel.ViewHolder>() {
+//    private val kanjiText: String, private val readingText: String, val selectedWord: String
+//    it.token.baseForm, it.token.reading, it.token.baseForm
+
+    val kanjiText: String
+        get() = kanjiInstance.token.baseForm
+
+    val readingText: String
+        get() = kanjiInstance.token.reading
+
     override fun getType(): Int {
         return R.id.KANJI_LIST_MODEL
     }
@@ -28,10 +49,12 @@ class KanjiListModel(val kanjiText: String, private val readingText: String, val
         super.bindView(holder, payloads)
         holder.kanjiText.text = kanjiText
         holder.furiganaText.text = readingText
-        holder.englishText.visibility = if (english.isNullOrEmpty()) GONE else VISIBLE
-        holder.englishText.text = english ?: ""
         holder.kanjiText.saveToClipboard(text = holder.kanjiText.text as String)
         holder.furiganaContainer.saveToClipboard(text = holder.furiganaText.text as String)
+        holder.englishReading = kanjiInstance.englishReading
+        if (kanjiInstance.englishReading == null) {
+            getDefinition(holder)
+        }
     }
 
     override fun getFactory(): ViewHolderFactory<out ViewHolder> {
@@ -40,14 +63,25 @@ class KanjiListModel(val kanjiText: String, private val readingText: String, val
 
     private class ItemFactory : ViewHolderFactory<ViewHolder> {
         override fun create(v: View): ViewHolder {
-            return ViewHolder(v)
+            val viewHolder = ViewHolder(v)
+            MainApplication.graph.inject(viewHolder)
+            return viewHolder
         }
     }
 
     class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
+        @Inject
+        lateinit var moshi: Moshi
+
+        var englishReading: String? = null
+            set(value) {
+                englishText.visibility = if (value.isNullOrEmpty()) GONE else VISIBLE
+                englishText.text = value ?: ""
+            }
+
         var kanjiText: TextView = view.findViewById(R.id.kanji_text)
         var furiganaText: TextView = view.findViewById(R.id.furigana_text)
-        var englishText: TextView = view.findViewById(R.id.english_text)
+        private var englishText: TextView = view.findViewById(R.id.english_text)
         var furiganaContainer: LinearLayout = view.findViewById(R.id.furigana_container)
     }
 
@@ -57,10 +91,40 @@ class KanjiListModel(val kanjiText: String, private val readingText: String, val
 
     override fun equals(other: Any?): Boolean {
         val rhs = other as? KanjiListModel ?: return false
-        return rhs.kanjiText == kanjiText || rhs.readingText == readingText || rhs.selectedWord == selectedWord
+        return rhs.kanjiText == kanjiText || rhs.readingText == readingText
     }
 
     override fun hashCode(): Int {
         return (kanjiText + readingText).hashCode()
+    }
+
+    private fun getDefinition(holder: ViewHolder) = async(UI) {
+        val english = getJishoModel(kanjiText, holder)?.englishDefinition() ?: return@async
+        kanjiInstance.englishReading = english
+        holder.englishReading = english
+    }
+
+    private suspend fun getJishoModel(forKanji: String, holder: ViewHolder): JishoModel? = suspendCoroutine { continuation ->
+        val dir = "http://jisho.org/api/v1/search/words?keyword="
+        (dir + forKanji).httpGet().responseString { _, _, result ->
+            //do something with response
+            when (result) {
+                is Result.Failure -> {
+                    continuation.resume(null)
+                }
+                is Result.Success -> {
+                    try {
+                        val data = result.get()
+                        val jsonAdapter = holder.moshi.adapter(JishoModel::class.java)
+                        val response = jsonAdapter.fromJson(data)
+                        continuation.resume(response)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        Crashlytics.logException(e)
+                        continuation.resume(null)
+                    }
+                }
+            }
+        }
     }
 }
