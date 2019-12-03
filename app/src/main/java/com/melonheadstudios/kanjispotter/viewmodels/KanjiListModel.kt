@@ -1,6 +1,6 @@
 package com.melonheadstudios.kanjispotter.viewmodels
 
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
@@ -18,10 +18,12 @@ import com.melonheadstudios.kanjispotter.models.englishDefinition
 import com.mikepenz.fastadapter.items.AbstractItem
 import com.mikepenz.fastadapter.utils.ViewHolderFactory
 import com.squareup.moshi.Moshi
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.coroutines.experimental.suspendCoroutine
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 /**
  * kanjispotter
@@ -98,8 +100,8 @@ class KanjiListModel(val kanjiInstance: KanjiInstance): AbstractItem<KanjiListMo
         return (kanjiText + readingText).hashCode()
     }
 
-    private fun getDefinition(holder: ViewHolder) = async(UI) {
-        val english = getJishoModel(kanjiText, holder)?.englishDefinition() ?: return@async
+    private fun getDefinition(holder: ViewHolder) = GlobalScope.launch(Dispatchers.Main) {
+        val english = getJishoModel(kanjiText, holder)?.englishDefinition() ?: return@launch
         kanjiInstance.englishReading = english
         holder.englishReading = english
     }

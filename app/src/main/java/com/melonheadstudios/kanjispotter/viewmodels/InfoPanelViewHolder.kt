@@ -1,9 +1,9 @@
 package com.melonheadstudios.kanjispotter.viewmodels
 
 import android.content.Context
-import android.support.v7.widget.DefaultItemAnimator
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.util.Log
 import android.view.View
 import com.melonheadstudios.kanjispotter.R
@@ -37,12 +37,19 @@ class InfoPanelViewHolder(val context: Context,
     private var headerItems = ArrayList<KanjiSelectionListModel>()
 
     init {
-        list.layoutManager = LinearLayoutManager(context)
+        list.layoutManager =
+            LinearLayoutManager(context)
         list.itemAnimator = DefaultItemAnimator()
         list.adapter = itemAdapter.wrap(fastAdapter)
 
-        headerList.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-        headerList.itemAnimator = DefaultItemAnimator()
+        headerList.layoutManager =
+            LinearLayoutManager(
+                context,
+                LinearLayoutManager.HORIZONTAL,
+                false
+            )
+        headerList.itemAnimator =
+            DefaultItemAnimator()
         headerList.adapter = headerItemAdapter.wrap(headerFastAdapter)
 
         headerFastAdapter.withItemEvent(KanjiSelectionListModel.RadioButtonClickEvent())

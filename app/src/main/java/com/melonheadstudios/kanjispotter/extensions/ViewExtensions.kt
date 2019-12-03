@@ -23,7 +23,7 @@ fun View.saveToClipboard(text: String) {
         val context = v.context
         val clipboard: ClipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         val clip = ClipData.newPlainText("KanjiSpotter", text)
-        clipboard.primaryClip = clip
+        clipboard.setPrimaryClip(clip)
         Toast.makeText(context, "Copied $text to clipboard", Toast.LENGTH_SHORT).show()
         Answers.getInstance().logCustom(CustomEvent(Constants.EVENT_CLIPBOARD))
         true

@@ -6,9 +6,9 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.view.ContextThemeWrapper
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.view.ContextThemeWrapper
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import com.melonheadstudios.kanjispotter.BuildConfig
@@ -110,7 +110,7 @@ class MainActivity : AppCompatActivity() {
         iabManager.unregister(this)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         iabManager.handleResult(requestCode, resultCode, data) {
             super.onActivityResult(requestCode, resultCode, data)
         }

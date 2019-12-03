@@ -3,9 +3,9 @@ package com.melonheadstudios.kanjispotter.activities
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.DefaultItemAnimator
-import android.support.v7.widget.LinearLayoutManager
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.LinearLayoutManager
 import android.view.MenuItem
 import android.view.View
 import android.view.View.GONE
@@ -17,8 +17,9 @@ import com.melonheadstudios.kanjispotter.viewmodels.BlacklistSelectionModel
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import kotlinx.android.synthetic.main.actvity_blacklist.*
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
 
@@ -64,8 +65,10 @@ class BlacklistActivity: AppCompatActivity() {
             updateUI()
         }
 
-        blacklist_list.layoutManager = LinearLayoutManager(this)
-        blacklist_list.itemAnimator = DefaultItemAnimator()
+        blacklist_list.layoutManager =
+            LinearLayoutManager(this)
+        blacklist_list.itemAnimator =
+            DefaultItemAnimator()
         blacklist_list.adapter = itemAdapter.wrap(fastAdapter)
 
         fastAdapter.withItemEvent(BlacklistSelectionModel.CheckButtonClickEvent())
@@ -84,7 +87,7 @@ class BlacklistActivity: AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    private fun populateBlacklist(forceRepopulate: Boolean = false) = async(UI) {
+    private fun populateBlacklist(forceRepopulate: Boolean = false) = GlobalScope.launch(Dispatchers.Main) {
         blacklist_progress.visibility = VISIBLE
         val mainIntent = Intent(Intent.ACTION_MAIN, null)
         mainIntent.addCategory(Intent.CATEGORY_LAUNCHER)
@@ -128,7 +131,7 @@ class BlacklistActivity: AppCompatActivity() {
     }
 
     @SuppressLint("CommitPrefEdits")
-    private fun selectAllBlacklist(selectedAll: Boolean) = async(UI) {
+    private fun selectAllBlacklist(selectedAll: Boolean) = GlobalScope.launch(Dispatchers.Main) {
         prefManager.setAllBlackListChecked(selectedAll)
         blacklist_progress.visibility = VISIBLE
         prefManager.setAllAppsBlackilist(selectedAll, items)

@@ -13,8 +13,9 @@ import com.melonheadstudios.kanjispotter.services.AccessibilityEventHolder
 import com.melonheadstudios.kanjispotter.services.HoverPanelService
 import com.melonheadstudios.kanjispotter.utils.Constants
 import com.squareup.moshi.Moshi
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -50,7 +51,7 @@ class KanjiRepo(private val applicationContext: Context) {
         return kanjiAppDictionary[forApp]?.sortedByDescending { it.dateSearched.time } ?: listOf()
     }
 
-    fun add(kanji: Token, forApp: String) = async(UI) {
+    fun add(kanji: Token, forApp: String) = GlobalScope.launch(Dispatchers.Main) {
         if (kanjiAppDictionary[forApp] == null) {
             kanjiAppDictionary[forApp] = mutableListOf()
         }
@@ -66,14 +67,14 @@ class KanjiRepo(private val applicationContext: Context) {
         kanjiAppDictionary.clear()
     }
 
-    fun parse(event: AccessibilityEventHolder) = async(UI) {
+    fun parse(event: AccessibilityEventHolder) = GlobalScope.launch(Dispatchers.Main) {
         val app = event.packageName
         val text = event.text
-        val tokens = tokenizer.tokenize(text) ?: return@async
+        val tokens = tokenizer.tokenize(text) ?: return@launch
         val knownTokens = tokens.filter { it.isKnown }
 
         if (knownTokens.isEmpty()) {
-            return@async
+            return@launch
         }
 
         if (!applicationContext.isServiceRunning(HoverPanelService::class.java)) {

@@ -43,7 +43,7 @@ class IABManager : IabBroadcastReceiver.IabBroadcastListener {
         MainApplication.graph.inject(this)
     }
 
-    fun handleResult(requestCode: Int, resultCode: Int, data: Intent, completion: () -> Unit) {
+    fun handleResult(requestCode: Int, resultCode: Int, data: Intent?, completion: () -> Unit) {
         Log.d(TAG, "onActivityResult($requestCode,$resultCode,$data")
         mHelper ?: return
 
