@@ -17,8 +17,8 @@ android {
             storePassword 'FM0$5YhPsN@If#5o'
         }
     }
-    compileSdkVersion 27
-    buildToolsVersion '27.0.3'
+    compileSdkVersion 29
+    buildToolsVersion '29.0.0'
     dexOptions {
         javaMaxHeapSize "4g"
     }
@@ -27,8 +27,8 @@ android {
     }
     defaultConfig {
         applicationId "com.melonheadstudios.apps.kanjispotter"
-        minSdkVersion 19
-        targetSdkVersion 27
+        minSdkVersion 21
+        targetSdkVersion 29
         versionCode 6
         versionName "2.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
