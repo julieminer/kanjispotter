@@ -6,29 +6,22 @@ import android.view.View.VISIBLE
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.github.kittinunf.fuel.httpGet
-import com.github.kittinunf.result.Result
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.melonheadstudios.kanjispotter.R
 import com.melonheadstudios.kanjispotter.extensions.saveToClipboard
-import com.melonheadstudios.kanjispotter.models.JishoModel
 import com.melonheadstudios.kanjispotter.models.KanjiInstance
 import com.melonheadstudios.kanjispotter.models.englishDefinition
+import com.melonheadstudios.kanjispotter.services.JishoService
 import com.mikepenz.fastadapter.items.AbstractItem
 import com.mikepenz.fastadapter.utils.ViewHolderFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 /**
  * kanjispotter
  * Created by jake on 2017-04-15, 9:48 PM
  */
-class KanjiListModel(private val kanjiInstance: KanjiInstance): AbstractItem<KanjiListModel, KanjiListModel.ViewHolder>() {
+class KanjiListModel(private val kanjiInstance: KanjiInstance, private val jishoService: JishoService): AbstractItem<KanjiListModel, KanjiListModel.ViewHolder>() {
     private val factory = ItemFactory()
 
 //    private val kanjiText: String, private val readingText: String, val selectedWord: String
@@ -95,31 +88,8 @@ class KanjiListModel(private val kanjiInstance: KanjiInstance): AbstractItem<Kan
     }
 
     private fun getDefinition(holder: ViewHolder) = GlobalScope.launch(Dispatchers.Main) {
-        val english = getJishoModel(kanjiText, holder)?.englishDefinition() ?: return@launch
+        val english = jishoService.get(kanjiText)?.englishDefinition() ?: return@launch
         kanjiInstance.englishReading = english
         holder.englishReading = english
-    }
-
-    private suspend fun getJishoModel(forKanji: String, holder: ViewHolder): JishoModel? = suspendCoroutine { continuation ->
-        val dir = "http://jisho.org/api/v1/search/words?keyword="
-        (dir + forKanji).httpGet().responseString { _, _, result ->
-            //do something with response
-            when (result) {
-                is Result.Failure -> {
-                    continuation.resume(null)
-                }
-                is Result.Success -> {
-                    try {
-                        val data = result.get()
-                        val response = Json { ignoreUnknownKeys = true }.decodeFromString<JishoModel>(data)
-                        continuation.resume(response)
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                        FirebaseCrashlytics.getInstance().recordException(e)
-                        continuation.resume(null)
-                    }
-                }
-            }
-        }
     }
 }

@@ -4,6 +4,7 @@ import android.app.Application
 import com.melonheadstudios.kanjispotter.injection.appModule
 import com.melonheadstudios.kanjispotter.managers.PrefManager
 import com.melonheadstudios.kanjispotter.repos.KanjiRepo
+import com.melonheadstudios.kanjispotter.services.JishoService
 import com.melonheadstudios.kanjispotter.utils.MainThreadBus
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
@@ -17,6 +18,7 @@ class MainApplication: Application() {
     val bus: MainThreadBus by inject()
     val prefManager: PrefManager by inject()
     val kanjiRepo: KanjiRepo by inject()
+    val jishoService: JishoService by inject()
 
     override fun onCreate() {
         super.onCreate()

@@ -62,7 +62,7 @@ class HoverPanelService: HoverMenuService() {
         }
 
         private fun createScreen(): Content {
-            return HoverMenuScreen(context, MainApplication.instance.bus, MainApplication.instance.kanjiRepo)
+            return HoverMenuScreen(context, MainApplication.instance.bus, MainApplication.instance.kanjiRepo, MainApplication.instance.jishoService)
         }
 
         override fun getId(): String {

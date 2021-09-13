@@ -3,6 +3,7 @@ package com.melonheadstudios.kanjispotter.injection
 import com.atilika.kuromoji.ipadic.Tokenizer
 import com.melonheadstudios.kanjispotter.managers.PrefManager
 import com.melonheadstudios.kanjispotter.repos.KanjiRepo
+import com.melonheadstudios.kanjispotter.services.JishoService
 import com.melonheadstudios.kanjispotter.utils.MainThreadBus
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.qualifier.named
@@ -19,4 +20,5 @@ val appModule = module {
     single { PrefManager(get()) }
     single { Tokenizer() }
     single { KanjiRepo(get(), get()) }
+    single { JishoService() }
 }
