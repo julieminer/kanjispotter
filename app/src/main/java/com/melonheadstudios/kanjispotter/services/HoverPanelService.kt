@@ -5,6 +5,7 @@ import android.content.Intent
 import androidx.annotation.Nullable
 import android.view.View
 import android.widget.ImageView
+import androidx.appcompat.app.AppCompatViewInflater
 import com.melonheadstudios.kanjispotter.MainApplication
 import com.melonheadstudios.kanjispotter.R
 import com.melonheadstudios.kanjispotter.managers.PrefManager
@@ -69,10 +70,7 @@ class HoverPanelService: HoverMenuService() {
         }
 
         private fun createTabView(): View {
-            val imageView = ImageView(context)
-            imageView.setImageResource(R.drawable.tab_background)
-            imageView.scaleType = ImageView.ScaleType.CENTER_INSIDE
-            return imageView
+            return View.inflate(context, R.layout.tab_view, null)
         }
 
         private fun createScreen(): Content {
