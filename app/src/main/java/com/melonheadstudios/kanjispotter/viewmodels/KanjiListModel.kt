@@ -9,19 +9,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.melonheadstudios.kanjispotter.R
 import com.melonheadstudios.kanjispotter.extensions.saveToClipboard
 import com.melonheadstudios.kanjispotter.models.KanjiInstance
-import com.melonheadstudios.kanjispotter.models.englishDefinition
-import com.melonheadstudios.kanjispotter.services.JishoService
 import com.mikepenz.fastadapter.items.AbstractItem
 import com.mikepenz.fastadapter.utils.ViewHolderFactory
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 /**
  * kanjispotter
  * Created by jake on 2017-04-15, 9:48 PM
  */
-class KanjiListModel(private val kanjiInstance: KanjiInstance, private val jishoService: JishoService): AbstractItem<KanjiListModel, KanjiListModel.ViewHolder>() {
+class KanjiListModel(private val kanjiInstance: KanjiInstance): AbstractItem<KanjiListModel, KanjiListModel.ViewHolder>() {
     private val factory = ItemFactory()
 
 //    private val kanjiText: String, private val readingText: String, val selectedWord: String
@@ -48,9 +43,6 @@ class KanjiListModel(private val kanjiInstance: KanjiInstance, private val jisho
         holder.kanjiText.saveToClipboard(text = holder.kanjiText.text as String)
         holder.furiganaContainer.saveToClipboard(text = holder.furiganaText.text as String)
         holder.englishReading = kanjiInstance.englishReading
-        if (kanjiInstance.englishReading == null) {
-            getDefinition(holder)
-        }
     }
 
     override fun getFactory(): ViewHolderFactory<out ViewHolder> {
@@ -85,11 +77,5 @@ class KanjiListModel(private val kanjiInstance: KanjiInstance, private val jisho
 
     override fun hashCode(): Int {
         return (kanjiText + readingText).hashCode()
-    }
-
-    private fun getDefinition(holder: ViewHolder) = GlobalScope.launch(Dispatchers.Main) {
-        val english = jishoService.get(kanjiText)?.englishDefinition() ?: return@launch
-        kanjiInstance.englishReading = english
-        holder.englishReading = english
     }
 }

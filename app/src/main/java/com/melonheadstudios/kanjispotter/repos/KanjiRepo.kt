@@ -8,11 +8,13 @@ import com.atilika.kuromoji.ipadic.Tokenizer
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.melonheadstudios.kanjispotter.extensions.isServiceRunning
 import com.melonheadstudios.kanjispotter.models.KanjiInstance
+import com.melonheadstudios.kanjispotter.models.englishDefinition
 import com.melonheadstudios.kanjispotter.services.AccessibilityEventHolder
 import com.melonheadstudios.kanjispotter.services.HoverPanelService
+import com.melonheadstudios.kanjispotter.services.JishoService
 import com.melonheadstudios.kanjispotter.utils.Constants
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.collections.HashMap
@@ -21,7 +23,7 @@ import kotlin.collections.HashMap
  * kanjispotter
  * Created by jake on 2018-05-28, 7:32 PM
  */
-class KanjiRepo(private val appContext: Context, private val tokenizer: Tokenizer) {
+class KanjiRepo(private val appContext: Context, private val tokenizer: Tokenizer, private val appScope: CoroutineScope, private val jishoService: JishoService) {
     private var kanjiAppDictionary = HashMap<String, MutableList<KanjiInstance>>()
 
     private fun has(kanji: String): Boolean {
@@ -36,11 +38,11 @@ class KanjiRepo(private val appContext: Context, private val tokenizer: Tokenize
         return kanjiAppDictionary[forApp]?.sortedByDescending { it.dateSearched.time } ?: listOf()
     }
 
-    fun add(kanji: Token, forApp: String) = GlobalScope.launch(Dispatchers.Main) {
+    fun add(kanji: Token, forApp: String) = appScope.launch(Dispatchers.Main) {
         if (kanjiAppDictionary[forApp] == null) {
             kanjiAppDictionary[forApp] = mutableListOf()
         }
-        val kanjiInstance = KanjiInstance(kanji, Date())
+        val kanjiInstance = KanjiInstance(kanji, Date(), jishoService.get(kanji.baseForm)?.englishDefinition())
         kanjiAppDictionary[forApp]?.add(kanjiInstance)
     }
 
@@ -52,7 +54,7 @@ class KanjiRepo(private val appContext: Context, private val tokenizer: Tokenize
         kanjiAppDictionary.clear()
     }
 
-    fun parse(event: AccessibilityEventHolder) = GlobalScope.launch(Dispatchers.Main) {
+    fun parse(event: AccessibilityEventHolder) = appScope.launch(Dispatchers.Main) {
         val app = event.packageName
         val text = event.text
         val tokens = tokenizer.tokenize(text) ?: return@launch

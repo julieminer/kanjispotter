@@ -70,9 +70,14 @@ dependencies {
         transitive = true
     }
     implementation 'com.mikepenz:fastadapter-commons:2.1.0@aar'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.0'
     implementation 'com.github.atilika.kuromoji:kuromoji-ipadic:0.9.0'
+
     implementation 'androidx.core:core-ktx:1.6.0'
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.4.0-alpha03"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.4.0-alpha03"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0-alpha03"
+
     implementation('io.mattcarroll.hover:hover:0.9.8') {
         exclude group: 'com.android.support', module: 'cardview-v7'
         exclude group: 'com.android.support', module: 'recyclerview-v7'

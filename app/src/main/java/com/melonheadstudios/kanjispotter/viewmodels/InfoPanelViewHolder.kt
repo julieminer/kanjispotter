@@ -77,7 +77,7 @@ class InfoPanelViewHolder(val context: Context,
     fun displayKanji(kanji: List<KanjiInstance>) {
         updateSelections(kanji.map { it.token.baseForm })
         kanji.forEach {
-            items.add(KanjiListModel(it, jishoService))
+            items.add(KanjiListModel(it))
         }
         itemAdapter.set(items)
         headerFastAdapter.deselect()

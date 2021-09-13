@@ -8,6 +8,7 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.melonheadstudios.kanjispotter.R
@@ -17,7 +18,6 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import kotlinx.android.synthetic.main.actvity_blacklist.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import java.util.*
@@ -83,7 +83,7 @@ class BlacklistActivity: AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    private fun populateBlacklist(forceRepopulate: Boolean = false) = GlobalScope.launch(Dispatchers.Main) {
+    private fun populateBlacklist(forceRepopulate: Boolean = false) = lifecycleScope.launch(Dispatchers.Main) {
         blacklist_progress.visibility = VISIBLE
         val mainIntent = Intent(Intent.ACTION_MAIN, null)
         mainIntent.addCategory(Intent.CATEGORY_LAUNCHER)
@@ -127,7 +127,7 @@ class BlacklistActivity: AppCompatActivity() {
     }
 
     @SuppressLint("CommitPrefEdits")
-    private fun selectAllBlacklist(selectedAll: Boolean) = GlobalScope.launch(Dispatchers.Main) {
+    private fun selectAllBlacklist(selectedAll: Boolean) = lifecycleScope.launch(Dispatchers.Main) {
         prefManager.setAllBlackListChecked(selectedAll)
         blacklist_progress.visibility = VISIBLE
         prefManager.setAllAppsBlackilist(selectedAll, items)
