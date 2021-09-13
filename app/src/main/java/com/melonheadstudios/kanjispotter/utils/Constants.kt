@@ -13,12 +13,12 @@ class Constants {
         val APP_BLACKLISTED = "appBlacklisted:"
         val PREFERENCES_KEY = "com.melonhead.android_quick_settings"
 
-        val EVENT_USED = "Parsed Kanji"
-        val EVENT_ADDED_OPTION = "Manually selected words"
-        val EVENT_API = "Checked API"
-        val EVENT_SWITCHED_WORDS = "Switched Words using tabs"
-        val EVENT_CLIPBOARD = "Copied to clipboard"
-        val ATTRIBUTE_WORDS = "Words per use"
-        val ATTRIBUTE_CHARACTERS = "Characters per use"
+        val EVENT_USED = "parsed_kanji"
+        val EVENT_ADDED_OPTION = "manually_selected_words"
+        val EVENT_API = "checked_api"
+        val EVENT_SWITCHED_WORDS = "switched_words_using_tabs"
+        val EVENT_CLIPBOARD = "copied_to_clipboard"
+        val ATTRIBUTE_WORDS = "words_per_use"
+        val ATTRIBUTE_CHARACTERS = "characters_per_use"
     }
 }

@@ -3,8 +3,7 @@ package com.melonheadstudios.kanjispotter.injection
 import android.app.Application
 import android.content.Context
 import com.atilika.kuromoji.ipadic.Tokenizer
-import com.crashlytics.android.Crashlytics
-import com.crashlytics.android.core.CrashlyticsCore
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.melonheadstudios.kanjispotter.BuildConfig
 import com.melonheadstudios.kanjispotter.managers.IABManager
 import com.melonheadstudios.kanjispotter.managers.PrefManager
@@ -14,7 +13,6 @@ import com.melonheadstudios.kanjispotter.utils.MainThreadBus
 import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
-import io.fabric.sdk.android.Fabric
 import javax.inject.Singleton
 
 
@@ -29,8 +27,7 @@ class AndroidModule(private val application: Application) {
     private val tokenizer = Tokenizer()
 
     init {
-        val core = CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build()
-        Fabric.with(application, Crashlytics.Builder().core(core).build())
+        FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(!BuildConfig.DEBUG)
     }
 
     /**

@@ -1,5 +1,6 @@
 package com.melonheadstudios.kanjispotter.viewmodels
 
+import android.os.Bundle
 import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import android.view.View.GONE
@@ -7,8 +8,7 @@ import android.view.View.VISIBLE
 import android.widget.LinearLayout
 import android.widget.RadioButton
 import android.widget.TextView
-import com.crashlytics.android.answers.Answers
-import com.crashlytics.android.answers.CustomEvent
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.melonheadstudios.kanjispotter.R
 import com.melonheadstudios.kanjispotter.extensions.saveToClipboard
 import com.melonheadstudios.kanjispotter.models.InfoPanelSelectedWordEvent
@@ -88,7 +88,9 @@ class KanjiSelectionListModel(val selectedWord: String, val bus: MainThreadBus):
                 }
                 fastAdapter.select(position)
                 item.bus.post(InfoPanelSelectedWordEvent(position))
-                Answers.getInstance().logCustom(CustomEvent(EVENT_SWITCHED_WORDS))
+                v?.let {
+                    FirebaseAnalytics.getInstance(it.context).logEvent(EVENT_SWITCHED_WORDS, Bundle())
+                }
             }
         }
     }

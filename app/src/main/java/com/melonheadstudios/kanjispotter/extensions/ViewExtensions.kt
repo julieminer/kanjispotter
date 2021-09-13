@@ -3,6 +3,7 @@ package com.melonheadstudios.kanjispotter.extensions
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.os.Bundle
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.method.LinkMovementMethod
@@ -10,8 +11,7 @@ import android.text.style.ClickableSpan
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
-import com.crashlytics.android.answers.Answers
-import com.crashlytics.android.answers.CustomEvent
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.melonheadstudios.kanjispotter.utils.Constants
 
 /**
@@ -25,7 +25,7 @@ fun View.saveToClipboard(text: String) {
         val clip = ClipData.newPlainText("KanjiSpotter", text)
         clipboard.setPrimaryClip(clip)
         Toast.makeText(context, "Copied $text to clipboard", Toast.LENGTH_SHORT).show()
-        Answers.getInstance().logCustom(CustomEvent(Constants.EVENT_CLIPBOARD))
+        FirebaseAnalytics.getInstance(context).logEvent(Constants.EVENT_CLIPBOARD, Bundle())
         true
     }
 }

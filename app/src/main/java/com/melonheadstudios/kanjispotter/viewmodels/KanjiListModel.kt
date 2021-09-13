@@ -6,9 +6,9 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.LinearLayout
 import android.widget.TextView
-import com.crashlytics.android.Crashlytics
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.melonheadstudios.kanjispotter.MainApplication
 import com.melonheadstudios.kanjispotter.R
 import com.melonheadstudios.kanjispotter.extensions.saveToClipboard
@@ -122,7 +122,7 @@ class KanjiListModel(val kanjiInstance: KanjiInstance): AbstractItem<KanjiListMo
                         continuation.resume(response)
                     } catch (e: Exception) {
                         e.printStackTrace()
-                        Crashlytics.logException(e)
+                        FirebaseCrashlytics.getInstance().recordException(e)
                         continuation.resume(null)
                     }
                 }

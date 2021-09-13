@@ -2,10 +2,11 @@ package com.melonheadstudios.kanjispotter.repos
 
 import android.content.Context
 import android.content.Intent
+import android.os.Bundle
 import com.atilika.kuromoji.ipadic.Token
 import com.atilika.kuromoji.ipadic.Tokenizer
-import com.crashlytics.android.answers.Answers
-import com.crashlytics.android.answers.CustomEvent
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.melonheadstudios.kanjispotter.MainApplication
 import com.melonheadstudios.kanjispotter.extensions.isServiceRunning
 import com.melonheadstudios.kanjispotter.models.KanjiInstance
@@ -88,6 +89,6 @@ class KanjiRepo(private val applicationContext: Context) {
             }
         }
 
-        Answers.getInstance().logCustom(CustomEvent(Constants.EVENT_API))
+        FirebaseAnalytics.getInstance(applicationContext).logEvent(Constants.EVENT_API, Bundle())
     }
 }

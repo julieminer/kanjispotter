@@ -3,7 +3,7 @@ package com.melonheadstudios.kanjispotter.services
 import android.accessibilityservice.AccessibilityService
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
-import com.crashlytics.android.Crashlytics
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.melonheadstudios.kanjispotter.MainApplication
 import com.melonheadstudios.kanjispotter.extensions.shouldParse
 import com.melonheadstudios.kanjispotter.managers.PrefManager
@@ -38,7 +38,7 @@ class JapaneseTextGrabberService : AccessibilityService() {
             }
             kanjiRepo.parse(AccessibilityEventHolder(event.packageName.toString(), event.text.toString()))
         } catch (e: Exception) {
-            Crashlytics.logException(e)
+            FirebaseCrashlytics.getInstance().recordException(e)
         }
     }
 

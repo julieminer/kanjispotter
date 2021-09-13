@@ -5,9 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.util.Log
-import com.crashlytics.android.Crashlytics
-import com.crashlytics.android.answers.Answers
-import com.crashlytics.android.answers.PurchaseEvent
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.melonheadstudios.kanjispotter.MainApplication
 import com.melonheadstudios.kanjispotter.models.IABUpdateUIEvent
 import com.melonheadstudios.kanjispotter.utils.MainThreadBus
@@ -82,7 +81,7 @@ class IABManager : IabBroadcastReceiver.IabBroadcastListener {
                 }
             }
         } catch (e: Exception) {
-            Crashlytics.logException(e)
+            FirebaseCrashlytics.getInstance().recordException(e)
         }
     }
 
@@ -235,12 +234,13 @@ class IABManager : IabBroadcastReceiver.IabBroadcastListener {
                 Log.d(TAG, "Purchase is premium upgrade. Congratulating user.")
                 alert("Thank you for upgrading to premium!")
                 isPremium = true
-                Answers.getInstance().logPurchase(PurchaseEvent()
-                        .putItemPrice(BigDecimal.valueOf(3.00))
-                        .putCurrency(Currency.getInstance("CAD"))
-                        .putItemName("Premium Status")
-                        .putItemId(REMOVE_ADS)
-                        .putSuccess(true))
+//                FirebaseAnalytics.getInstance()
+//                Answers.getInstance().logPurchase(PurchaseEvent()
+//                        .putItemPrice(BigDecimal.valueOf(3.00))
+//                        .putCurrency(Currency.getInstance("CAD"))
+//                        .putItemName("Premium Status")
+//                        .putItemId(REMOVE_ADS)
+//                        .putSuccess(true))
                 bus.post(IABUpdateUIEvent())
             }
         }
@@ -260,7 +260,7 @@ class IABManager : IabBroadcastReceiver.IabBroadcastListener {
             alert("Error launching purchase flow. Another async operation in progress.")
         } catch (e: Exception) {
             alert(e.localizedMessage)
-            Crashlytics.logException(e)
+            FirebaseCrashlytics.getInstance().recordException(e)
         }
     }
 
