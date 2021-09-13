@@ -11,7 +11,6 @@ import com.melonheadstudios.kanjispotter.models.KanjiInstance
 import com.melonheadstudios.kanjispotter.utils.MainThreadBus
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
-import com.squareup.moshi.Moshi
 
 
 /**
@@ -21,7 +20,7 @@ import com.squareup.moshi.Moshi
 
 class InfoPanelViewHolder(val context: Context,
                           parent: View,
-                          private val bus: MainThreadBus, private val moshi: Moshi) {
+                          private val bus: MainThreadBus) {
     private val tag = "InfoPanelViewHolder"
 
     private val list: RecyclerView = parent.findViewById(R.id.info)
@@ -76,7 +75,7 @@ class InfoPanelViewHolder(val context: Context,
     fun displayKanji(kanji: List<KanjiInstance>) {
         updateSelections(kanji.map { it.token.baseForm })
         kanji.forEach {
-            items.add(KanjiListModel(it, moshi))
+            items.add(KanjiListModel(it))
         }
         itemAdapter.set(items)
         headerFastAdapter.deselect()

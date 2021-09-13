@@ -8,7 +8,6 @@ import com.melonheadstudios.kanjispotter.models.InfoPanelSelectedWordEvent
 import com.melonheadstudios.kanjispotter.repos.KanjiRepo
 import com.melonheadstudios.kanjispotter.utils.MainThreadBus
 import com.melonheadstudios.kanjispotter.viewmodels.InfoPanelViewHolder
-import com.squareup.moshi.Moshi
 import com.squareup.otto.Subscribe
 import io.mattcarroll.hover.Content
 
@@ -17,7 +16,7 @@ import io.mattcarroll.hover.Content
  * Created by jake on 2018-04-28, 3:53 PM
  */
 
-class HoverMenuScreen(val context: Context, val bus: MainThreadBus, val kanjiRepo: KanjiRepo, val moshi: Moshi) : Content {
+class HoverMenuScreen(val context: Context, val bus: MainThreadBus, val kanjiRepo: KanjiRepo) : Content {
     private val tag: String = HoverMenuScreen::class.java.simpleName
 
     init {
@@ -37,7 +36,7 @@ class HoverMenuScreen(val context: Context, val bus: MainThreadBus, val kanjiRep
 
     private fun createScreenView(): View {
         val view = View.inflate(mContext, R.layout.spotter_content, null)
-        viewHolder = InfoPanelViewHolder(mContext, view, bus, moshi)
+        viewHolder = InfoPanelViewHolder(mContext, view, bus)
         return view
     }
 

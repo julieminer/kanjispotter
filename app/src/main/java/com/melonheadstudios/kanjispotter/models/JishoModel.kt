@@ -1,24 +1,24 @@
 package com.melonheadstudios.kanjispotter.models
 
-import se.ansman.kotshi.JsonSerializable
+import kotlinx.serialization.Serializable
 
 /**
  * kanjispotter
  * Created by jake on 2018-04-29, 12:25 PM
  */
 
-@JsonSerializable
+@Serializable
 data class JishoModel(
     val meta: Meta?,
     val data: List<Data>?
 )
 
-@JsonSerializable
+@Serializable
 data class Meta(
     val status: Int?
 )
 
-@JsonSerializable
+@Serializable
 data class Data(
     val is_common: Boolean?,
     val tags: List<String>?,
@@ -26,23 +26,16 @@ data class Data(
     val senses: List<Sense>?
 )
 
-@JsonSerializable
+@Serializable
 data class Japanese(
     val word: String?,
     val reading: String?
 )
 
-@JsonSerializable
+@Serializable
 data class Sense(
     val english_definitions: List<String>?,
-    val parts_of_speech: List<String>?,
-    val links: List<Any>?,
-    val tags: List<Any>?,
-    val restrictions: List<Any>?,
-    val see_also: List<Any>?,
-    val antonyms: List<Any>?,
-    val source: List<Any>?,
-    val info: List<Any>?
+    val parts_of_speech: List<String>?
 )
 
 fun JishoModel.englishDefinition(): String? = data?.first()?.senses?.first()?.english_definitions?.joinToString { it }

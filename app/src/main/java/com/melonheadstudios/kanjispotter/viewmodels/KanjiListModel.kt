@@ -1,15 +1,14 @@
 package com.melonheadstudios.kanjispotter.viewmodels
 
-import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.melonheadstudios.kanjispotter.MainApplication
 import com.melonheadstudios.kanjispotter.R
 import com.melonheadstudios.kanjispotter.extensions.saveToClipboard
 import com.melonheadstudios.kanjispotter.models.JishoModel
@@ -17,11 +16,11 @@ import com.melonheadstudios.kanjispotter.models.KanjiInstance
 import com.melonheadstudios.kanjispotter.models.englishDefinition
 import com.mikepenz.fastadapter.items.AbstractItem
 import com.mikepenz.fastadapter.utils.ViewHolderFactory
-import com.squareup.moshi.Moshi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import javax.inject.Inject
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -29,8 +28,8 @@ import kotlin.coroutines.suspendCoroutine
  * kanjispotter
  * Created by jake on 2017-04-15, 9:48 PM
  */
-class KanjiListModel(private val kanjiInstance: KanjiInstance, moshi: Moshi): AbstractItem<KanjiListModel, KanjiListModel.ViewHolder>() {
-    private val factory = ItemFactory(moshi)
+class KanjiListModel(private val kanjiInstance: KanjiInstance): AbstractItem<KanjiListModel, KanjiListModel.ViewHolder>() {
+    private val factory = ItemFactory()
 
 //    private val kanjiText: String, private val readingText: String, val selectedWord: String
 //    it.token.baseForm, it.token.reading, it.token.baseForm
@@ -65,14 +64,14 @@ class KanjiListModel(private val kanjiInstance: KanjiInstance, moshi: Moshi): Ab
         return factory
     }
 
-    private class ItemFactory(private val moshi: Moshi) : ViewHolderFactory<ViewHolder> {
+    private class ItemFactory() : ViewHolderFactory<ViewHolder> {
         override fun create(v: View): ViewHolder {
-            val viewHolder = ViewHolder(moshi, v)
+            val viewHolder = ViewHolder(v)
             return viewHolder
         }
     }
 
-    class ViewHolder(val moshi: Moshi, view: View): RecyclerView.ViewHolder(view) {
+    class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
 
         var englishReading: String? = null
             set(value) {
@@ -112,8 +111,7 @@ class KanjiListModel(private val kanjiInstance: KanjiInstance, moshi: Moshi): Ab
                 is Result.Success -> {
                     try {
                         val data = result.get()
-                        val jsonAdapter = holder.moshi.adapter(JishoModel::class.java)
-                        val response = jsonAdapter.fromJson(data)
+                        val response = Json { ignoreUnknownKeys = true }.decodeFromString<JishoModel>(data)
                         continuation.resume(response)
                     } catch (e: Exception) {
                         e.printStackTrace()

@@ -5,7 +5,6 @@ import com.melonheadstudios.kanjispotter.injection.appModule
 import com.melonheadstudios.kanjispotter.managers.PrefManager
 import com.melonheadstudios.kanjispotter.repos.KanjiRepo
 import com.melonheadstudios.kanjispotter.utils.MainThreadBus
-import com.squareup.moshi.Moshi
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
@@ -18,7 +17,6 @@ class MainApplication: Application() {
     val bus: MainThreadBus by inject()
     val prefManager: PrefManager by inject()
     val kanjiRepo: KanjiRepo by inject()
-    val moshi: Moshi by inject()
 
     override fun onCreate() {
         super.onCreate()
