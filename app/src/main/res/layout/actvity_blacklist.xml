@@ -38,7 +38,7 @@
                     android:text="Blacklist apps"
                     android:textColor="?attr/themeTextColor" />
 
-                <androidx.legacy.widget.Space
+                <FrameLayout
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_weight="1" />
@@ -63,7 +63,7 @@
                     android:text="Select all"
                     android:textColor="?attr/themeTextColor" />
 
-                <androidx.legacy.widget.Space
+                <FrameLayout
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_weight="1" />

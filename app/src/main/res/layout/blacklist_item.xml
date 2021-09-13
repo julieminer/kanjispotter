@@ -27,7 +27,7 @@
         android:textColor="?attr/themeTextColor"
         tools:text="App Name" />
 
-    <androidx.legacy.widget.Space
+    <FrameLayout
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_weight="1" />
