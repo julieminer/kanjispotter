@@ -3,14 +3,13 @@ package com.melonheadstudios.kanjispotter.activities
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.DefaultItemAnimator
-import androidx.recyclerview.widget.LinearLayoutManager
 import android.view.MenuItem
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
-import com.melonheadstudios.kanjispotter.MainApplication
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.melonheadstudios.kanjispotter.R
 import com.melonheadstudios.kanjispotter.managers.PrefManager
 import com.melonheadstudios.kanjispotter.viewmodels.BlacklistSelectionModel
@@ -20,24 +19,21 @@ import kotlinx.android.synthetic.main.actvity_blacklist.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 import java.util.*
-import javax.inject.Inject
 
 /**
  * kanjispotter
  * Created by jake on 2017-04-22, 12:21 AM
  */
 class BlacklistActivity: AppCompatActivity() {
-    @Inject
-    lateinit var prefManager: PrefManager
+    private val prefManager: PrefManager by inject()
 
     private lateinit var fastAdapter: FastAdapter<BlacklistSelectionModel>
     private lateinit var itemAdapter: ItemAdapter<BlacklistSelectionModel>
     private lateinit var items: ArrayList<BlacklistSelectionModel>
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        MainApplication.graph.inject(this)
-
         title = "Blacklist Settings"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 

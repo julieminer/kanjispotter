@@ -18,7 +18,7 @@ class PrefManager(appContext: Context) {
     val prefs: SharedPreferences = appContext.getSharedPreferences(Constants.PREFERENCES_KEY, Context.MODE_PRIVATE)
 
     fun darkThemeEnabled(): Boolean {
-        return prefs.getBoolean(Constants.DARK_THEME_FLAG, true)
+        return prefs.getBoolean(DARK_THEME_FLAG, true)
     }
 
     fun setDarkTheme(enabled: Boolean) {

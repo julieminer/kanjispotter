@@ -2,21 +2,16 @@ package com.melonheadstudios.kanjispotter.services
 
 import android.content.Context
 import android.content.Intent
-import androidx.annotation.Nullable
 import android.view.View
-import android.widget.ImageView
-import androidx.appcompat.app.AppCompatViewInflater
+import androidx.annotation.Nullable
 import com.melonheadstudios.kanjispotter.MainApplication
 import com.melonheadstudios.kanjispotter.R
-import com.melonheadstudios.kanjispotter.managers.PrefManager
-import com.melonheadstudios.kanjispotter.repos.KanjiRepo
 import com.melonheadstudios.kanjispotter.views.HoverMenuScreen
 import io.mattcarroll.hover.Content
 import io.mattcarroll.hover.HoverMenu
 import io.mattcarroll.hover.HoverView
 import io.mattcarroll.hover.window.HoverMenuService
 import java.util.*
-import javax.inject.Inject
 
 
 /**
@@ -24,20 +19,13 @@ import javax.inject.Inject
  * Created by jake on 2018-04-28, 3:51 PM
  */
 class HoverPanelService: HoverMenuService() {
-    @Inject
-    lateinit var prefManager: PrefManager
-
-    @Inject
-    lateinit var kanjiRepo: KanjiRepo
-
     override fun onCreate() {
-        MainApplication.graph.inject(this)
         updateTheme()
         super.onCreate()
     }
 
     override fun onDestroy() {
-        kanjiRepo.clearAll()
+        MainApplication.instance.kanjiRepo.clearAll()
         super.onDestroy()
     }
 
@@ -51,7 +39,7 @@ class HoverPanelService: HoverMenuService() {
     }
 
     private fun updateTheme() {
-        if (prefManager.darkThemeEnabled()) {
+        if (MainApplication.instance.prefManager.darkThemeEnabled()) {
             setTheme(R.style.AppTheme)
         } else {
             setTheme(R.style.AppThemeLight)
@@ -74,7 +62,7 @@ class HoverPanelService: HoverMenuService() {
         }
 
         private fun createScreen(): Content {
-            return HoverMenuScreen(context)
+            return HoverMenuScreen(context, MainApplication.instance.bus, MainApplication.instance.kanjiRepo, MainApplication.instance.moshi)
         }
 
         override fun getId(): String {

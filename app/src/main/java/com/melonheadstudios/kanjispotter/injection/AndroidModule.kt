@@ -1,71 +1,25 @@
 package com.melonheadstudios.kanjispotter.injection
 
-import android.app.Application
-import android.content.Context
 import com.atilika.kuromoji.ipadic.Tokenizer
-import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.melonheadstudios.kanjispotter.BuildConfig
-import com.melonheadstudios.kanjispotter.managers.IABManager
 import com.melonheadstudios.kanjispotter.managers.PrefManager
 import com.melonheadstudios.kanjispotter.models.ApplicationJsonAdapterFactory
 import com.melonheadstudios.kanjispotter.repos.KanjiRepo
 import com.melonheadstudios.kanjispotter.utils.MainThreadBus
 import com.squareup.moshi.Moshi
-import dagger.Module
-import dagger.Provides
-import javax.inject.Singleton
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.qualifier.named
+import org.koin.dsl.module
 
 
 /**
  * KanjiSpotter
  * Created by jake on 2017-04-15, 10:52 AM
  */
-@Module
-class AndroidModule(private val application: Application) {
-
-    private val bus = MainThreadBus()
-    private val tokenizer = Tokenizer()
-
-    init {
-        FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(!BuildConfig.DEBUG)
-    }
-
-    /**
-     * Allow the application context to be injected but require that it be annotated with [ ][ForApplication] to explicitly differentiate it from an activity context.
-     */
-    @Provides
-    @Singleton
-    @ForApplication
-    fun provideApplicationContext(): Context = application
-
-    @Provides
-    @Singleton
-    fun providesIABManager(): IABManager = IABManager()
-
-    @Provides
-    @Singleton
-    fun providesPrefManager(): PrefManager = PrefManager(application)
-
-    @Provides
-    @Singleton
-    fun providesBus(): MainThreadBus = bus
-
-    @Provides
-    @Singleton
-    fun providesTokenizer(): Tokenizer = tokenizer
-
-    @Provides
-    @Singleton
-    fun providesMoshi(): Moshi = Moshi.Builder().add(ApplicationJsonAdapterFactory.INSTANCE).build()
-
-    @Provides
-    @Singleton
-    fun providesKanjiRepo(): KanjiRepo = KanjiRepo(application)
-
-//    @Provides
-//    @Singleton
-//    @Named("something")
-//    fun provideSomething(): String {
-//        return "something"
-//    }
+val appModule = module {
+    single(named("appContext")) { androidContext() }
+    single { MainThreadBus() }
+    single { PrefManager(get()) }
+    single { Tokenizer() }
+    single { KanjiRepo(get(), get()) }
+    single { Moshi.Builder().add(ApplicationJsonAdapterFactory.INSTANCE).build() }
 }

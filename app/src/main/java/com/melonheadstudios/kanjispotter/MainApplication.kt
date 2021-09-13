@@ -1,25 +1,36 @@
 package com.melonheadstudios.kanjispotter
 
 import android.app.Application
-import com.melonheadstudios.kanjispotter.injection.AndroidModule
-import com.melonheadstudios.kanjispotter.injection.ApplicationComponent
-import com.melonheadstudios.kanjispotter.injection.DaggerApplicationComponent
+import com.melonheadstudios.kanjispotter.injection.appModule
+import com.melonheadstudios.kanjispotter.managers.PrefManager
+import com.melonheadstudios.kanjispotter.repos.KanjiRepo
+import com.melonheadstudios.kanjispotter.utils.MainThreadBus
+import com.squareup.moshi.Moshi
+import org.koin.android.ext.android.inject
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.startKoin
 
 /**
  * MainApplication
  * Created by jake on 2017-04-15, 9:40 AM
  */
 class MainApplication: Application() {
-
-    companion object {
-        //platformStatic allow access it from java code
-        @JvmStatic lateinit var graph: ApplicationComponent
-    }
+    val bus: MainThreadBus by inject()
+    val prefManager: PrefManager by inject()
+    val kanjiRepo: KanjiRepo by inject()
+    val moshi: Moshi by inject()
 
     override fun onCreate() {
         super.onCreate()
-        graph = DaggerApplicationComponent.builder().androidModule(AndroidModule(this)).build()
-        graph.inject(this)
+        startKoin {
+            androidContext(this@MainApplication)
+            modules(appModule)
+        }
+
+        instance = this
     }
 
+    companion object {
+        lateinit var instance: MainApplication
+    }
 }

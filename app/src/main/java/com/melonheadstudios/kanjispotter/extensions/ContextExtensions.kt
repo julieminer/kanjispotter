@@ -11,7 +11,7 @@ import android.util.TypedValue
  * Created by jake on 2017-04-21, 9:51 PM
  */
 fun Context.canDrawOverlays(): Boolean {
-    if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
         return Settings.canDrawOverlays(this)
     }
     return true

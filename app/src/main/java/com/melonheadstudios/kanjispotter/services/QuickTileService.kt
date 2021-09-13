@@ -22,22 +22,13 @@ import javax.inject.Inject
 @SuppressLint("Override")
 @TargetApi(Build.VERSION_CODES.N)
 class QuickTileService: TileService() {
-
-    @Inject
-    lateinit var prefManager: PrefManager
-
-    @Inject
-    lateinit var bus: MainThreadBus
-
     override fun onCreate() {
-        MainApplication.graph.inject(this)
-
         super.onCreate()
-        bus.register(this)
+        MainApplication.instance.bus.register(this)
     }
 
     override fun onDestroy() {
-        bus.unregister(this)
+        MainApplication.instance.bus.unregister(this)
         super.onDestroy()
     }
 
@@ -52,7 +43,7 @@ class QuickTileService: TileService() {
 
     private fun updateTile() {
         val tile = this.qsTile
-        val isActive = prefManager.serviceStatus()
+        val isActive = MainApplication.instance.prefManager.serviceStatus()
 
         val newIcon: Icon
         val newLabel: String
@@ -81,10 +72,10 @@ class QuickTileService: TileService() {
 
     @SuppressLint("CommitPrefEdits")
     private fun toggleServiceStatus(): Boolean {
-        var isActive = prefManager.serviceStatus()
+        var isActive = MainApplication.instance.prefManager.serviceStatus()
         isActive = !isActive
-        prefManager.serviceStatus(isActive)
-        bus.post(InfoPanelPreferenceChanged(isActive))
+        MainApplication.instance.prefManager.serviceStatus(isActive)
+        MainApplication.instance.bus.post(InfoPanelPreferenceChanged(isActive))
         return isActive
     }
 

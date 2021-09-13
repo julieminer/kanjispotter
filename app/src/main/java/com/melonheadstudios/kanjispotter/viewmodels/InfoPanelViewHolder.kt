@@ -7,11 +7,11 @@ import androidx.recyclerview.widget.RecyclerView
 import android.util.Log
 import android.view.View
 import com.melonheadstudios.kanjispotter.R
-import com.melonheadstudios.kanjispotter.managers.IABManager
 import com.melonheadstudios.kanjispotter.models.KanjiInstance
 import com.melonheadstudios.kanjispotter.utils.MainThreadBus
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
+import com.squareup.moshi.Moshi
 
 
 /**
@@ -21,8 +21,7 @@ import com.mikepenz.fastadapter.adapters.ItemAdapter
 
 class InfoPanelViewHolder(val context: Context,
                           parent: View,
-                          iabManager: IABManager,
-                          private val bus: MainThreadBus) {
+                          private val bus: MainThreadBus, private val moshi: Moshi) {
     private val tag = "InfoPanelViewHolder"
 
     private val list: RecyclerView = parent.findViewById(R.id.info)
@@ -53,8 +52,6 @@ class InfoPanelViewHolder(val context: Context,
         headerList.adapter = headerItemAdapter.wrap(headerFastAdapter)
 
         headerFastAdapter.withItemEvent(KanjiSelectionListModel.RadioButtonClickEvent())
-
-        iabManager.setupIAB(context)
     }
 
     private fun updateSelections(selections: List<String>) {
@@ -79,7 +76,7 @@ class InfoPanelViewHolder(val context: Context,
     fun displayKanji(kanji: List<KanjiInstance>) {
         updateSelections(kanji.map { it.token.baseForm })
         kanji.forEach {
-            items.add(KanjiListModel(it))
+            items.add(KanjiListModel(it, moshi))
         }
         itemAdapter.set(items)
         headerFastAdapter.deselect()

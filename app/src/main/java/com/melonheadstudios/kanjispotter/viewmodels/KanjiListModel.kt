@@ -29,7 +29,9 @@ import kotlin.coroutines.suspendCoroutine
  * kanjispotter
  * Created by jake on 2017-04-15, 9:48 PM
  */
-class KanjiListModel(val kanjiInstance: KanjiInstance): AbstractItem<KanjiListModel, KanjiListModel.ViewHolder>() {
+class KanjiListModel(private val kanjiInstance: KanjiInstance, moshi: Moshi): AbstractItem<KanjiListModel, KanjiListModel.ViewHolder>() {
+    private val factory = ItemFactory(moshi)
+
 //    private val kanjiText: String, private val readingText: String, val selectedWord: String
 //    it.token.baseForm, it.token.reading, it.token.baseForm
 
@@ -60,20 +62,17 @@ class KanjiListModel(val kanjiInstance: KanjiInstance): AbstractItem<KanjiListMo
     }
 
     override fun getFactory(): ViewHolderFactory<out ViewHolder> {
-        return FACTORY
+        return factory
     }
 
-    private class ItemFactory : ViewHolderFactory<ViewHolder> {
+    private class ItemFactory(private val moshi: Moshi) : ViewHolderFactory<ViewHolder> {
         override fun create(v: View): ViewHolder {
-            val viewHolder = ViewHolder(v)
-            MainApplication.graph.inject(viewHolder)
+            val viewHolder = ViewHolder(moshi, v)
             return viewHolder
         }
     }
 
-    class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
-        @Inject
-        lateinit var moshi: Moshi
+    class ViewHolder(val moshi: Moshi, view: View): RecyclerView.ViewHolder(view) {
 
         var englishReading: String? = null
             set(value) {
@@ -85,10 +84,6 @@ class KanjiListModel(val kanjiInstance: KanjiInstance): AbstractItem<KanjiListMo
         var furiganaText: TextView = view.findViewById(R.id.furigana_text)
         private var englishText: TextView = view.findViewById(R.id.english_text)
         var furiganaContainer: LinearLayout = view.findViewById(R.id.furigana_container)
-    }
-
-    companion object {
-        private val FACTORY = ItemFactory()
     }
 
     override fun equals(other: Any?): Boolean {

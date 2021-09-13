@@ -4,12 +4,7 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.os.Bundle
-import android.text.SpannableString
-import android.text.Spanned
-import android.text.method.LinkMovementMethod
-import android.text.style.ClickableSpan
 import android.view.View
-import android.widget.TextView
 import android.widget.Toast
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.melonheadstudios.kanjispotter.utils.Constants

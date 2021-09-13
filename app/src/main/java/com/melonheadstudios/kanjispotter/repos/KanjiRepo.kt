@@ -6,38 +6,22 @@ import android.os.Bundle
 import com.atilika.kuromoji.ipadic.Token
 import com.atilika.kuromoji.ipadic.Tokenizer
 import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.melonheadstudios.kanjispotter.MainApplication
 import com.melonheadstudios.kanjispotter.extensions.isServiceRunning
 import com.melonheadstudios.kanjispotter.models.KanjiInstance
 import com.melonheadstudios.kanjispotter.services.AccessibilityEventHolder
 import com.melonheadstudios.kanjispotter.services.HoverPanelService
 import com.melonheadstudios.kanjispotter.utils.Constants
-import com.squareup.moshi.Moshi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.util.*
-import javax.inject.Inject
-import javax.inject.Singleton
 import kotlin.collections.HashMap
 
 /**
  * kanjispotter
  * Created by jake on 2018-05-28, 7:32 PM
  */
-@Singleton
-class KanjiRepo(private val applicationContext: Context) {
-    @Inject
-    lateinit var tokenizer: Tokenizer
-
-    @Inject
-    lateinit var moshi: Moshi
-
-    init {
-        MainApplication.graph.inject(this)
-    }
-
+class KanjiRepo(private val appContext: Context, private val tokenizer: Tokenizer) {
     private var kanjiAppDictionary = HashMap<String, MutableList<KanjiInstance>>()
 
     private fun has(kanji: String): Boolean {
@@ -78,9 +62,9 @@ class KanjiRepo(private val applicationContext: Context) {
             return@launch
         }
 
-        if (!applicationContext.isServiceRunning(HoverPanelService::class.java)) {
-            val startHoverIntent = Intent(applicationContext, HoverPanelService::class.java)
-            applicationContext.startService(startHoverIntent)
+        if (!appContext.isServiceRunning(HoverPanelService::class.java)) {
+            val startHoverIntent = Intent(appContext, HoverPanelService::class.java)
+            appContext.startService(startHoverIntent)
         }
 
         knownTokens.forEach {
@@ -89,6 +73,6 @@ class KanjiRepo(private val applicationContext: Context) {
             }
         }
 
-        FirebaseAnalytics.getInstance(applicationContext).logEvent(Constants.EVENT_API, Bundle())
+        FirebaseAnalytics.getInstance(appContext).logEvent(Constants.EVENT_API, Bundle())
     }
 }

@@ -6,16 +6,12 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.view.ContextThemeWrapper
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import androidx.appcompat.app.AppCompatActivity
 import com.melonheadstudios.kanjispotter.BuildConfig
-import com.melonheadstudios.kanjispotter.MainApplication
 import com.melonheadstudios.kanjispotter.R
 import com.melonheadstudios.kanjispotter.extensions.isServiceRunning
-import com.melonheadstudios.kanjispotter.managers.IABManager
 import com.melonheadstudios.kanjispotter.managers.PrefManager
 import com.melonheadstudios.kanjispotter.models.IABUpdateUIEvent
 import com.melonheadstudios.kanjispotter.models.InfoPanelPreferenceChanged
@@ -24,22 +20,14 @@ import com.melonheadstudios.kanjispotter.services.JapaneseTextGrabberService
 import com.melonheadstudios.kanjispotter.utils.MainThreadBus
 import com.squareup.otto.Subscribe
 import kotlinx.android.synthetic.main.activity_main.*
-import javax.inject.Inject
+import org.koin.android.ext.android.inject
 
 class MainActivity : AppCompatActivity() {
-    @Inject
-    lateinit var iabManager: IABManager
-
-    @Inject
-    lateinit var prefManager: PrefManager
-
-    @Inject
-    lateinit var bus: MainThreadBus
+    private val prefManager: PrefManager by inject()
+    private val bus: MainThreadBus by inject()
 
     @SuppressLint("RestrictedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
-        MainApplication.graph.inject(this)
-
         if (!prefManager.darkThemeEnabled()) {
             setTheme(R.style.AppThemeLight)
         }
@@ -54,20 +42,6 @@ class MainActivity : AppCompatActivity() {
 
         report_issue_button.setOnClickListener {
             reportIssue()
-        }
-
-        donate_button.setOnClickListener {
-            AlertDialog.Builder(ContextThemeWrapper(this, R.style.DialogTheme))
-                    .setMessage("Have you tested your favourite apps? Make sure you do that before donating!")
-                    .setCancelable(true)
-                    .setPositiveButton("Yes", { dialog, _ ->
-                        run {
-                            iabManager.onUpgradeAppButtonClicked(this)
-                            dialog.cancel()
-                        }
-                    })
-                    .setNegativeButton("No", { dialog, _ -> dialog.cancel() })
-                    .create().show()
         }
 
         spotter_overlay_switch.setOnClickListener {
@@ -90,8 +64,6 @@ class MainActivity : AppCompatActivity() {
             val startHoverIntent = Intent(this, HoverPanelService::class.java)
             startService(startHoverIntent)
         }
-
-        iabManager.setupIAB(context = this)
     }
 
     override fun onResume() {
@@ -105,21 +77,7 @@ class MainActivity : AppCompatActivity() {
         bus.unregister(this)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        iabManager.unregister(this)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        iabManager.handleResult(requestCode, resultCode, data) {
-            super.onActivityResult(requestCode, resultCode, data)
-        }
-    }
-
     private fun updateUI() {
-        val isPremium = iabManager.isPremium
-
-        donate_button.visibility = if (isPremium) GONE else VISIBLE
         val overlayEnabled = prefManager.overlayEnabled()
         spotter_overlay_switch.isChecked = overlayEnabled
         theme_dark_switch.isChecked = prefManager.darkThemeEnabled()

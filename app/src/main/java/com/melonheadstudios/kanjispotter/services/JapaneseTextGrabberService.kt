@@ -13,16 +13,8 @@ import javax.inject.Inject
 class JapaneseTextGrabberService : AccessibilityService() {
     private val tag = "JapaneseTextGrabber"
 
-    @Inject
-    lateinit var prefManager: PrefManager
-
-    @Inject
-    lateinit var kanjiRepo: KanjiRepo
-
     override fun onServiceConnected() {
         super.onServiceConnected()
-
-        MainApplication.graph.inject(this)
         Log.d(tag, "Service connected")
     }
 
@@ -31,12 +23,12 @@ class JapaneseTextGrabberService : AccessibilityService() {
             event?.packageName ?: return
             event.text ?: return
             if (!event.shouldParse()) return
-            if (!prefManager.overlayEnabled()) return
-            if (prefManager.blacklistEnabled() &&
-                    prefManager.blacklisted(event.packageName)) {
+            if (!MainApplication.instance.prefManager.overlayEnabled()) return
+            if (MainApplication.instance.prefManager.blacklistEnabled() &&
+                    MainApplication.instance.prefManager.blacklisted(event.packageName)) {
                 return
             }
-            kanjiRepo.parse(AccessibilityEventHolder(event.packageName.toString(), event.text.toString()))
+            MainApplication.instance.kanjiRepo.parse(AccessibilityEventHolder(event.packageName.toString(), event.text.toString()))
         } catch (e: Exception) {
             FirebaseCrashlytics.getInstance().recordException(e)
         }
