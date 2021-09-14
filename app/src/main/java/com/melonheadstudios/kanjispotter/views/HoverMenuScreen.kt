@@ -35,6 +35,10 @@ class HoverMenuScreen(private val kanjiRepo: KanjiRepo, private val scope: Corou
 
     private fun createScreenView(): View {
         val view = View.inflate(mContext, R.layout.spotter_content, null)
+        view.compose_view.setContent {
+            MaterialTheme {
+            }
+        }
         viewHolder = InfoPanelViewHolder(mContext, scope, view) { position ->
             kanjiRepo.select(position)
         }

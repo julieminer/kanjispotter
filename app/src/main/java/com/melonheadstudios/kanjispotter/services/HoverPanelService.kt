@@ -4,6 +4,11 @@ import android.content.Context
 import android.content.Intent
 import android.view.View
 import androidx.annotation.Nullable
+import androidx.lifecycle.*
+import androidx.savedstate.SavedStateRegistry
+import androidx.savedstate.SavedStateRegistryController
+import androidx.savedstate.SavedStateRegistryOwner
+import androidx.savedstate.ViewTreeSavedStateRegistryOwner
 import com.melonheadstudios.kanjispotter.MainApplication
 import com.melonheadstudios.kanjispotter.R
 import com.melonheadstudios.kanjispotter.views.HoverMenuScreen
@@ -15,25 +20,34 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking
 import java.util.*
 
-
 /**
  * kanjispotter
  * Created by jake on 2018-04-28, 3:51 PM
  */
-class HoverPanelService: HoverMenuService() {
+class HoverPanelService: HoverMenuService(), LifecycleOwner, SavedStateRegistryOwner, ViewModelStoreOwner {
+    private val registry = LifecycleRegistry(this)
+    private val savedStateRegistryController = SavedStateRegistryController.create(this)
+
     override fun onCreate() {
         updateTheme()
         super.onCreate()
+        savedStateRegistryController.performRestore(null)
+        registry.currentState = Lifecycle.State.RESUMED
     }
 
     override fun onDestroy() {
-        MainApplication.instance.kanjiRepo.clearAll()
         super.onDestroy()
+        MainApplication.instance.kanjiRepo.clearAll()
+        registry.currentState = Lifecycle.State.DESTROYED
+        store.clear()
     }
 
     override fun onHoverMenuLaunched(intent: Intent, hoverView: HoverView) {
         hoverView.setMenu(createHoverMenu())
         hoverView.collapse()
+        ViewTreeLifecycleOwner.set(hoverView, this)
+        ViewTreeViewModelStoreOwner.set(hoverView, this)
+        ViewTreeSavedStateRegistryOwner.set(hoverView, this)
     }
 
     private fun createHoverMenu(): HoverMenu {
@@ -97,4 +111,16 @@ class HoverPanelService: HoverMenuService() {
             return Collections.singletonList(section)
         }
     }
+
+    override fun getLifecycle(): Lifecycle {
+        return registry
+    }
+
+    override fun getSavedStateRegistry(): SavedStateRegistry {
+        return savedStateRegistryController.savedStateRegistry
+    }
+
+    // ViewModelStore methods
+    private val store = ViewModelStore()
+    override fun getViewModelStore(): ViewModelStore = store
 }
