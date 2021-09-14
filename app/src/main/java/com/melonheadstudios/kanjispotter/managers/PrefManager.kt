@@ -17,28 +17,8 @@ import javax.inject.Singleton
 class PrefManager(appContext: Context) {
     val prefs: SharedPreferences = appContext.getSharedPreferences(Constants.PREFERENCES_KEY, Context.MODE_PRIVATE)
 
-    fun darkThemeEnabled(): Boolean {
-        return prefs.getBoolean(DARK_THEME_FLAG, true)
-    }
-
-    fun setDarkTheme(enabled: Boolean) {
-        prefs.edit().putBoolean(DARK_THEME_FLAG, enabled).commit()
-    }
-
-    fun overlayEnabled(): Boolean {
-        return prefs.getBoolean(Constants.SERVICE_STATUS_FLAG, true)
-    }
-
-    fun blacklistEnabled(): Boolean {
-        return prefs.getBoolean(Constants.BLACKLIST_STATUS_FLAG, false)
-    }
-
     fun blacklisted(packageName: CharSequence): Boolean {
         return prefs.getBoolean(Constants.APP_BLACKLISTED + packageName, false)
-    }
-
-    fun setBlacklist(enabled: Boolean) {
-        prefs.edit().putBoolean(Constants.BLACKLIST_STATUS_FLAG, enabled).apply()
     }
 
     fun allBlackListChecked(): Boolean {
@@ -58,18 +38,5 @@ class PrefManager(appContext: Context) {
             edit.putBoolean(Constants.APP_BLACKLISTED + item.packageName, selectedAll)
         }
         edit.commit()
-    }
-
-    @SuppressLint("CommitPrefEdits")
-    fun setOverlay(enabled: Boolean) {
-        prefs.edit().putBoolean(Constants.SERVICE_STATUS_FLAG, enabled).commit()
-    }
-
-    fun serviceStatus(): Boolean {
-        return prefs.getBoolean(Constants.SERVICE_STATUS_FLAG, true)
-    }
-
-    fun serviceStatus(enabled: Boolean) {
-        prefs.edit().putBoolean(Constants.SERVICE_STATUS_FLAG, enabled).commit()
     }
 }

@@ -4,8 +4,9 @@ import android.app.Application
 import com.melonheadstudios.kanjispotter.injection.appModule
 import com.melonheadstudios.kanjispotter.managers.PrefManager
 import com.melonheadstudios.kanjispotter.repos.KanjiRepo
+import com.melonheadstudios.kanjispotter.services.DataStore
 import com.melonheadstudios.kanjispotter.services.JishoService
-import com.melonheadstudios.kanjispotter.utils.MainThreadBus
+import kotlinx.coroutines.CoroutineScope
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
@@ -15,10 +16,9 @@ import org.koin.core.context.startKoin
  * Created by jake on 2017-04-15, 9:40 AM
  */
 class MainApplication: Application() {
-    val bus: MainThreadBus by inject()
-    val prefManager: PrefManager by inject()
     val kanjiRepo: KanjiRepo by inject()
-    val jishoService: JishoService by inject()
+    val dataStore: DataStore by inject()
+    val scope: CoroutineScope by inject()
 
     override fun onCreate() {
         super.onCreate()

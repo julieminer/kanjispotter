@@ -11,6 +11,8 @@ import io.mattcarroll.hover.Content
 import io.mattcarroll.hover.HoverMenu
 import io.mattcarroll.hover.HoverView
 import io.mattcarroll.hover.window.HoverMenuService
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.runBlocking
 import java.util.*
 
 
@@ -38,8 +40,8 @@ class HoverPanelService: HoverMenuService() {
         return SingleSectionHoverMenu(applicationContext)
     }
 
-    private fun updateTheme() {
-        if (MainApplication.instance.prefManager.darkThemeEnabled()) {
+    private fun updateTheme() = runBlocking {
+        if (MainApplication.instance.dataStore.darkThemeEnabled.firstOrNull() != false) {
             setTheme(R.style.AppTheme)
         } else {
             setTheme(R.style.AppThemeLight)
@@ -47,11 +49,11 @@ class HoverPanelService: HoverMenuService() {
     }
 
     private class SingleSectionHoverMenu(private val context: Context) : HoverMenu() {
-        private val section: HoverMenu.Section
+        private val section: Section
 
         init {
-            section = HoverMenu.Section(
-                    HoverMenu.SectionId("1"),
+            section = Section(
+                    SectionId("1"),
                     createTabView(),
                     createScreen()
             )
@@ -62,7 +64,7 @@ class HoverPanelService: HoverMenuService() {
         }
 
         private fun createScreen(): Content {
-            return HoverMenuScreen(context, MainApplication.instance.bus, MainApplication.instance.kanjiRepo, MainApplication.instance.jishoService)
+            return HoverMenuScreen(MainApplication.instance.kanjiRepo, MainApplication.instance.scope, context)
         }
 
         override fun getId(): String {
@@ -74,7 +76,7 @@ class HoverPanelService: HoverMenuService() {
         }
 
         @Nullable
-        override fun getSection(index: Int): HoverMenu.Section? {
+        override fun getSection(index: Int): Section? {
             return if (0 == index) {
                 section
             } else {
@@ -83,7 +85,7 @@ class HoverPanelService: HoverMenuService() {
         }
 
         @Nullable
-        override fun getSection(sectionId: HoverMenu.SectionId): HoverMenu.Section? {
+        override fun getSection(sectionId: SectionId): Section? {
             return if (sectionId == section.id) {
                 section
             } else {
@@ -91,7 +93,7 @@ class HoverPanelService: HoverMenuService() {
             }
         }
 
-        override fun getSections(): List<HoverMenu.Section> {
+        override fun getSections(): List<Section> {
             return Collections.singletonList(section)
         }
     }

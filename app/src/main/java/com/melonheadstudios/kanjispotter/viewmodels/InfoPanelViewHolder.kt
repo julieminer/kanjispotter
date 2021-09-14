@@ -8,10 +8,9 @@ import android.util.Log
 import android.view.View
 import com.melonheadstudios.kanjispotter.R
 import com.melonheadstudios.kanjispotter.models.KanjiInstance
-import com.melonheadstudios.kanjispotter.services.JishoService
-import com.melonheadstudios.kanjispotter.utils.MainThreadBus
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
+import kotlinx.coroutines.CoroutineScope
 
 
 /**
@@ -20,9 +19,9 @@ import com.mikepenz.fastadapter.adapters.ItemAdapter
  */
 
 class InfoPanelViewHolder(val context: Context,
+                          val scope: CoroutineScope,
                           parent: View,
-                          private val bus: MainThreadBus,
-                          private val jishoService: JishoService) {
+                          onSelect: (Int) -> Unit) {
     private val tag = "InfoPanelViewHolder"
 
     private val list: RecyclerView = parent.findViewById(R.id.info)
@@ -52,12 +51,12 @@ class InfoPanelViewHolder(val context: Context,
             DefaultItemAnimator()
         headerList.adapter = headerItemAdapter.wrap(headerFastAdapter)
 
-        headerFastAdapter.withItemEvent(KanjiSelectionListModel.RadioButtonClickEvent())
+        headerFastAdapter.withItemEvent(KanjiSelectionListModel.RadioButtonClickEvent(onSelect))
     }
 
     private fun updateSelections(selections: List<String>) {
         selections.forEach {
-            val item = KanjiSelectionListModel(it, bus)
+            val item = KanjiSelectionListModel(it)
             if (!headerItems.contains(item)) {
                 headerItems.add(item)
                 headerItemAdapter.set(headerItems)
@@ -77,7 +76,7 @@ class InfoPanelViewHolder(val context: Context,
     fun displayKanji(kanji: List<KanjiInstance>) {
         updateSelections(kanji.map { it.token.baseForm })
         kanji.forEach {
-            items.add(KanjiListModel(it))
+            items.add(KanjiListModel(it, scope))
         }
         itemAdapter.set(items)
         headerFastAdapter.deselect()

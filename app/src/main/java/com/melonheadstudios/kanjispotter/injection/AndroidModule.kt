@@ -3,8 +3,8 @@ package com.melonheadstudios.kanjispotter.injection
 import com.atilika.kuromoji.ipadic.Tokenizer
 import com.melonheadstudios.kanjispotter.managers.PrefManager
 import com.melonheadstudios.kanjispotter.repos.KanjiRepo
+import com.melonheadstudios.kanjispotter.services.DataStore
 import com.melonheadstudios.kanjispotter.services.JishoService
-import com.melonheadstudios.kanjispotter.utils.MainThreadBus
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -20,9 +20,9 @@ import org.koin.dsl.module
 val appModule = module {
     single(named("appContext")) { androidContext() }
     single { CoroutineScope(SupervisorJob() + Dispatchers.Default) }
-    single { MainThreadBus() }
     single { PrefManager(get()) }
     single { Tokenizer() }
     single { KanjiRepo(get(), get(), get(), get()) }
     single { JishoService() }
+    single { DataStore(get()) }
 }

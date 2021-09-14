@@ -11,9 +11,7 @@ import android.widget.TextView
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.melonheadstudios.kanjispotter.R
 import com.melonheadstudios.kanjispotter.extensions.saveToClipboard
-import com.melonheadstudios.kanjispotter.models.InfoPanelSelectedWordEvent
 import com.melonheadstudios.kanjispotter.utils.Constants.Companion.EVENT_SWITCHED_WORDS
-import com.melonheadstudios.kanjispotter.utils.MainThreadBus
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.items.AbstractItem
 import com.mikepenz.fastadapter.listeners.ClickEventHook
@@ -23,7 +21,7 @@ import com.mikepenz.fastadapter.utils.ViewHolderFactory
  * kanjispotter
  * Created by jake on 2017-04-15, 9:48 PM
  */
-class KanjiSelectionListModel(val selectedWord: String, val bus: MainThreadBus): AbstractItem<KanjiSelectionListModel, KanjiSelectionListModel.ViewHolder>() {
+class KanjiSelectionListModel(val selectedWord: String): AbstractItem<KanjiSelectionListModel, KanjiSelectionListModel.ViewHolder>() {
     override fun getType(): Int {
         return R.id.KANJI_LIST_SELECTION_MODEL
     }
@@ -71,9 +69,9 @@ class KanjiSelectionListModel(val selectedWord: String, val bus: MainThreadBus):
         var underline: LinearLayout = view.findViewById(R.id.selected_underline)
     }
 
-    class RadioButtonClickEvent: ClickEventHook<KanjiSelectionListModel>() {
+    class RadioButtonClickEvent(val onSelect: (Int) -> Unit): ClickEventHook<KanjiSelectionListModel>() {
         override fun onBind(viewHolder: RecyclerView.ViewHolder): View? {
-            val v = viewHolder as? KanjiSelectionListModel.ViewHolder ?: return null
+            val v = viewHolder as? ViewHolder ?: return null
             return v.radiobutton
         }
 
@@ -87,7 +85,7 @@ class KanjiSelectionListModel(val selectedWord: String, val bus: MainThreadBus):
                     fastAdapter.notifyItemChanged(selectedPosition)
                 }
                 fastAdapter.select(position)
-                item.bus.post(InfoPanelSelectedWordEvent(position))
+                onSelect(position)
                 v?.let {
                     FirebaseAnalytics.getInstance(it.context).logEvent(EVENT_SWITCHED_WORDS, Bundle())
                 }

@@ -14,7 +14,8 @@ import com.melonheadstudios.kanjispotter.services.HoverPanelService
 import com.melonheadstudios.kanjispotter.services.JishoService
 import com.melonheadstudios.kanjispotter.utils.Constants
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.collections.HashMap
@@ -25,6 +26,11 @@ import kotlin.collections.HashMap
  */
 class KanjiRepo(private val appContext: Context, private val tokenizer: Tokenizer, private val appScope: CoroutineScope, private val jishoService: JishoService) {
     private var kanjiAppDictionary = HashMap<String, MutableList<KanjiInstance>>()
+    private val mutableSelectedKanjiPosition = MutableStateFlow(0)
+    private val mutableParsedKanji = MutableStateFlow<List<KanjiInstance>>(listOf())
+
+    val parsedKanji = mutableParsedKanji.shareIn(appScope, started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 10000), replay = 1)
+    val selectedKanjiPosition = mutableSelectedKanjiPosition.shareIn(appScope, started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 10000), replay = 1)
 
     private fun has(kanji: String): Boolean {
         return allKanji().map { it.token.baseForm }.contains(kanji)
@@ -34,27 +40,24 @@ class KanjiRepo(private val appContext: Context, private val tokenizer: Tokenize
         return kanjiAppDictionary.values.flatMap { it }.sortedByDescending { it.dateSearched.time }
     }
 
-    fun kanji(forApp: String): List<KanjiInstance> {
-        return kanjiAppDictionary[forApp]?.sortedByDescending { it.dateSearched.time } ?: listOf()
-    }
-
-    fun add(kanji: Token, forApp: String) = appScope.launch(Dispatchers.Main) {
+    private suspend fun add(kanji: Token, forApp: String) {
         if (kanjiAppDictionary[forApp] == null) {
             kanjiAppDictionary[forApp] = mutableListOf()
         }
-        val kanjiInstance = KanjiInstance(kanji, Date(), jishoService.get(kanji.baseForm)?.englishDefinition())
+        val kanjiInstance = KanjiInstance(kanji, Date(), appScope.async { jishoService.get(kanji.baseForm)?.englishDefinition() } )
         kanjiAppDictionary[forApp]?.add(kanjiInstance)
     }
 
-    fun clear(fromApp: String) {
-        kanjiAppDictionary[fromApp]?.clear()
-    }
-
-    fun clearAll() {
+    fun clearAll() = appScope.launch  {
         kanjiAppDictionary.clear()
+        mutableParsedKanji.emit(allKanji())
     }
 
-    fun parse(event: AccessibilityEventHolder) = appScope.launch(Dispatchers.Main) {
+    fun select(kanjiPosition: Int) = appScope.launch {
+        mutableSelectedKanjiPosition.emit(kanjiPosition)
+    }
+
+    fun parse(event: AccessibilityEventHolder) = appScope.launch {
         val app = event.packageName
         val text = event.text
         val tokens = tokenizer.tokenize(text) ?: return@launch
@@ -74,6 +77,7 @@ class KanjiRepo(private val appContext: Context, private val tokenizer: Tokenize
                 add(it, app)
             }
         }
+        mutableParsedKanji.emit(allKanji())
 
         FirebaseAnalytics.getInstance(appContext).logEvent(Constants.EVENT_API, Bundle())
     }

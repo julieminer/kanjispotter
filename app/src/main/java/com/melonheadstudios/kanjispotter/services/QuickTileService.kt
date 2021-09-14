@@ -8,12 +8,11 @@ import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import com.melonheadstudios.kanjispotter.MainApplication
 import com.melonheadstudios.kanjispotter.R
-import com.melonheadstudios.kanjispotter.managers.PrefManager
-import com.melonheadstudios.kanjispotter.models.InfoPanelPreferenceChanged
-import com.melonheadstudios.kanjispotter.utils.MainThreadBus
-import com.squareup.otto.Subscribe
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.util.*
-import javax.inject.Inject
 
 /**
  * kanjispotter
@@ -22,28 +21,26 @@ import javax.inject.Inject
 @SuppressLint("Override")
 @TargetApi(Build.VERSION_CODES.N)
 class QuickTileService: TileService() {
-    override fun onCreate() {
-        super.onCreate()
-        MainApplication.instance.bus.register(this)
-    }
-
-    override fun onDestroy() {
-        MainApplication.instance.bus.unregister(this)
-        super.onDestroy()
-    }
+    private val app: MainApplication by lazy { MainApplication.instance }
 
     override fun onStartListening() {
         super.onStartListening()
-        updateTile()
+        app.scope.launch {
+            app.dataStore.overlayEnabled.collect {
+                updateTile(isActive = it == true)
+            }
+        }
     }
 
     override fun onClick() {
-        toggleServiceStatus()
+        runBlocking {
+            val isActive = app.dataStore.overlayEnabled.firstOrNull() ?: false
+            app.dataStore.setOverlayEnabled(!isActive)
+        }
     }
 
-    private fun updateTile() {
+    private fun updateTile(isActive: Boolean) {
         val tile = this.qsTile
-        val isActive = MainApplication.instance.prefManager.serviceStatus()
 
         val newIcon: Icon
         val newLabel: String
@@ -68,19 +65,5 @@ class QuickTileService: TileService() {
 
         // Need to call updateTile for the tile to pick up changes.
         tile.updateTile()
-    }
-
-    @SuppressLint("CommitPrefEdits")
-    private fun toggleServiceStatus(): Boolean {
-        var isActive = MainApplication.instance.prefManager.serviceStatus()
-        isActive = !isActive
-        MainApplication.instance.prefManager.serviceStatus(isActive)
-        MainApplication.instance.bus.post(InfoPanelPreferenceChanged(isActive))
-        return isActive
-    }
-
-    @Subscribe
-    fun onPrefChangedEvent(it: InfoPanelPreferenceChanged) {
-        updateTile()
     }
 }

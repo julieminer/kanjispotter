@@ -11,12 +11,15 @@ import com.melonheadstudios.kanjispotter.extensions.saveToClipboard
 import com.melonheadstudios.kanjispotter.models.KanjiInstance
 import com.mikepenz.fastadapter.items.AbstractItem
 import com.mikepenz.fastadapter.utils.ViewHolderFactory
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 /**
  * kanjispotter
  * Created by jake on 2017-04-15, 9:48 PM
  */
-class KanjiListModel(private val kanjiInstance: KanjiInstance): AbstractItem<KanjiListModel, KanjiListModel.ViewHolder>() {
+class KanjiListModel(private val kanjiInstance: KanjiInstance, private val scope: CoroutineScope): AbstractItem<KanjiListModel, KanjiListModel.ViewHolder>() {
     private val factory = ItemFactory()
 
 //    private val kanjiText: String, private val readingText: String, val selectedWord: String
@@ -42,7 +45,9 @@ class KanjiListModel(private val kanjiInstance: KanjiInstance): AbstractItem<Kan
         holder.furiganaText.text = readingText
         holder.kanjiText.saveToClipboard(text = holder.kanjiText.text as String)
         holder.furiganaContainer.saveToClipboard(text = holder.furiganaText.text as String)
-        holder.englishReading = kanjiInstance.englishReading
+        scope.launch(Dispatchers.Main) {
+            holder.englishReading = kanjiInstance.englishReading.await()
+        }
     }
 
     override fun getFactory(): ViewHolderFactory<out ViewHolder> {

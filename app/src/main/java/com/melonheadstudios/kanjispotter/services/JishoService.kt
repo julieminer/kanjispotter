@@ -8,7 +8,7 @@ import io.ktor.client.features.json.serializer.*
 import io.ktor.client.request.*
 
 class JishoService {
-    private val client = HttpClient() {
+    private val client = HttpClient {
         install(JsonFeature) {
             serializer = KotlinxSerializer(kotlinx.serialization.json.Json {
                 ignoreUnknownKeys = true
