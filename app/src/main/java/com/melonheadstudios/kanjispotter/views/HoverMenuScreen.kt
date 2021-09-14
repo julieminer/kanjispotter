@@ -45,7 +45,9 @@ class HoverMenuScreen(private val kanjiRepo: KanjiRepo, private val scope: Corou
         }
         scope.launch {
             kanjiRepo.selectedKanjiPosition.collect {
-                viewHolder?.selectedPosition(it)
+                scope.launch(Dispatchers.Main) {
+                    viewHolder?.selectedPosition(it)
+                }
             }
         }
         return view
