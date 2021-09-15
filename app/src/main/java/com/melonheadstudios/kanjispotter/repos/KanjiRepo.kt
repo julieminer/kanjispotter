@@ -44,7 +44,7 @@ class KanjiRepo(private val appContext: Context, private val tokenizer: Tokenize
         if (kanjiAppDictionary[forApp] == null) {
             kanjiAppDictionary[forApp] = mutableListOf()
         }
-        val kanjiInstance = KanjiInstance(kanji.baseForm, kanji.reading, Date(), appScope.async { jishoService.get(kanji.baseForm)?.englishDefinition() } )
+        val kanjiInstance = KanjiInstance(kanji.baseForm.trim(), kanji.reading.trim(), Date(), appScope.async { jishoService.get(kanji.baseForm)?.englishDefinition() } )
         if (kanjiInstance.baseForm.isBlank()) {
             return
         }

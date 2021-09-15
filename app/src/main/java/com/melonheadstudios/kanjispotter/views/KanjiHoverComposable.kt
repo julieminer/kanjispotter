@@ -4,11 +4,13 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.melonheadstudios.kanjispotter.models.KanjiInstance
@@ -20,13 +22,21 @@ import java.util.*
 
 @Composable
 fun KanjiClip(kanji: KanjiInstance, isSelected: Boolean, onClicked: () -> Unit) {
-    Text(text = kanji.baseForm,
-            style = MaterialTheme.typography.subtitle2,
-            color = if (isSelected) Color.Green else Color.Black,
+    val color = if (isSelected) Color.Green else Color.Black
+    val shape = RoundedCornerShape(18.dp)
+    Surface(shape = shape,
             modifier = Modifier
-                    .padding(5.dp)
-                    .clickable { onClicked() }
-    )
+                .border(width = 1.dp, color = color, shape = shape)
+                .clickable { onClicked() }) {
+        Text(text = kanji.baseForm,
+                style = MaterialTheme.typography.subtitle2,
+                color = color,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                        .defaultMinSize(minWidth = 44.dp)
+                        .padding(8.dp)
+        )
+    }
 }
 
 @Composable
@@ -93,5 +103,5 @@ fun PreviewKanjiHoverDisplay() {
                 KanjiInstance(baseForm = "主人2", reading = "シュジン", Date(), async { return@async "Husband" }),
         )
     }
-    KanjiHoverDisplay(kanji, setOf(), { })
+    KanjiHoverDisplay(kanji, setOf(kanji.first()), { })
 }
