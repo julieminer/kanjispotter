@@ -9,10 +9,13 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.melonheadstudios.kanjispotter.extensions.horizontalFadingEdge
+import com.melonheadstudios.kanjispotter.extensions.verticalFadingEdge
 import com.melonheadstudios.kanjispotter.models.KanjiInstance
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -26,8 +29,9 @@ fun KanjiClip(kanji: KanjiInstance, isSelected: Boolean, onClicked: () -> Unit) 
     val shape = RoundedCornerShape(18.dp)
     Surface(shape = shape,
             modifier = Modifier
-                .border(width = 1.dp, color = color, shape = shape)
-                .clickable { onClicked() }) {
+                    .border(width = 1.dp, color = color, shape = shape)
+                    .clip(shape = shape)
+                    .clickable { onClicked() }) {
         Text(text = kanji.baseForm,
                 style = MaterialTheme.typography.subtitle2,
                 color = color,
@@ -41,9 +45,12 @@ fun KanjiClip(kanji: KanjiInstance, isSelected: Boolean, onClicked: () -> Unit) 
 
 @Composable
 fun KanjiSelection(kanjiList: Set<KanjiInstance>, filteredKanji: Set<KanjiInstance>, onFilterToggled: (kanji: KanjiInstance) -> Unit, ) {
+    val scrollState = rememberScrollState()
     Row(horizontalArrangement = Arrangement.spacedBy(20.dp),
             modifier = Modifier
-                    .horizontalScroll(rememberScrollState())
+                    .fillMaxWidth()
+                    .horizontalFadingEdge(scrollState, length = 150.dp)
+                    .horizontalScroll(scrollState)
                     .padding(bottom = 10.dp)
     ) {
         kanjiList.forEach { kanji ->
@@ -79,9 +86,13 @@ fun KanjiHoverDisplay(parsedKanji: Set<KanjiInstance>, filteredKanji: Set<KanjiI
             .fillMaxWidth()
             .background(color = Color.White, shape = RoundedCornerShape(32.dp))
             .padding(24.dp)) {
-        Column {
+        val scrollState = rememberScrollState()
+        Column(modifier = Modifier.fillMaxWidth()) {
             KanjiSelection(parsedKanji, filteredKanji, onFilterToggled)
-            Column(Modifier.verticalScroll(rememberScrollState())) {
+            Column(Modifier
+                    .verticalFadingEdge(scrollState, length = 150.dp)
+                    .verticalScroll(scrollState)
+                    .fillMaxWidth()) {
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     val validKanji = if (filteredKanji.isEmpty()) parsedKanji else parsedKanji.filter { filteredKanji.contains(it) }
                     for (kanji in validKanji) {
