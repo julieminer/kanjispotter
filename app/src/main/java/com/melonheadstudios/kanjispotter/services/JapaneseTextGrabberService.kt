@@ -6,11 +6,8 @@ import android.view.accessibility.AccessibilityEvent
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.melonheadstudios.kanjispotter.MainApplication
 import com.melonheadstudios.kanjispotter.extensions.shouldParse
-import com.melonheadstudios.kanjispotter.managers.PrefManager
-import com.melonheadstudios.kanjispotter.repos.KanjiRepo
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking
-import javax.inject.Inject
 
 class JapaneseTextGrabberService : AccessibilityService() {
     private val tag = "JapaneseTextGrabber"

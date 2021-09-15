@@ -23,5 +23,3 @@ fun Context.isServiceRunning(serviceClass: Class<*>): Boolean {
     return manager.getRunningServices(Integer.MAX_VALUE).any { serviceClass.name == it.service.className }
 }
 
-fun Context.pixels(forDP: Float) =
-    TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, forDP, resources.displayMetrics)

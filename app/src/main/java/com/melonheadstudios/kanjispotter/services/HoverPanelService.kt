@@ -78,7 +78,7 @@ class HoverPanelService: HoverMenuService(), LifecycleOwner, SavedStateRegistryO
         }
 
         private fun createScreen(): Content {
-            return HoverMenuScreen(MainApplication.instance.kanjiRepo, MainApplication.instance.scope, context)
+            return HoverMenuScreen(MainApplication.instance.kanjiRepo, context)
         }
 
         override fun getId(): String {

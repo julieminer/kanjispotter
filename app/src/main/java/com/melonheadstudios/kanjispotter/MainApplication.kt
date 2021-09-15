@@ -2,10 +2,8 @@ package com.melonheadstudios.kanjispotter
 
 import android.app.Application
 import com.melonheadstudios.kanjispotter.injection.appModule
-import com.melonheadstudios.kanjispotter.managers.PrefManager
 import com.melonheadstudios.kanjispotter.repos.KanjiRepo
 import com.melonheadstudios.kanjispotter.services.DataStore
-import com.melonheadstudios.kanjispotter.services.JishoService
 import kotlinx.coroutines.CoroutineScope
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext

@@ -2,28 +2,20 @@ package com.melonheadstudios.kanjispotter.views
 
 import android.content.Context
 import android.view.View
-import androidx.lifecycle.coroutineScope
-import androidx.lifecycle.findViewTreeLifecycleOwner
+import androidx.compose.material.MaterialTheme
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.platform.ComposeView
 import com.melonheadstudios.kanjispotter.R
 import com.melonheadstudios.kanjispotter.repos.KanjiRepo
-import com.melonheadstudios.kanjispotter.viewmodels.InfoPanelViewHolder
 import io.mattcarroll.hover.Content
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 
 /**
  * kanjispotter
  * Created by jake on 2018-04-28, 3:53 PM
  */
 
-class HoverMenuScreen(private val kanjiRepo: KanjiRepo, private val scope: CoroutineScope, context: Context) : Content {
-    private val tag: String = HoverMenuScreen::class.java.simpleName
-
+class HoverMenuScreen(private val kanjiRepo: KanjiRepo, context: Context) : Content {
     private val mContext: Context = context.applicationContext
-    private var viewHolder: InfoPanelViewHolder? = null
 
     override fun getView(): View {
         return createScreenView()
@@ -34,24 +26,12 @@ class HoverMenuScreen(private val kanjiRepo: KanjiRepo, private val scope: Corou
     }
 
     private fun createScreenView(): View {
-        val view = View.inflate(mContext, R.layout.spotter_content, null)
-        view.compose_view.setContent {
+        val view = View.inflate(mContext, R.layout.spotter_content, null) as ComposeView
+        view.setContent {
             MaterialTheme {
-            }
-        }
-        viewHolder = InfoPanelViewHolder(mContext, scope, view) { position ->
-            kanjiRepo.select(position)
-        }
-        scope.launch(Dispatchers.Main) {
-            kanjiRepo.parsedKanji.collect {
-                viewHolder?.displayKanji(it)
-            }
-        }
-        scope.launch {
-            kanjiRepo.selectedKanjiPosition.collect {
-                scope.launch(Dispatchers.Main) {
-                    viewHolder?.selectedPosition(it)
-                }
+                val parsedKanji = kanjiRepo.parsedKanji.collectAsState(initial = listOf())
+                val selectedKanjiIndex = kanjiRepo.selectedKanjiPosition.collectAsState(initial = 0)
+                KanjiHoverDisplay(parsedKanji = parsedKanji.value, selectedKanjiIndex = selectedKanjiIndex.value)
             }
         }
         return view

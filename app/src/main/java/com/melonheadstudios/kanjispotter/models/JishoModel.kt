@@ -38,4 +38,4 @@ data class Sense(
     val parts_of_speech: List<String>? = null
 )
 
-fun JishoModel.englishDefinition(): String? = data?.first()?.senses?.first()?.english_definitions?.joinToString { it }
+fun JishoModel.englishDefinition(): String? = data?.firstOrNull()?.senses?.firstOrNull()?.english_definitions?.joinToString { it }

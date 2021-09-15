@@ -33,10 +33,10 @@ class KanjiRepo(private val appContext: Context, private val tokenizer: Tokenize
     val selectedKanjiPosition = mutableSelectedKanjiPosition.shareIn(appScope, started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 10000), replay = 1)
 
     private fun has(kanji: String): Boolean {
-        return allKanji().map { it.token.baseForm }.contains(kanji)
+        return allKanji().map { it.baseForm }.contains(kanji)
     }
 
-    fun allKanji(): List<KanjiInstance> {
+    private fun allKanji(): List<KanjiInstance> {
         return kanjiAppDictionary.values.flatMap { it }.sortedByDescending { it.dateSearched.time }
     }
 
@@ -44,7 +44,10 @@ class KanjiRepo(private val appContext: Context, private val tokenizer: Tokenize
         if (kanjiAppDictionary[forApp] == null) {
             kanjiAppDictionary[forApp] = mutableListOf()
         }
-        val kanjiInstance = KanjiInstance(kanji, Date(), appScope.async { jishoService.get(kanji.baseForm)?.englishDefinition() } )
+        val kanjiInstance = KanjiInstance(kanji.baseForm, kanji.reading, Date(), appScope.async { jishoService.get(kanji.baseForm)?.englishDefinition() } )
+        if (kanjiInstance.baseForm.isBlank()) {
+            return
+        }
         kanjiAppDictionary[forApp]?.add(kanjiInstance)
     }
 
