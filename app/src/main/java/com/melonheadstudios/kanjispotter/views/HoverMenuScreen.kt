@@ -29,9 +29,15 @@ class HoverMenuScreen(private val kanjiRepo: KanjiRepo, context: Context) : Cont
         val view = View.inflate(mContext, R.layout.spotter_content, null) as ComposeView
         view.setContent {
             MaterialTheme {
-                val parsedKanji = kanjiRepo.parsedKanji.collectAsState(initial = listOf())
-                val selectedKanjiIndex = kanjiRepo.selectedKanjiPosition.collectAsState(initial = 0)
-                KanjiHoverDisplay(parsedKanji = parsedKanji.value, selectedKanjiIndex = selectedKanjiIndex.value)
+                val parsedKanji = kanjiRepo.parsedKanji.collectAsState(initial = setOf())
+                val filteredKanji = kanjiRepo.filteredKanji.collectAsState(initial = setOf())
+                KanjiHoverDisplay(
+                        parsedKanji = parsedKanji.value,
+                        filteredKanji = filteredKanji.value,
+                        onFilterToggled = { kanji ->
+                            kanjiRepo.toggleFilter(kanji)
+                        }
+                )
             }
         }
         return view

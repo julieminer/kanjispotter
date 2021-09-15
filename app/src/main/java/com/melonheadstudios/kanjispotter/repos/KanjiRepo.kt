@@ -26,18 +26,18 @@ import kotlin.collections.HashMap
  */
 class KanjiRepo(private val appContext: Context, private val tokenizer: Tokenizer, private val appScope: CoroutineScope, private val jishoService: JishoService) {
     private var kanjiAppDictionary = HashMap<String, MutableList<KanjiInstance>>()
-    private val mutableSelectedKanjiPosition = MutableStateFlow(0)
-    private val mutableParsedKanji = MutableStateFlow<List<KanjiInstance>>(listOf())
+    private val mutableFilteredKanji = MutableStateFlow<Set<KanjiInstance>>(setOf())
+    private val mutableParsedKanji = MutableStateFlow<Set<KanjiInstance>>(setOf())
 
     val parsedKanji = mutableParsedKanji.shareIn(appScope, started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 10000), replay = 1)
-    val selectedKanjiPosition = mutableSelectedKanjiPosition.shareIn(appScope, started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 10000), replay = 1)
+    val filteredKanji = mutableFilteredKanji.shareIn(appScope, started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 10000), replay = 1)
 
     private fun has(kanji: String): Boolean {
         return allKanji().map { it.baseForm }.contains(kanji)
     }
 
-    private fun allKanji(): List<KanjiInstance> {
-        return kanjiAppDictionary.values.flatMap { it }.sortedByDescending { it.dateSearched.time }
+    private fun allKanji(): Set<KanjiInstance> {
+        return kanjiAppDictionary.values.flatMap { it }.sortedByDescending { it.dateSearched.time }.toSet()
     }
 
     private suspend fun add(kanji: Token, forApp: String) {
@@ -56,8 +56,14 @@ class KanjiRepo(private val appContext: Context, private val tokenizer: Tokenize
         mutableParsedKanji.emit(allKanji())
     }
 
-    fun select(kanjiPosition: Int) = appScope.launch {
-        mutableSelectedKanjiPosition.emit(kanjiPosition)
+    fun toggleFilter(kanjiInstance: KanjiInstance) = appScope.launch {
+        var filteredKanji = mutableFilteredKanji.value
+        filteredKanji = if (filteredKanji.contains(kanjiInstance)) {
+            filteredKanji.filter { it != kanjiInstance }.toSet()
+        } else {
+            filteredKanji + kanjiInstance
+        }
+        mutableFilteredKanji.emit(filteredKanji)
     }
 
     fun parse(event: AccessibilityEventHolder) = appScope.launch {
