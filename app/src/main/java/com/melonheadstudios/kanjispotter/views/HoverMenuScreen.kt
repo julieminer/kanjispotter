@@ -34,6 +34,7 @@ class HoverMenuScreen(private val kanjiRepo: KanjiRepo, context: Context) : Cont
                 KanjiHoverDisplay(
                         parsedKanji = parsedKanji.value,
                         filteredKanji = filteredKanji.value,
+                        showAllClicked = { kanjiRepo.toggleAllClicked() },
                         onFilterToggled = { kanji ->
                             kanjiRepo.toggleFilter(kanji)
                         }

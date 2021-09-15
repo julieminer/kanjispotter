@@ -1,5 +1,7 @@
 package com.melonheadstudios.kanjispotter.views
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,15 +26,15 @@ import kotlinx.coroutines.runBlocking
 import java.util.*
 
 @Composable
-fun KanjiClip(kanji: KanjiInstance, isSelected: Boolean, onClicked: () -> Unit) {
-    val color = if (isSelected) Color.Green else Color.Black
+fun Clip(text: String, isSelected: Boolean, onClicked: () -> Unit) {
+    val color = if (isSelected) Color.Black else Color.Black.copy(alpha = 0.2f)
     val shape = RoundedCornerShape(18.dp)
     Surface(shape = shape,
             modifier = Modifier
                     .border(width = 1.dp, color = color, shape = shape)
                     .clip(shape = shape)
                     .clickable { onClicked() }) {
-        Text(text = kanji.baseForm,
+        Text(text = text,
                 style = MaterialTheme.typography.subtitle2,
                 color = color,
                 textAlign = TextAlign.Center,
@@ -43,18 +45,31 @@ fun KanjiClip(kanji: KanjiInstance, isSelected: Boolean, onClicked: () -> Unit) 
     }
 }
 
+
 @Composable
-fun KanjiSelection(kanjiList: Set<KanjiInstance>, filteredKanji: Set<KanjiInstance>, onFilterToggled: (kanji: KanjiInstance) -> Unit, ) {
+fun ShowAllClip(allOn: Boolean, onClicked: () -> Unit) {
+    Clip(text = if (allOn) "Show None" else "Show All", isSelected = allOn, onClicked = onClicked)
+}
+
+
+@Composable
+fun KanjiClip(kanji: KanjiInstance, isSelected: Boolean, onClicked: () -> Unit) {
+    Clip(kanji.baseForm, isSelected, onClicked)
+}
+
+@Composable
+fun KanjiSelection(kanjiList: Set<KanjiInstance>, filteredKanji: Set<KanjiInstance>, selectAll: () -> Unit, onFilterToggled: (kanji: KanjiInstance) -> Unit, ) {
     val scrollState = rememberScrollState()
-    Row(horizontalArrangement = Arrangement.spacedBy(20.dp),
+    Row(horizontalArrangement = Arrangement.spacedBy(10.dp),
             modifier = Modifier
                     .fillMaxWidth()
                     .horizontalFadingEdge(scrollState, length = 150.dp)
                     .horizontalScroll(scrollState)
                     .padding(bottom = 10.dp)
     ) {
+        ShowAllClip(onClicked = selectAll, allOn = filteredKanji.isEmpty())
         kanjiList.forEach { kanji ->
-            KanjiClip(kanji = kanji, isSelected = filteredKanji.contains(kanji), onClicked = {
+            KanjiClip(kanji = kanji, isSelected = !filteredKanji.contains(kanji), onClicked = {
                 onFilterToggled(kanji)
             })
         }
@@ -80,23 +95,25 @@ fun KanjiEntry(kanji: KanjiInstance) {
 }
 
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun KanjiHoverDisplay(parsedKanji: Set<KanjiInstance>, filteredKanji: Set<KanjiInstance>, onFilterToggled: (kanji: KanjiInstance) -> Unit) {
+fun KanjiHoverDisplay(parsedKanji: Set<KanjiInstance>, filteredKanji: Set<KanjiInstance>, showAllClicked: () -> Unit, onFilterToggled: (kanji: KanjiInstance) -> Unit) {
     Box(modifier = Modifier
             .fillMaxWidth()
             .background(color = Color.White, shape = RoundedCornerShape(32.dp))
             .padding(24.dp)) {
         val scrollState = rememberScrollState()
         Column(modifier = Modifier.fillMaxWidth()) {
-            KanjiSelection(parsedKanji, filteredKanji, onFilterToggled)
+            KanjiSelection(parsedKanji, filteredKanji, showAllClicked, onFilterToggled)
             Column(Modifier
                     .verticalFadingEdge(scrollState, length = 150.dp)
                     .verticalScroll(scrollState)
                     .fillMaxWidth()) {
-                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    val validKanji = if (filteredKanji.isEmpty()) parsedKanji else parsedKanji.filter { filteredKanji.contains(it) }
-                    for (kanji in validKanji) {
-                        KanjiEntry(kanji = kanji)
+                AnimatedContent(targetState = parsedKanji.filter { !filteredKanji.contains(it) }) { validKanji ->
+                    Column(verticalArrangement = Arrangement.spacedBy(15.dp)) {
+                        for (kanji in validKanji) {
+                            KanjiEntry(kanji = kanji)
+                        }
                     }
                 }
             }
@@ -114,5 +131,5 @@ fun PreviewKanjiHoverDisplay() {
                 KanjiInstance(baseForm = "主人2", reading = "シュジン", Date(), async { return@async "Husband" }),
         )
     }
-    KanjiHoverDisplay(kanji, setOf(kanji.first()), { })
+    KanjiHoverDisplay(kanji, setOf(kanji.first()), { }, { })
 }

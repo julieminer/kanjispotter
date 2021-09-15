@@ -66,6 +66,15 @@ class KanjiRepo(private val appContext: Context, private val tokenizer: Tokenize
         mutableFilteredKanji.emit(filteredKanji)
     }
 
+    fun toggleAllClicked() = appScope.launch {
+        val filteredKanji = mutableFilteredKanji.value
+        val allKanji = allKanji()
+        when (filteredKanji.count()) {
+            allKanji.count() -> mutableFilteredKanji.emit(setOf())
+            else -> mutableFilteredKanji.emit(allKanji)
+        }
+    }
+
     fun parse(event: AccessibilityEventHolder) = appScope.launch {
         val app = event.packageName
         val text = event.text
@@ -87,6 +96,7 @@ class KanjiRepo(private val appContext: Context, private val tokenizer: Tokenize
             }
         }
         mutableParsedKanji.emit(allKanji())
+        mutableFilteredKanji.emit(setOf())
 
         FirebaseAnalytics.getInstance(appContext).logEvent(Constants.EVENT_API, Bundle())
     }
