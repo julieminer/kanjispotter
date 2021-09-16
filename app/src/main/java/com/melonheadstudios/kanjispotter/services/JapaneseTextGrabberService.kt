@@ -25,13 +25,10 @@ class JapaneseTextGrabberService : AccessibilityService() {
             if (!event.shouldParse()) return
             runBlocking {
                 if (app.dataStore.overlayEnabled.firstOrNull() != true) return@runBlocking
-//                if (app.dataStore.blackListEnabled.firstOrNull() == true)
-                MainApplication.instance.kanjiRepo.parse(AccessibilityEventHolder(event.packageName.toString(), event.text.toString()))
+                if (app.dataStore.blackListEnabled.firstOrNull() == true &&
+                        app.dataStore.blackListedApps.firstOrNull()?.contains(event.packageName) == true) return@runBlocking
+                    MainApplication.instance.kanjiRepo.parse(AccessibilityEventHolder(event.packageName.toString(), event.text.toString()))
             }
-//            if (MainApplication.instance.prefManager.blacklistEnabled() &&
-//                    MainApplication.instance.prefManager.blacklisted(event.packageName)) {
-//                return
-//            }
         } catch (e: Exception) {
             FirebaseCrashlytics.getInstance().recordException(e)
         }

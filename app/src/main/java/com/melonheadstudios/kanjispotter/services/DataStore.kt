@@ -3,6 +3,7 @@ package com.melonheadstudios.kanjispotter.services
 import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.melonheadstudios.kanjispotter.utils.Constants
 import kotlinx.coroutines.flow.map
@@ -19,8 +20,8 @@ class DataStore(private val appContext: Context) {
     private val blackListKey = booleanPreferencesKey(Constants.BLACKLIST_STATUS_FLAG)
     val blackListEnabled = appContext.dataStore.data.map { preferences -> preferences[blackListKey]  }
 
-    private val blackListAllKey = booleanPreferencesKey(Constants.BLACKLIST_SELECTION_STATUS_FLAG)
-    val blackListAllEnabled = appContext.dataStore.data.map { preferences -> preferences[blackListAllKey]  }
+    private val blackListAppsKey = stringSetPreferencesKey(Constants.BLACKLIST_SELECTION_STATUS_FLAG)
+    val blackListedApps = appContext.dataStore.data.map { preferences -> preferences[blackListAppsKey]  }
 
     suspend fun setDarkThemeEnabled(enabled: Boolean) {
         appContext.dataStore.edit { settings -> settings[darkThemeKey] = enabled }
@@ -34,7 +35,7 @@ class DataStore(private val appContext: Context) {
         appContext.dataStore.edit { settings -> settings[blackListKey] = enabled }
     }
 
-    suspend fun setBlackListAllEnabled(enabled: Boolean) {
-        appContext.dataStore.edit { settings -> settings[blackListAllKey] = enabled }
+    suspend fun setBlackListApps(apps: Set<String>) {
+        appContext.dataStore.edit { settings -> settings[blackListAppsKey] = apps }
     }
 }

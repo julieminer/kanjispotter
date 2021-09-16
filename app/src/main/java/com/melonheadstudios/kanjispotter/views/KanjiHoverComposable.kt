@@ -18,7 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.melonheadstudios.kanjispotter.extensions.horizontalFadingEdge
 import com.melonheadstudios.kanjispotter.extensions.verticalFadingEdge
-import com.melonheadstudios.kanjispotter.models.KanjiInstance
+import com.melonheadstudios.kanjispotter.models.Kanji
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -53,12 +53,12 @@ fun ShowAllClip(allOn: Boolean, onClicked: () -> Unit) {
 
 
 @Composable
-fun KanjiClip(kanji: KanjiInstance, isSelected: Boolean, onClicked: () -> Unit) {
+fun KanjiClip(kanji: Kanji, isSelected: Boolean, onClicked: () -> Unit) {
     Clip(kanji.baseForm, isSelected, onClicked)
 }
 
 @Composable
-fun KanjiSelection(kanjiList: Set<KanjiInstance>, filteredKanji: Set<KanjiInstance>, selectAll: () -> Unit, onFilterToggled: (kanji: KanjiInstance) -> Unit, ) {
+fun KanjiSelection(kanjiList: Set<Kanji>, filteredKanji: Set<Kanji>, selectAll: () -> Unit, onFilterToggled: (kanji: Kanji) -> Unit, ) {
     val scrollState = rememberScrollState()
     Row(horizontalArrangement = Arrangement.spacedBy(10.dp),
             modifier = Modifier
@@ -77,7 +77,7 @@ fun KanjiSelection(kanjiList: Set<KanjiInstance>, filteredKanji: Set<KanjiInstan
 }
 
 @Composable
-fun KanjiEntry(kanji: KanjiInstance) {
+fun KanjiEntry(kanji: Kanji) {
     val coroutineScope = rememberCoroutineScope()
     val englishReading = remember { mutableStateOf("") }
     SideEffect {
@@ -97,7 +97,7 @@ fun KanjiEntry(kanji: KanjiInstance) {
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun KanjiHoverDisplay(parsedKanji: Set<KanjiInstance>, filteredKanji: Set<KanjiInstance>, showAllClicked: () -> Unit, onFilterToggled: (kanji: KanjiInstance) -> Unit) {
+fun KanjiHoverDisplay(parsedKanji: Set<Kanji>, filteredKanji: Set<Kanji>, showAllClicked: () -> Unit, onFilterToggled: (kanji: Kanji) -> Unit) {
     Box(modifier = Modifier
             .fillMaxWidth()
             .background(color = Color.White, shape = RoundedCornerShape(32.dp))
@@ -126,9 +126,9 @@ fun KanjiHoverDisplay(parsedKanji: Set<KanjiInstance>, filteredKanji: Set<KanjiI
 fun PreviewKanjiHoverDisplay() {
     val kanji = runBlocking {
         setOf(
-                KanjiInstance(baseForm = "主人", reading = "シュジン", Date(), async { return@async "Husband" }),
-                KanjiInstance(baseForm = "主人1", reading = "シュジン", Date(), async { return@async "Husband" }),
-                KanjiInstance(baseForm = "主人2", reading = "シュジン", Date(), async { return@async "Husband" }),
+                Kanji(baseForm = "主人", reading = "シュジン", Date(), async { return@async "Husband" }),
+                Kanji(baseForm = "主人1", reading = "シュジン", Date(), async { return@async "Husband" }),
+                Kanji(baseForm = "主人2", reading = "シュジン", Date(), async { return@async "Husband" }),
         )
     }
     KanjiHoverDisplay(kanji, setOf(kanji.first()), { }, { })

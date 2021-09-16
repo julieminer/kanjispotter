@@ -7,7 +7,7 @@ import com.atilika.kuromoji.ipadic.Token
 import com.atilika.kuromoji.ipadic.Tokenizer
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.melonheadstudios.kanjispotter.extensions.isServiceRunning
-import com.melonheadstudios.kanjispotter.models.KanjiInstance
+import com.melonheadstudios.kanjispotter.models.Kanji
 import com.melonheadstudios.kanjispotter.models.englishDefinition
 import com.melonheadstudios.kanjispotter.services.AccessibilityEventHolder
 import com.melonheadstudios.kanjispotter.services.HoverPanelService
@@ -25,9 +25,9 @@ import kotlin.collections.HashMap
  * Created by jake on 2018-05-28, 7:32 PM
  */
 class KanjiRepo(private val appContext: Context, private val tokenizer: Tokenizer, private val appScope: CoroutineScope, private val jishoService: JishoService) {
-    private var kanjiAppDictionary = HashMap<String, MutableList<KanjiInstance>>()
-    private val mutableFilteredKanji = MutableStateFlow<Set<KanjiInstance>>(setOf())
-    private val mutableParsedKanji = MutableStateFlow<Set<KanjiInstance>>(setOf())
+    private var kanjiAppDictionary = HashMap<String, MutableList<Kanji>>()
+    private val mutableFilteredKanji = MutableStateFlow<Set<Kanji>>(setOf())
+    private val mutableParsedKanji = MutableStateFlow<Set<Kanji>>(setOf())
 
     val parsedKanji = mutableParsedKanji.shareIn(appScope, started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 10000), replay = 1)
     val filteredKanji = mutableFilteredKanji.shareIn(appScope, started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 10000), replay = 1)
@@ -36,7 +36,7 @@ class KanjiRepo(private val appContext: Context, private val tokenizer: Tokenize
         return allKanji().map { it.baseForm }.contains(kanji)
     }
 
-    private fun allKanji(): Set<KanjiInstance> {
+    private fun allKanji(): Set<Kanji> {
         return kanjiAppDictionary.values.flatMap { it }.sortedByDescending { it.dateSearched.time }.toSet()
     }
 
@@ -44,7 +44,7 @@ class KanjiRepo(private val appContext: Context, private val tokenizer: Tokenize
         if (kanjiAppDictionary[forApp] == null) {
             kanjiAppDictionary[forApp] = mutableListOf()
         }
-        val kanjiInstance = KanjiInstance(kanji.baseForm.trim(), kanji.reading.trim(), Date(), appScope.async { jishoService.get(kanji.baseForm)?.englishDefinition() } )
+        val kanjiInstance = Kanji(kanji.baseForm.trim(), kanji.reading.trim(), Date(), appScope.async { jishoService.get(kanji.baseForm)?.englishDefinition() } )
         if (kanjiInstance.baseForm.isBlank()) {
             return
         }
@@ -56,12 +56,12 @@ class KanjiRepo(private val appContext: Context, private val tokenizer: Tokenize
         mutableParsedKanji.emit(allKanji())
     }
 
-    fun toggleFilter(kanjiInstance: KanjiInstance) = appScope.launch {
+    fun toggleFilter(kanji: Kanji) = appScope.launch {
         var filteredKanji = mutableFilteredKanji.value
-        filteredKanji = if (filteredKanji.contains(kanjiInstance)) {
-            filteredKanji.filter { it != kanjiInstance }.toSet()
+        filteredKanji = if (filteredKanji.contains(kanji)) {
+            filteredKanji.filter { it != kanji }.toSet()
         } else {
-            filteredKanji + kanjiInstance
+            filteredKanji + kanji
         }
         mutableFilteredKanji.emit(filteredKanji)
     }
