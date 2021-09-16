@@ -70,8 +70,8 @@ class KanjiRepo(private val appContext: Context, private val tokenizer: Tokenize
         val filteredKanji = mutableFilteredKanji.value
         val allKanji = allKanji()
         when (filteredKanji.count()) {
-            allKanji.count() -> mutableFilteredKanji.emit(setOf())
-            else -> mutableFilteredKanji.emit(allKanji)
+            0 -> mutableFilteredKanji.emit(allKanji)
+            else -> mutableFilteredKanji.emit(setOf())
         }
     }
 
