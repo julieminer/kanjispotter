@@ -8,13 +8,14 @@ import android.os.Bundle
 import android.provider.Settings
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.melonheadstudios.kanjispotter.BuildConfig
 import com.melonheadstudios.kanjispotter.R
+import com.melonheadstudios.kanjispotter.activities.fragments.NotificationHelper
 import com.melonheadstudios.kanjispotter.extensions.isServiceRunning
 import com.melonheadstudios.kanjispotter.services.DataStore
-import com.melonheadstudios.kanjispotter.services.HoverPanelService
 import com.melonheadstudios.kanjispotter.services.JapaneseTextGrabberService
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.flow.collect
@@ -25,6 +26,7 @@ import org.koin.android.ext.android.inject
 
 class MainActivity : AppCompatActivity() {
     private val dataStore: DataStore by inject()
+    lateinit var helper: NotificationHelper
 
     @SuppressLint("RestrictedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,11 +38,14 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        helper = NotificationHelper(applicationContext)
+        helper.setUpNotificationChannels()
+
         debug_button.visibility = if (BuildConfig.DEBUG) VISIBLE else GONE
 
-        if (shouldLaunchOnboarding()) {
-            startActivity(Intent(this, KanjiOnboardingActivity::class.java))
-        }
+//        if (shouldLaunchOnboarding()) {
+//            startActivity(Intent(this, KanjiOnboardingActivity::class.java))
+//        }
 
         lifecycleScope.launch {
             dataStore.overlayEnabled.collect {
@@ -75,9 +80,21 @@ class MainActivity : AppCompatActivity() {
 //        }
 
         debug_button.setOnClickListener {
-            val startHoverIntent = Intent(this, HoverPanelService::class.java)
-            startService(startHoverIntent)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                makeBubble()
+            }
         }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    private fun makeBubble() {
+        if (!helper.canBubble()) {
+            startActivityForResult(
+                    Intent(Settings.ACTION_APP_NOTIFICATION_BUBBLE_SETTINGS).putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName()),
+                    1);
+            return
+        }
+        helper.updateNotification()
     }
 
     private fun updateOverlay(enabled: Boolean) {
@@ -93,10 +110,7 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("WrongConstant")
     private fun setDarkThemeEnabled(enabled: Boolean) = lifecycleScope.launch {
         dataStore.setDarkThemeEnabled(enabled)
-        if (isServiceRunning(HoverPanelService::class.java)) {
-            val service = Intent(applicationContext, HoverPanelService::class.java)
-            stopService(service)
-        }
+        // TODO: 2021-09-16 check if bubbles are on
         this@MainActivity.finish()
         val intent = this@MainActivity.intent
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -118,8 +132,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun reportIssue() {
-        val emailIntent = Intent(Intent.ACTION_SENDTO, Uri.fromParts(
-                "mailto", "melonheadstudiosapps@gmail.com", null))
+        val emailIntent = Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", "melonheadstudiosapps@gmail.com", null))
         emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Issue report")
         val userInfo = "Build Number: ${BuildConfig.VERSION_CODE}\n Version: ${BuildConfig.VERSION_NAME}\n " +
                 "Model: ${Build.MODEL}\n Manufacturer: ${Build.MANUFACTURER}\n" +

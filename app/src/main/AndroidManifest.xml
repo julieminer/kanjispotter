@@ -4,8 +4,6 @@
     package="com.melonheadstudios.kanjispotter">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-    <uses-permission android:name="com.android.vending.BILLING" />
 
     <application
         android:name=".MainApplication"
@@ -13,8 +11,9 @@
         android:icon="@drawable/app_icon"
         android:label="@string/app_name"
         android:usesCleartextTraffic="true"
-        tools:replace="android:allowBackup">
-        <service
+        tools:replace="android:allowBackup"
+        android:launchMode="singleTop">
+            <service
             android:name=".services.JapaneseTextGrabberService"
             android:label="@string/app_name"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
@@ -35,19 +34,52 @@
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
             </intent-filter>
         </service>
-        <service android:name=".services.HoverPanelService" />
 
         <activity android:name=".activities.MainActivity"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:host="com.melonheadstudios.kanjispotter"
+                    android:pathPattern="/chat/*"
+                    android:scheme="https" />
+            </intent-filter>
+            <!--
+                This opens the chat screen with the message field filled with the passed text.
+                This is necessary for making our dynamic shortcuts appear in Direct Share.
+            -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
         </activity>
         <activity android:name=".activities.KanjiOnboardingActivity"
             android:theme="@style/AppTheme" />
-        <activity android:name=".activities.BlacklistActivity"
-            android:theme="@style/AppTheme" />
+        <activity android:name=".activities.KanjiBubbleActivity"
+            android:theme="@style/AppTheme"
+            android:allowEmbedded="true"
+            android:documentLaunchMode="always"
+            android:resizeableActivity="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:host="com.melonheadstudios.kanjispotter"
+                    android:pathPattern="/chat/*"
+                    android:scheme="https" />
+            </intent-filter>
+        </activity>
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="0a42b40a552517099cb9cc3566d71400743e7984" />

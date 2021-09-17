@@ -99,7 +99,7 @@ fun KanjiEntry(kanji: Kanji) {
 @Composable
 fun KanjiHoverDisplay(parsedKanji: Set<Kanji>, filteredKanji: Set<Kanji>, showAllClicked: () -> Unit, onFilterToggled: (kanji: Kanji) -> Unit) {
     Box(modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxSize()
             .background(color = Color.White, shape = RoundedCornerShape(32.dp))
             .padding(24.dp)) {
         val scrollState = rememberScrollState()
@@ -126,9 +126,9 @@ fun KanjiHoverDisplay(parsedKanji: Set<Kanji>, filteredKanji: Set<Kanji>, showAl
 fun PreviewKanjiHoverDisplay() {
     val kanji = runBlocking {
         setOf(
-                Kanji(baseForm = "主人", reading = "シュジン", Date(), async { return@async "Husband" }),
-                Kanji(baseForm = "主人1", reading = "シュジン", Date(), async { return@async "Husband" }),
-                Kanji(baseForm = "主人2", reading = "シュジン", Date(), async { return@async "Husband" }),
+            Kanji(baseForm = "主人", reading = "シュジン", Date(), async { return@async "Husband" }),
+            Kanji(baseForm = "主人1", reading = "シュジン", Date(), async { return@async "Husband" }),
+            Kanji(baseForm = "主人2", reading = "シュジン", Date(), async { return@async "Husband" }),
         )
     }
     KanjiHoverDisplay(kanji, setOf(kanji.first()), { }, { })

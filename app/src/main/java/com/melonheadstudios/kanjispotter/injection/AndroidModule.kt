@@ -1,6 +1,7 @@
 package com.melonheadstudios.kanjispotter.injection
 
 import com.atilika.kuromoji.ipadic.Tokenizer
+import com.melonheadstudios.kanjispotter.activities.fragments.NotificationHelper
 import com.melonheadstudios.kanjispotter.repos.KanjiRepo
 import com.melonheadstudios.kanjispotter.services.DataStore
 import com.melonheadstudios.kanjispotter.services.JishoService
@@ -20,7 +21,8 @@ val appModule = module {
     single(named("appContext")) { androidContext() }
     single { CoroutineScope(SupervisorJob() + Dispatchers.Default) }
     single { Tokenizer() }
-    single { KanjiRepo(get(), get(), get(), get()) }
+    single { KanjiRepo(get(), get(), get(), get(), get()) }
     single { JishoService() }
     single { DataStore(get()) }
+    single { NotificationHelper(get()) }
 }

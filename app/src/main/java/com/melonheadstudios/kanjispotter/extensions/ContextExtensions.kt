@@ -11,10 +11,7 @@ import android.util.TypedValue
  * Created by jake on 2017-04-21, 9:51 PM
  */
 fun Context.canDrawOverlays(): Boolean {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        return Settings.canDrawOverlays(this)
-    }
-    return true
+    return Settings.canDrawOverlays(this)
 }
 
 @Suppress("DEPRECATION") // getRunningServices only returns this applications services as of time of deprecation. this is all we need

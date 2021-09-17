@@ -6,11 +6,12 @@ import android.os.Bundle
 import com.atilika.kuromoji.ipadic.Token
 import com.atilika.kuromoji.ipadic.Tokenizer
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.melonheadstudios.kanjispotter.activities.fragments.NotificationHelper
 import com.melonheadstudios.kanjispotter.extensions.isServiceRunning
 import com.melonheadstudios.kanjispotter.models.Kanji
 import com.melonheadstudios.kanjispotter.models.englishDefinition
 import com.melonheadstudios.kanjispotter.services.AccessibilityEventHolder
-import com.melonheadstudios.kanjispotter.services.HoverPanelService
+//import com.melonheadstudios.kanjispotter.services.HoverPanelService
 import com.melonheadstudios.kanjispotter.services.JishoService
 import com.melonheadstudios.kanjispotter.utils.Constants
 import kotlinx.coroutines.CoroutineScope
@@ -24,7 +25,11 @@ import kotlin.collections.HashMap
  * kanjispotter
  * Created by jake on 2018-05-28, 7:32 PM
  */
-class KanjiRepo(private val appContext: Context, private val tokenizer: Tokenizer, private val appScope: CoroutineScope, private val jishoService: JishoService) {
+class KanjiRepo(private val appContext: Context,
+                private val tokenizer: Tokenizer,
+                private val appScope: CoroutineScope,
+                private val jishoService: JishoService,
+                private val notificationHelper: NotificationHelper) {
     private var kanjiAppDictionary = HashMap<String, MutableList<Kanji>>()
     private val mutableFilteredKanji = MutableStateFlow<Set<Kanji>>(setOf())
     private val mutableParsedKanji = MutableStateFlow<Set<Kanji>>(setOf())
@@ -85,11 +90,6 @@ class KanjiRepo(private val appContext: Context, private val tokenizer: Tokenize
             return@launch
         }
 
-        if (!appContext.isServiceRunning(HoverPanelService::class.java)) {
-            val startHoverIntent = Intent(appContext, HoverPanelService::class.java)
-            appContext.startService(startHoverIntent)
-        }
-
         knownTokens.forEach {
             if (!has(it.baseForm)) {
                 add(it, app)
@@ -98,6 +98,7 @@ class KanjiRepo(private val appContext: Context, private val tokenizer: Tokenize
         mutableParsedKanji.emit(allKanji())
         mutableFilteredKanji.emit(setOf())
 
+        notificationHelper.showNotification()
         FirebaseAnalytics.getInstance(appContext).logEvent(Constants.EVENT_API, Bundle())
     }
 }

@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <item name="KANJI_LIST_MODEL" type="id"/>
-    <item name="KANJI_LIST_SELECTION_MODEL" type="id"/>
-    <item name="BLACKLIST_SELECTION_MODEL" type="id"/>
-</resources>

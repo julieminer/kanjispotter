@@ -13,7 +13,7 @@ import com.melonheadstudios.kanjispotter.extensions.canDrawOverlays
 import com.melonheadstudios.kanjispotter.extensions.isServiceRunning
 import com.melonheadstudios.kanjispotter.services.JapaneseTextGrabberService
 import com.melonheadstudios.kanjispotter.viewmodels.OnboardingViewModel
-import io.mattcarroll.hover.overlay.OverlayPermission
+//import io.mattcarroll.hover.overlay.OverlayPermission
 import kotlinx.android.synthetic.main.activity_onboarding.*
 
 /**
@@ -67,7 +67,6 @@ class KanjiOnboardingActivity: AppCompatActivity(), OnboardingFragmentListener {
                 if (!canDrawOverlays()) {
                     userSettingOverlay = true
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        val intent = OverlayPermission.createIntentToRequestOverlayPermission(this)
                         startActivityForResult(intent, ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE)
                     }
                 } else {
@@ -90,6 +89,7 @@ class KanjiOnboardingActivity: AppCompatActivity(), OnboardingFragmentListener {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE) {
             if (this.canDrawOverlays()) {
                 goToPage(1)

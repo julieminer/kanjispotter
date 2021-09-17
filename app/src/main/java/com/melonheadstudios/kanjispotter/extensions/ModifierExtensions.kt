@@ -15,14 +15,14 @@ import androidx.compose.ui.unit.Dp
 // Source: https://gist.github.com/dovahkiin98/85acb72ab0c4ddfc6b53413c955bcd10
 
 fun Modifier.horizontalFadingEdge(
-        scrollState: ScrollState,
-        length: Dp,
-        edgeColor: Color? = null,
+    scrollState: ScrollState,
+    length: Dp,
+    edgeColor: Color? = null,
 ) = composed(
-        debugInspectorInfo {
-            name = "length"
-            value = length
-        }
+    debugInspectorInfo {
+        name = "length"
+        value = length
+    }
 ) {
     val color = edgeColor ?: MaterialTheme.colors.surface
 
@@ -38,43 +38,43 @@ fun Modifier.horizontalFadingEdge(
         drawContent()
 
         drawRect(
-                brush = Brush.horizontalGradient(
-                        colors = listOf(
-                                color,
-                                Color.Transparent,
-                        ),
-                        startX = 0f,
-                        endX = startFadingEdgeStrength,
+            brush = Brush.horizontalGradient(
+                colors = listOf(
+                        color,
+                        Color.Transparent,
                 ),
-                size = Size(
-                        startFadingEdgeStrength,
-                        this.size.height,
-                ),
+                startX = 0f,
+                endX = startFadingEdgeStrength,
+            ),
+            size = Size(
+                startFadingEdgeStrength,
+                this.size.height,
+            ),
         )
 
         drawRect(
-                brush = Brush.horizontalGradient(
-                        colors = listOf(
-                                Color.Transparent,
-                                color,
-                        ),
-                        startX = size.width - endFadingEdgeStrength,
-                        endX = size.width,
+            brush = Brush.horizontalGradient(
+                colors = listOf(
+                    Color.Transparent,
+                    color,
                 ),
-                topLeft = Offset(x = size.width - endFadingEdgeStrength, y = 0f),
+                startX = size.width - endFadingEdgeStrength,
+                endX = size.width,
+            ),
+            topLeft = Offset(x = size.width - endFadingEdgeStrength, y = 0f),
         )
     }
 }
 
 fun Modifier.verticalFadingEdge(
-        scrollState: ScrollState,
-        length: Dp,
-        edgeColor: Color? = null,
+    scrollState: ScrollState,
+    length: Dp,
+    edgeColor: Color? = null,
 ) = composed(
-        debugInspectorInfo {
-            name = "length"
-            value = length
-        }
+    debugInspectorInfo {
+        name = "length"
+        value = length
+    }
 ) {
     val color = edgeColor ?: MaterialTheme.colors.surface
 
@@ -90,30 +90,30 @@ fun Modifier.verticalFadingEdge(
         drawContent()
 
         drawRect(
-                brush = Brush.verticalGradient(
-                        colors = listOf(
-                                color,
-                                Color.Transparent,
-                        ),
-                        startY = 0f,
-                        endY = topFadingEdgeStrength,
+            brush = Brush.verticalGradient(
+                colors = listOf(
+                    color,
+                    Color.Transparent,
                 ),
-                size = Size(
-                        this.size.width,
-                        topFadingEdgeStrength
-                ),
+                startY = 0f,
+                endY = topFadingEdgeStrength,
+            ),
+            size = Size(
+                this.size.width,
+                topFadingEdgeStrength
+            ),
         )
 
         drawRect(
-                brush = Brush.verticalGradient(
-                        colors = listOf(
-                                Color.Transparent,
-                                color,
-                        ),
-                        startY = size.height - bottomFadingEdgeStrength,
-                        endY = size.height,
+            brush = Brush.verticalGradient(
+                colors = listOf(
+                        Color.Transparent,
+                        color,
                 ),
-                topLeft = Offset(x = 0f, y = size.height - bottomFadingEdgeStrength),
+                startY = size.height - bottomFadingEdgeStrength,
+                endY = size.height,
+            ),
+            topLeft = Offset(x = 0f, y = size.height - bottomFadingEdgeStrength),
         )
     }
 }
