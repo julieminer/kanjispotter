@@ -27,7 +27,7 @@ class JapaneseTextGrabberService : AccessibilityService() {
                 if (app.dataStore.overlayEnabled.firstOrNull() != true) return@runBlocking
                 if (app.dataStore.blackListEnabled.firstOrNull() == true &&
                         app.dataStore.blackListedApps.firstOrNull()?.contains(event.packageName) == true) return@runBlocking
-                    MainApplication.instance.kanjiRepo.parse(AccessibilityEventHolder(event.packageName.toString(), event.text.toString()))
+                    app.kanjiRepo.parse(AccessibilityEventHolder(event.packageName.toString(), event.text.toString()))
             }
         } catch (e: Exception) {
             FirebaseCrashlytics.getInstance().recordException(e)

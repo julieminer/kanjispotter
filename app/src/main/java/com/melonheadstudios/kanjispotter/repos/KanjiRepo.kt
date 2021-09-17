@@ -56,11 +56,6 @@ class KanjiRepo(private val appContext: Context,
         kanjiAppDictionary[forApp]?.add(kanjiInstance)
     }
 
-    fun clearAll() = appScope.launch  {
-        kanjiAppDictionary.clear()
-        mutableParsedKanji.emit(allKanji())
-    }
-
     fun toggleFilter(kanji: Kanji) = appScope.launch {
         var filteredKanji = mutableFilteredKanji.value
         filteredKanji = if (filteredKanji.contains(kanji)) {

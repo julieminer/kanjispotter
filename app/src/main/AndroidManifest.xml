@@ -47,7 +47,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data
                     android:host="com.melonheadstudios.kanjispotter"
-                    android:pathPattern="/chat/*"
+                    android:pathPattern="/kanji/*"
                     android:scheme="https" />
             </intent-filter>
             <!--
@@ -76,7 +76,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data
                     android:host="com.melonheadstudios.kanjispotter"
-                    android:pathPattern="/chat/*"
+                    android:pathPattern="/kanji/*"
                     android:scheme="https" />
             </intent-filter>
         </activity>

@@ -26,7 +26,6 @@ import org.koin.android.ext.android.inject
 
 class MainActivity : AppCompatActivity() {
     private val dataStore: DataStore by inject()
-    lateinit var helper: NotificationHelper
 
     @SuppressLint("RestrictedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,9 +36,6 @@ class MainActivity : AppCompatActivity() {
         }
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        helper = NotificationHelper(applicationContext)
-        helper.setUpNotificationChannels()
 
         debug_button.visibility = if (BuildConfig.DEBUG) VISIBLE else GONE
 
@@ -88,13 +84,13 @@ class MainActivity : AppCompatActivity() {
 
     @RequiresApi(Build.VERSION_CODES.R)
     private fun makeBubble() {
-        if (!helper.canBubble()) {
-            startActivityForResult(
-                    Intent(Settings.ACTION_APP_NOTIFICATION_BUBBLE_SETTINGS).putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName()),
-                    1);
-            return
-        }
-        helper.updateNotification()
+//        if (!helper.canBubble()) {
+//            startActivityForResult(
+//                    Intent(Settings.ACTION_APP_NOTIFICATION_BUBBLE_SETTINGS).putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName()),
+//                    1);
+//            return
+//        }
+//        helper.updateNotification()
     }
 
     private fun updateOverlay(enabled: Boolean) {

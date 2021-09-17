@@ -24,29 +24,35 @@ import com.melonheadstudios.kanjispotter.activities.MainActivity
 
 class NotificationHelper(private val context: Context) {
     companion object {
-        private const val CHANNEL_NEW_MESSAGES = "new_messages"
+        private const val CHANNEL = "Kanji Spotter"
         private const val REQUEST_CONTENT = 1
         private const val REQUEST_BUBBLE = 2
-        private const val SHORTCUT = "chat.contact.shortcutId"
+        private const val SHORTCUT = "Show Kanji Spotter"
     }
 
-    private val notificationManager: NotificationManager = context.getSystemService() ?: throw IllegalStateException()
-    private val shortcutManager: ShortcutManager = context.getSystemService() ?: throw IllegalStateException()
+    private val notificationManager: NotificationManager
+    private val shortcutManager: ShortcutManager
+
+    init {
+        notificationManager = context.getSystemService() ?: throw IllegalStateException()
+        shortcutManager = context.getSystemService() ?: throw IllegalStateException()
+        setUpNotificationChannels()
+        updateShortcuts()
+    }
 
     @RequiresApi(Build.VERSION_CODES.Q)
     fun setUpNotificationChannels() {
         notificationManager.createNotificationChannel(
             NotificationChannel(
-                CHANNEL_NEW_MESSAGES,
-                "context.getString(R.string.channel_new_messages)",
+                CHANNEL,
+                "Kanji Spotter",
                 // The importance must be IMPORTANCE_HIGH to show Bubbles.
                 NotificationManager.IMPORTANCE_HIGH
             ).apply {
-                description = "context.getString(R.string.channel_new_messages_description)"
+                description = "Channel used for notifications used to show Kanji Spotter panel"
                 setAllowBubbles(true)
             }
         )
-        updateShortcuts()
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
@@ -59,20 +65,20 @@ class NotificationHelper(private val context: Context) {
             ShortcutInfo.Builder(context, SHORTCUT)
                 .setLocusId(LocusId(SHORTCUT))
                 .setActivity(ComponentName(context, MainActivity::class.java))
-                .setShortLabel("contact.name")
+                .setShortLabel("Kanji Spotter")
                 .setIcon(icon)
                 .setLongLived(true)
                 .setCategories(setOf("com.melonheadstudios.kanjispotter.bubbles.category.TEXT_SHARE_TARGET"))
                 .setIntent(
-                    Intent(context, KanjiBubbleActivity::class.java)
+                    Intent(context, MainActivity::class.java)
                         .setAction(Intent.ACTION_VIEW)
                         .setData(
-                            Uri.parse("https://com.melonheadstudios.kanjispotter/chat/${"contact.id"}")
+                            Uri.parse("https://com.melonheadstudios.kanjispotter/kanji/")
                         )
                 )
                 .setPerson(
                     Person.Builder()
-                        .setName("contact.name")
+                        .setName("Kanji Spotter")
                         .setIcon(icon)
                         .setImportant(true)
                         .build()
@@ -90,11 +96,12 @@ class NotificationHelper(private val context: Context) {
     @RequiresApi(Build.VERSION_CODES.R)
     @WorkerThread
     fun showNotification() {
-        updateShortcuts()
+        dismissNotification()
+
         val icon = Icon.createWithResource(context, R.drawable.app_icon)
-        val user = Person.Builder().setName("df").setImportant(true).build()
-        val person = Person.Builder().setName("chat.contact.name").setIcon(icon).setImportant(true).build()
-        val contentUri = "https://com.melonheadstudios.kanjispotter/chat/${"chat.contact.id"}".toUri()
+        val user = Person.Builder().setName("User").setImportant(true).build()
+        val person = Person.Builder().setName("Kanji Spotter").setIcon(icon).setImportant(true).build()
+        val contentUri = "https://com.melonheadstudios.kanjispotter/kanji/".toUri()
 
         val pendingIntent = PendingIntent.getActivity(
             context,
@@ -105,7 +112,7 @@ class NotificationHelper(private val context: Context) {
             PendingIntent.FLAG_UPDATE_CURRENT
         )
 
-        val builder = Notification.Builder(context, CHANNEL_NEW_MESSAGES)
+        val builder = Notification.Builder(context, CHANNEL)
             .setBubbleMetadata(
                 Notification.BubbleMetadata.Builder(pendingIntent, icon)
                     .setDesiredHeight(600)
@@ -114,7 +121,7 @@ class NotificationHelper(private val context: Context) {
                     }
                     .build()
             )
-            .setContentTitle("chat.contact.name")
+            .setContentTitle("Kanji Spotter")
             .setSmallIcon(R.mipmap.ic_launcher_round)
             .setLargeIcon(icon)
             .setCategory(Notification.CATEGORY_MESSAGE)
@@ -139,7 +146,7 @@ class NotificationHelper(private val context: Context) {
                     .apply {
                         for (message in listOf(1)) {
                             val m = Notification.MessagingStyle.Message(
-                                "message.text",
+                                "Kanji Spotter",
                                 System.currentTimeMillis(),
                                 person,
                             )
@@ -161,15 +168,9 @@ class NotificationHelper(private val context: Context) {
     @RequiresApi(Build.VERSION_CODES.R)
     fun canBubble(): Boolean {
         val channel = notificationManager.getNotificationChannel(
-            CHANNEL_NEW_MESSAGES,
+            CHANNEL,
             SHORTCUT
         )
         return notificationManager.areBubblesAllowed() || channel?.canBubble() == true
-    }
-
-    @RequiresApi(Build.VERSION_CODES.R)
-    fun updateNotification() {
-        dismissNotification()
-        showNotification()
     }
 }
