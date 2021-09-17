@@ -13,8 +13,8 @@ import com.melonheadstudios.kanjispotter.BuildConfig
 import com.melonheadstudios.kanjispotter.R
 import com.melonheadstudios.kanjispotter.utils.NotificationManager
 import com.melonheadstudios.kanjispotter.extensions.isServiceRunning
-import com.melonheadstudios.kanjispotter.services.DataStore
 import com.melonheadstudios.kanjispotter.services.JapaneseTextGrabberService
+import com.melonheadstudios.kanjispotter.utils.DataStore
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.firstOrNull

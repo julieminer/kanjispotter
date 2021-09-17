@@ -3,8 +3,8 @@ package com.melonheadstudios.kanjispotter.injection
 import com.atilika.kuromoji.ipadic.Tokenizer
 import com.melonheadstudios.kanjispotter.utils.NotificationManager
 import com.melonheadstudios.kanjispotter.repos.KanjiRepo
-import com.melonheadstudios.kanjispotter.services.DataStore
 import com.melonheadstudios.kanjispotter.services.JishoService
+import com.melonheadstudios.kanjispotter.utils.DataStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
