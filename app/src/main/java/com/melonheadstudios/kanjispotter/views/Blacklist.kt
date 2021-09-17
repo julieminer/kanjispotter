@@ -3,6 +3,7 @@ package com.melonheadstudios.kanjispotter.views
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Switch
 import androidx.compose.material.Text
@@ -19,30 +20,21 @@ import com.melonheadstudios.kanjispotter.R
 import com.melonheadstudios.kanjispotter.extensions.verticalFadingEdge
 import com.melonheadstudios.kanjispotter.models.BlacklistApp
 
-//    val mainIntent = Intent(Intent.ACTION_MAIN, null)
-//    mainIntent.addCategory(Intent.CATEGORY_LAUNCHER)
-//    val pkgAppsList = packageManager.queryIntentActivities(mainIntent, 0)
-//    pkgAppsList.map {
-//        val appLabel = it.loadLabel(packageManager).toString()
-//        val packageName = it.activityInfo.taskAffinity
-//        val packageIcon = it.loadIcon(packageManager)
-//        BlackListableApp(name = appLabel, packageName = packageName, icon = packageIcon)
-//    }
-
+// TODO: 2021-09-17 add sorting options + ui
 @Composable
 fun Blacklist(
         blacklistApps: Set<BlacklistApp>,
         blacklistedPackages: Set<String>,
         blackListValueToggled: (packageName: String, isBlackListed: Boolean) -> Unit) {
-    val scrollState = rememberScrollState()
-    Column(Modifier.padding(24.dp)) {
+    Column(Modifier.padding(24.dp).fillMaxSize()) {
         Text(text = "Blacklist Apps", style = MaterialTheme.typography.h5)
         Text(text = "Prevent Kanji Spotter from triggering from certain apps", style = MaterialTheme.typography.body2)
+        val scrollState = rememberScrollState()
         Column(verticalArrangement = Arrangement.spacedBy(15.dp),
                modifier = Modifier
-                       .verticalFadingEdge(scrollState, length = 150.dp)
-                       .fillMaxWidth()
-                       .padding(vertical = 15.dp)) {
+                   .padding(vertical = 15.dp)
+                   .verticalFadingEdge(scrollState, length = 50.dp)
+                   .verticalScroll(scrollState)) {
             blacklistApps.forEach { app ->
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Image(

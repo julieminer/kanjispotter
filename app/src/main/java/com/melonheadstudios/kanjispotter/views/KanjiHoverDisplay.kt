@@ -28,7 +28,7 @@ fun KanjiSelection(kanjiList: Set<Kanji>, filteredKanji: Set<Kanji>, selectAll: 
     Row(horizontalArrangement = Arrangement.spacedBy(10.dp),
             modifier = Modifier
                     .fillMaxWidth()
-                    .horizontalFadingEdge(scrollState, length = 150.dp)
+                    .horizontalFadingEdge(scrollState, length = 50.dp)
                     .horizontalScroll(scrollState)
                     .padding(bottom = 10.dp)
     ) {
@@ -71,7 +71,7 @@ fun KanjiHoverDisplay(parsedKanji: Set<Kanji>, filteredKanji: Set<Kanji>, showAl
         Column(modifier = Modifier.fillMaxWidth()) {
             KanjiSelection(parsedKanji, filteredKanji, showAllClicked, onFilterToggled)
             Column(Modifier
-                    .verticalFadingEdge(scrollState, length = 150.dp)
+                    .verticalFadingEdge(scrollState, length = 50.dp)
                     .verticalScroll(scrollState)
                     .fillMaxWidth()) {
                 AnimatedContent(targetState = parsedKanji.filter { !filteredKanji.contains(it) }) { validKanji ->

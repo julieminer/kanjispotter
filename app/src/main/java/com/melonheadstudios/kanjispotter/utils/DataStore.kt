@@ -17,9 +17,6 @@ class DataStore(private val appContext: Context) {
     private val overlayKey = booleanPreferencesKey(Constants.SERVICE_STATUS_FLAG)
     val overlayEnabled = appContext.dataStore.data.map { preferences -> preferences[overlayKey]  }
 
-    private val blackListKey = booleanPreferencesKey(Constants.BLACKLIST_STATUS_FLAG)
-    val blackListEnabled = appContext.dataStore.data.map { preferences -> preferences[blackListKey]  }
-
     private val blackListAppsKey = stringSetPreferencesKey(Constants.BLACKLIST_SELECTION_STATUS_FLAG)
     val blackListedApps = appContext.dataStore.data.map { preferences -> preferences[blackListAppsKey]  }
 
@@ -29,10 +26,6 @@ class DataStore(private val appContext: Context) {
 
     suspend fun setOverlayEnabled(enabled: Boolean) {
         appContext.dataStore.edit { settings -> settings[overlayKey] = enabled }
-    }
-
-    suspend fun setBlackListEnabled(enabled: Boolean) {
-        appContext.dataStore.edit { settings -> settings[blackListKey] = enabled }
     }
 
     suspend fun setBlackListApps(apps: Set<String>) {
