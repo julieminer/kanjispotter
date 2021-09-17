@@ -92,7 +92,6 @@ class KanjiRepo(private val appContext: Context,
         }
         mutableParsedKanji.emit(allKanji())
         mutableFilteredKanji.emit(setOf())
-
         notificationHelper.showNotification()
         FirebaseAnalytics.getInstance(appContext).logEvent(Constants.EVENT_API, Bundle())
     }

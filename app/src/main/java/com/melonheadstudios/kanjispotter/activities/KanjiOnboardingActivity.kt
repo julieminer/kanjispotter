@@ -2,32 +2,32 @@ package com.melonheadstudios.kanjispotter.activities
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import androidx.appcompat.app.AppCompatActivity
 import com.melonheadstudios.kanjispotter.BuildConfig
 import com.melonheadstudios.kanjispotter.R
+import com.melonheadstudios.kanjispotter.activities.fragments.NotificationHelper
 import com.melonheadstudios.kanjispotter.activities.fragments.OnboardingFragment
 import com.melonheadstudios.kanjispotter.activities.fragments.OnboardingFragmentListener
-import com.melonheadstudios.kanjispotter.extensions.canDrawOverlays
 import com.melonheadstudios.kanjispotter.extensions.isServiceRunning
 import com.melonheadstudios.kanjispotter.services.JapaneseTextGrabberService
 import com.melonheadstudios.kanjispotter.viewmodels.OnboardingViewModel
-//import io.mattcarroll.hover.overlay.OverlayPermission
 import kotlinx.android.synthetic.main.activity_onboarding.*
+import org.koin.android.ext.android.inject
 
 /**
  * kanjispotter
  * Created by jake on 2017-04-16, 5:23 PM
  */
 class KanjiOnboardingActivity: AppCompatActivity(), OnboardingFragmentListener {
-    private val ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE: Int = 5469
+    private val ACTION_BUBBLE_REQUEST_CODE: Int = 5469
     private val ACTION_ACESSIBILITY_REQUEST_CODE: Int = 5269
 
-    private var userSettingOverlay = false
     private var userSettingAccessibility = false
 
     private val pages = arrayOf( OnboardingFragment(), OnboardingFragment(), OnboardingFragment() )
+    private val helper: NotificationHelper by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,19 +64,16 @@ class KanjiOnboardingActivity: AppCompatActivity(), OnboardingFragmentListener {
     override fun onPageButtonClicked(pageNumber: Int) {
         when (pageNumber) {
             0 -> {
-                if (!canDrawOverlays()) {
-                    userSettingOverlay = true
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        startActivityForResult(intent, ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE)
-                    }
+                if (!helper.canBubble()) {
+                    startActivityForResult(Intent(Settings.ACTION_APP_NOTIFICATION_BUBBLE_SETTINGS).putExtra(Settings.EXTRA_APP_PACKAGE, packageName), ACTION_BUBBLE_REQUEST_CODE)
                 } else {
                     goToPage(1)
                 }
             }
             1 -> {
-                if (!BuildConfig.DEBUG && !isServiceRunning(JapaneseTextGrabberService::class.java)) {
+                if (!isServiceRunning(JapaneseTextGrabberService::class.java)) {
                     userSettingAccessibility = true
-                    val intent = Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS)
+                    val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
                     startActivityForResult(intent, ACTION_ACESSIBILITY_REQUEST_CODE)
                 } else {
                     goToPage(2)
@@ -90,8 +87,8 @@ class KanjiOnboardingActivity: AppCompatActivity(), OnboardingFragmentListener {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE) {
-            if (this.canDrawOverlays()) {
+        if (requestCode == ACTION_BUBBLE_REQUEST_CODE) {
+            if (helper.canBubble()) {
                 goToPage(1)
             }
         } else if (requestCode == ACTION_ACESSIBILITY_REQUEST_CODE) {

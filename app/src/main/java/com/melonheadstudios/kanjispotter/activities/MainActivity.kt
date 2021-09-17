@@ -26,6 +26,7 @@ import org.koin.android.ext.android.inject
 
 class MainActivity : AppCompatActivity() {
     private val dataStore: DataStore by inject()
+    private val helper: NotificationHelper by inject()
 
     @SuppressLint("RestrictedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,9 +40,9 @@ class MainActivity : AppCompatActivity() {
 
         debug_button.visibility = if (BuildConfig.DEBUG) VISIBLE else GONE
 
-//        if (shouldLaunchOnboarding()) {
-//            startActivity(Intent(this, KanjiOnboardingActivity::class.java))
-//        }
+        if (shouldLaunchOnboarding()) {
+            startActivity(Intent(this, KanjiOnboardingActivity::class.java))
+        }
 
         lifecycleScope.launch {
             dataStore.overlayEnabled.collect {
@@ -76,21 +77,7 @@ class MainActivity : AppCompatActivity() {
 //        }
 
         debug_button.setOnClickListener {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                makeBubble()
-            }
         }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.R)
-    private fun makeBubble() {
-//        if (!helper.canBubble()) {
-//            startActivityForResult(
-//                    Intent(Settings.ACTION_APP_NOTIFICATION_BUBBLE_SETTINGS).putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName()),
-//                    1);
-//            return
-//        }
-//        helper.updateNotification()
     }
 
     private fun updateOverlay(enabled: Boolean) {
@@ -102,11 +89,8 @@ class MainActivity : AppCompatActivity() {
         theme_dark_switch.isChecked = enabled
     }
 
-    @Suppress("DEPRECATION")
-    @SuppressLint("WrongConstant")
     private fun setDarkThemeEnabled(enabled: Boolean) = lifecycleScope.launch {
         dataStore.setDarkThemeEnabled(enabled)
-        // TODO: 2021-09-16 check if bubbles are on
         this@MainActivity.finish()
         val intent = this@MainActivity.intent
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -115,16 +99,8 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("NewApi")
     private fun shouldLaunchOnboarding(): Boolean {
-        val needsPermission = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-        val hasPermission = try {
-            Settings.canDrawOverlays(this)
-        } catch (e: NoSuchMethodError) {
-            e.printStackTrace()
-            true
-        }
-        val canDrawOverApps = !needsPermission || (needsPermission && hasPermission)
         val serviceIsRunning = isServiceRunning(JapaneseTextGrabberService::class.java)
-        return !(canDrawOverApps && serviceIsRunning)
+        return !(helper.canBubble() && serviceIsRunning)
     }
 
     private fun reportIssue() {
