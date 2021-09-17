@@ -6,14 +6,6 @@ import android.os.Build
 import android.provider.Settings
 import android.util.TypedValue
 
-/**
- * kanjispotter
- * Created by jake on 2017-04-21, 9:51 PM
- */
-fun Context.canDrawOverlays(): Boolean {
-    return Settings.canDrawOverlays(this)
-}
-
 @Suppress("DEPRECATION") // getRunningServices only returns this applications services as of time of deprecation. this is all we need
 fun Context.isServiceRunning(serviceClass: Class<*>): Boolean {
     val manager = this.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager? ?: return false

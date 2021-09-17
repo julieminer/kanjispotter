@@ -1,17 +1,14 @@
 package com.melonheadstudios.kanjispotter.repos
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import com.atilika.kuromoji.ipadic.Token
 import com.atilika.kuromoji.ipadic.Tokenizer
 import com.google.firebase.analytics.FirebaseAnalytics
-import com.melonheadstudios.kanjispotter.activities.fragments.NotificationHelper
-import com.melonheadstudios.kanjispotter.extensions.isServiceRunning
+import com.melonheadstudios.kanjispotter.utils.NotificationManager
 import com.melonheadstudios.kanjispotter.models.Kanji
 import com.melonheadstudios.kanjispotter.models.englishDefinition
 import com.melonheadstudios.kanjispotter.services.AccessibilityEventHolder
-//import com.melonheadstudios.kanjispotter.services.HoverPanelService
 import com.melonheadstudios.kanjispotter.services.JishoService
 import com.melonheadstudios.kanjispotter.utils.Constants
 import kotlinx.coroutines.CoroutineScope
@@ -29,7 +26,7 @@ class KanjiRepo(private val appContext: Context,
                 private val tokenizer: Tokenizer,
                 private val appScope: CoroutineScope,
                 private val jishoService: JishoService,
-                private val notificationHelper: NotificationHelper) {
+                private val notificationManager: NotificationManager) {
     private var kanjiAppDictionary = HashMap<String, MutableList<Kanji>>()
     private val mutableFilteredKanji = MutableStateFlow<Set<Kanji>>(setOf())
     private val mutableParsedKanji = MutableStateFlow<Set<Kanji>>(setOf())
@@ -92,7 +89,7 @@ class KanjiRepo(private val appContext: Context,
         }
         mutableParsedKanji.emit(allKanji())
         mutableFilteredKanji.emit(setOf())
-        notificationHelper.showNotification()
+        notificationManager.showNotification()
         FirebaseAnalytics.getInstance(appContext).logEvent(Constants.EVENT_API, Bundle())
     }
 }

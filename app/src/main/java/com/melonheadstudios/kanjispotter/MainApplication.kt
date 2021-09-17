@@ -1,7 +1,7 @@
 package com.melonheadstudios.kanjispotter
 
 import android.app.Application
-import com.melonheadstudios.kanjispotter.activities.fragments.NotificationHelper
+import com.melonheadstudios.kanjispotter.utils.NotificationManager
 import com.melonheadstudios.kanjispotter.injection.appModule
 import com.melonheadstudios.kanjispotter.repos.KanjiRepo
 import com.melonheadstudios.kanjispotter.services.DataStore
@@ -18,7 +18,7 @@ class MainApplication: Application() {
     val kanjiRepo: KanjiRepo by inject()
     val dataStore: DataStore by inject()
     val scope: CoroutineScope by inject()
-    private val notificationHelper: NotificationHelper by inject()
+    private val notificationManager: NotificationManager by inject()
 
     override fun onCreate() {
         super.onCreate()
@@ -29,7 +29,7 @@ class MainApplication: Application() {
 
         instance = this
         // force initialization
-        notificationHelper
+        notificationManager
     }
 
     companion object {

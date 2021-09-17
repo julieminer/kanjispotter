@@ -30,11 +30,8 @@ fun Modifier.horizontalFadingEdge(
         val lengthValue = length.toPx()
         val scrollFromStart = scrollState.value
         val scrollFromEnd = scrollState.maxValue - scrollState.value
-
         val startFadingEdgeStrength = lengthValue * (scrollFromStart / lengthValue).coerceAtMost(1f)
-
         val endFadingEdgeStrength = lengthValue * (scrollFromEnd / lengthValue).coerceAtMost(1f)
-
         drawContent()
 
         drawRect(
@@ -82,13 +79,10 @@ fun Modifier.verticalFadingEdge(
         val lengthValue = length.toPx()
         val scrollFromTop = scrollState.value
         val scrollFromBottom = scrollState.maxValue - scrollState.value
-
         val topFadingEdgeStrength = lengthValue * (scrollFromTop / lengthValue).coerceAtMost(1f)
-
         val bottomFadingEdgeStrength = lengthValue * (scrollFromBottom / lengthValue).coerceAtMost(1f)
 
         drawContent()
-
         drawRect(
             brush = Brush.verticalGradient(
                 colors = listOf(

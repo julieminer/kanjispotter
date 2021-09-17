@@ -1,4 +1,4 @@
-package com.melonheadstudios.kanjispotter.activities.fragments
+package com.melonheadstudios.kanjispotter.utils
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -22,7 +22,7 @@ import com.melonheadstudios.kanjispotter.R
 import com.melonheadstudios.kanjispotter.activities.KanjiBubbleActivity
 import com.melonheadstudios.kanjispotter.activities.MainActivity
 
-class NotificationHelper(private val context: Context) {
+class NotificationManager(private val context: Context) {
     companion object {
         private const val CHANNEL = "Kanji Spotter"
         private const val REQUEST_CONTENT = 1

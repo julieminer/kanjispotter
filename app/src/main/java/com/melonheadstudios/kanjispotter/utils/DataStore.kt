@@ -1,4 +1,4 @@
-package com.melonheadstudios.kanjispotter.services
+package com.melonheadstudios.kanjispotter.utils
 
 import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey

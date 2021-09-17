@@ -5,15 +5,13 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
 import android.view.View.GONE
 import android.view.View.VISIBLE
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.melonheadstudios.kanjispotter.BuildConfig
 import com.melonheadstudios.kanjispotter.R
-import com.melonheadstudios.kanjispotter.activities.fragments.NotificationHelper
+import com.melonheadstudios.kanjispotter.utils.NotificationManager
 import com.melonheadstudios.kanjispotter.extensions.isServiceRunning
 import com.melonheadstudios.kanjispotter.services.DataStore
 import com.melonheadstudios.kanjispotter.services.JapaneseTextGrabberService
@@ -26,7 +24,7 @@ import org.koin.android.ext.android.inject
 
 class MainActivity : AppCompatActivity() {
     private val dataStore: DataStore by inject()
-    private val helper: NotificationHelper by inject()
+    private val manager: NotificationManager by inject()
 
     @SuppressLint("RestrictedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -100,7 +98,7 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("NewApi")
     private fun shouldLaunchOnboarding(): Boolean {
         val serviceIsRunning = isServiceRunning(JapaneseTextGrabberService::class.java)
-        return !(helper.canBubble() && serviceIsRunning)
+        return !(manager.canBubble() && serviceIsRunning)
     }
 
     private fun reportIssue() {
