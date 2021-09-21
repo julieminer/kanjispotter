@@ -59,9 +59,13 @@ fun KanjiEntry(kanji: Kanji) {
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun KanjiHoverDisplay(parsedKanji: Set<Kanji>, filteredKanji: Set<Kanji>, showAllClicked: () -> Unit, onFilterToggled: (kanji: Kanji) -> Unit) {
-    Box(modifier = Modifier
-            .fillMaxSize()
+fun KanjiHoverDisplay(
+    modifier: Modifier = Modifier,
+    parsedKanji: Set<Kanji>,
+    filteredKanji: Set<Kanji>,
+    showAllClicked: () -> Unit,
+    onFilterToggled: (kanji: Kanji) -> Unit) {
+    Box(modifier = modifier
             .background(color = Color.White, shape = RoundedCornerShape(32.dp))
             .padding(24.dp)) {
         val scrollState = rememberScrollState()
@@ -93,5 +97,5 @@ fun PreviewKanjiHoverDisplay() {
             Kanji(baseForm = "主人2", reading = "シュジン", Date(), async { return@async "Husband" }),
         )
     }
-    KanjiHoverDisplay(kanji, setOf(kanji.first()), { }, { })
+    KanjiHoverDisplay(Modifier.fillMaxSize(), kanji, setOf(kanji.first()), { }, { })
 }
