@@ -1,6 +1,7 @@
 package com.melonheadstudios.kanjispotter.views
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Switch
 import androidx.compose.material.Text
@@ -21,7 +22,7 @@ fun Home(exampleKanji: Set<Kanji>,
         Column(
             verticalArrangement = Arrangement.spacedBy(15.dp),
             modifier = Modifier
-                .padding(top = 24.dp, start = 24.dp, end = 24.dp, bottom = 0.dp)) {
+                .padding(top = 24.dp, start = 24.dp, end = 24.dp, bottom = 10.dp)) {
             Text(text = "Appearance", style = MaterialTheme.typography.h5)
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
@@ -44,13 +45,15 @@ fun Home(exampleKanji: Set<Kanji>,
             }
         }
         if (overlayEnabled) {
-            KanjiHoverDisplay(
-                modifier = Modifier.fillMaxHeight(0.75f),
-                parsedKanji = exampleKanji,
-                filteredKanji = setOf(),
-                showAllClicked = { },
-                onFilterToggled = { }
-            )
+            Card(Modifier.padding(5.dp), elevation = 10.dp) {
+                KanjiHoverDisplay(
+                    modifier = Modifier.fillMaxHeight(0.75f),
+                    parsedKanji = exampleKanji,
+                    filteredKanji = setOf(),
+                    showAllClicked = { },
+                    onFilterToggled = { }
+                )
+            }
         }
     }
 }
