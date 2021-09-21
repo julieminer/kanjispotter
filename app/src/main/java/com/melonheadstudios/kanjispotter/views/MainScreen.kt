@@ -3,10 +3,7 @@ package com.melonheadstudios.kanjispotter.views
 import android.content.Intent
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -22,7 +19,10 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.melonheadstudios.kanjispotter.R
 import com.melonheadstudios.kanjispotter.models.BlacklistApp
+import com.melonheadstudios.kanjispotter.models.Kanji
+import com.melonheadstudios.kanjispotter.repos.KanjiRepo
 import com.melonheadstudios.kanjispotter.utils.DataStore
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.get
 
@@ -33,7 +33,8 @@ sealed class NavigationItem(var route: String, var icon: Int, var title: String)
     object Blacklist : NavigationItem("blacklist", R.drawable.close_button, "Blacklist")
 
     companion object {
-        val allValues = listOf(Home, History, Blacklist, Settings)
+        private const val devMode = false
+        val allValues = if (devMode) listOf(Home, History, Blacklist, Settings) else listOf(Home, Blacklist)
     }
 }
 
@@ -72,25 +73,48 @@ fun BottomNav(navController: NavController) {
 }
 
 @Composable
-fun BlackListScreen(navController: NavController, dataStore: DataStore = get()) {
+fun HomeScreen(dataStore: DataStore = get(), kanjiRepo: KanjiRepo = get()) {
+    val enabled = dataStore.overlayEnabled.collectAsState(initial = false)
+    val darkTheme = dataStore.darkThemeEnabled.collectAsState(initial = false)
+    val coroutineScope = rememberCoroutineScope()
+    val exampleKanji = remember { mutableStateOf(setOf<Kanji>()) }
+
+    LaunchedEffect(true) {
+        exampleKanji.value = kanjiRepo.kanjiForText(text = "食べる\n男の人\nご主人")
+    }
+
+    Home(
+        exampleKanji = exampleKanji.value,
+        overlayEnabled = enabled.value == true,
+        darkThemeEnabled = darkTheme.value == true,
+        onOverlayToggled = { coroutineScope.launch { dataStore.setOverlayEnabled(it) } },
+        darkThemeToggled = { coroutineScope.launch { dataStore.setDarkThemeEnabled(it) } },
+    )
+}
+
+@Composable
+fun BlackListScreen(dataStore: DataStore = get()) {
     val blackListedPackages = dataStore.blackListedApps.collectAsState(initial = setOf())
     val scope = rememberCoroutineScope()
-
-    val mainIntent = Intent(Intent.ACTION_MAIN, null)
-    mainIntent.addCategory(Intent.CATEGORY_LAUNCHER)
+    val blacklistApps = remember { mutableStateOf(setOf<BlacklistApp>()) }
     val context = LocalContext.current
-    val packageManager = context.packageManager
-    val pkgAppsList = packageManager.queryIntentActivities(mainIntent, 0)
-    val blackListApps = remember {
-        pkgAppsList.mapNotNull {
-            val appLabel = it.loadLabel(packageManager).toString()
-            val packageName = it.activityInfo.taskAffinity ?: return@mapNotNull null
-            val packageIcon = it.loadIcon(packageManager)
-            BlacklistApp(name = appLabel, packageName = packageName, icon = packageIcon)
+
+    if (blacklistApps.value.isEmpty()) {
+        LaunchedEffect(true) {
+            val mainIntent = Intent(Intent.ACTION_MAIN, null)
+            mainIntent.addCategory(Intent.CATEGORY_LAUNCHER)
+            val packageManager = context.packageManager
+            val pkgAppsList = packageManager.queryIntentActivities(mainIntent, 0)
+            blacklistApps.value = pkgAppsList.mapNotNull {
+                val appLabel = it.loadLabel(packageManager).toString()
+                val packageName = it.activityInfo.taskAffinity ?: return@mapNotNull null
+                val packageIcon = it.loadIcon(packageManager)
+                BlacklistApp(name = appLabel, packageName = packageName, icon = packageIcon)
+            }.toSet()
         }
     }
 
-    Blacklist(blacklistApps = blackListApps.toSet(),
+    Blacklist(blacklistApps = blacklistApps.value,
         blacklistedPackages = blackListedPackages.value ?: setOf(),
         blackListValueToggled = { packageName, isBlackListed ->
             val newList = blackListedPackages.value?.toMutableSet() ?: mutableSetOf()
@@ -106,19 +130,32 @@ fun BlackListScreen(navController: NavController, dataStore: DataStore = get()) 
 }
 
 @Composable
+fun HistoryScreen() {
+
+}
+
+@Composable
+fun SettingsScreen() {
+
+}
+
+@Composable
 fun MainScreen() {
     val navController = rememberNavController()
     Scaffold(bottomBar = { BottomNav(navController) }) { innerPadding ->
-        NavHost(navController, startDestination = NavigationItem.Blacklist.route, modifier = Modifier.padding(innerPadding)) {
-//            composable(NavigationItem.Home.route) { Profile(navController) }
-            composable(NavigationItem.Blacklist.route) { BlackListScreen(navController) }
-//            composable(NavigationItem.Settings.route) { FriendsList(navController) }
+        NavHost(navController, startDestination = NavigationItem.Home.route, modifier = Modifier.padding(innerPadding)) {
+            composable(NavigationItem.Home.route) { HomeScreen() }
+            composable(NavigationItem.Blacklist.route) { BlackListScreen() }
+            composable(NavigationItem.History.route) { HistoryScreen() }
+            composable(NavigationItem.Settings.route) { SettingsScreen() }
         }
     }
 }
 
-@Preview(showBackground = true, backgroundColor = 0xffffff)
+@Preview(showBackground = true, backgroundColor = 0xffffff, showSystemUi = true)
 @Composable
-fun HomeScreenPreview() {
-    MainScreen()
+fun MainScreenPreview() {
+    Surface {
+        MainScreen()
+    }
 }
