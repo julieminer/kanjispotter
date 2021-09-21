@@ -2,6 +2,7 @@ package com.melonheadstudios.kanjispotter.extensions
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.mutableStateOf
@@ -121,6 +122,7 @@ fun Modifier.verticalFadingEdge(
 fun Modifier.verticalFadingEdge(
     scrollState: LazyListState,
     length: Dp,
+    verticalArrangement: Arrangement.Vertical,
     edgeColor: Color? = null,
 ) = composed(
     debugInspectorInfo {
@@ -133,11 +135,13 @@ fun Modifier.verticalFadingEdge(
 
     Modifier.onSizeChanged { size -> height.value = size.height }.drawWithContent {
         if (scrollState.layoutInfo.totalItemsCount != 0) {
+            val totalItems = scrollState.layoutInfo.totalItemsCount
+            val spacePerItem = verticalArrangement.spacing.toPx()
+            val totalSpace = spacePerItem * (totalItems - 1)
             val lengthValue = length.toPx()
             val itemSize = scrollState.layoutInfo.visibleItemsInfo.first().size
-            val totalItems = scrollState.layoutInfo.totalItemsCount
-            val totalSize = itemSize * totalItems
-            val scrolledTopPosition = ((scrollState.firstVisibleItemIndex) * itemSize) + scrollState.firstVisibleItemScrollOffset
+            val totalSize = (itemSize * totalItems) + totalSpace
+            val scrolledTopPosition = (scrollState.firstVisibleItemIndex * itemSize) + (scrollState.firstVisibleItemIndex * spacePerItem) + scrollState.firstVisibleItemScrollOffset
             val scrolledBottomPosition = scrolledTopPosition + height.value
             val scrollFromBottom = totalSize - scrolledBottomPosition
             val topFadingEdgeStrength = lengthValue * (scrolledTopPosition / lengthValue).coerceAtMost(1f)
