@@ -2,17 +2,15 @@ package com.melonheadstudios.kanjispotter.repos
 
 import android.content.Context
 import android.os.Bundle
-import com.atilika.kuromoji.ipadic.Token
 import com.atilika.kuromoji.ipadic.Tokenizer
 import com.google.firebase.analytics.FirebaseAnalytics
-import com.melonheadstudios.kanjispotter.utils.NotificationManager
+import com.melonheadstudios.kanjispotter.extensions.toKanji
 import com.melonheadstudios.kanjispotter.models.Kanji
-import com.melonheadstudios.kanjispotter.models.englishDefinition
 import com.melonheadstudios.kanjispotter.services.AccessibilityEventHolder
 import com.melonheadstudios.kanjispotter.services.JishoService
 import com.melonheadstudios.kanjispotter.utils.Constants
+import com.melonheadstudios.kanjispotter.utils.NotificationManager
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.*
@@ -42,15 +40,14 @@ class KanjiRepo(private val appContext: Context,
         return kanjiAppDictionary.values.flatMap { it }.sortedByDescending { it.dateSearched.time }.toSet()
     }
 
-    private suspend fun add(kanji: Token, forApp: String) {
+    private fun add(kanji: Kanji, forApp: String) {
         if (kanjiAppDictionary[forApp] == null) {
             kanjiAppDictionary[forApp] = mutableListOf()
         }
-        val kanjiInstance = Kanji(kanji.baseForm.trim(), kanji.reading.trim(), Date(), appScope.async { jishoService.get(kanji.baseForm)?.englishDefinition() } )
-        if (kanjiInstance.baseForm.isBlank()) {
+        if (kanji.baseForm.isBlank()) {
             return
         }
-        kanjiAppDictionary[forApp]?.add(kanjiInstance)
+        kanjiAppDictionary[forApp]?.add(kanji)
     }
 
     fun toggleFilter(kanji: Kanji) = appScope.launch {
@@ -72,11 +69,15 @@ class KanjiRepo(private val appContext: Context,
         }
     }
 
+    fun kanjiForText(text: String): Set<Kanji> {
+        val tokens = tokenizer.tokenize(text) ?: return setOf()
+        return tokens.filter { it.isKnown }.map { it.toKanji(appScope, jishoService) }.toSet()
+    }
+
     fun parse(event: AccessibilityEventHolder) = appScope.launch {
         val app = event.packageName
         val text = event.text
-        val tokens = tokenizer.tokenize(text) ?: return@launch
-        val knownTokens = tokens.filter { it.isKnown }
+        val knownTokens = kanjiForText(text)
 
         if (knownTokens.isEmpty()) {
             return@launch
