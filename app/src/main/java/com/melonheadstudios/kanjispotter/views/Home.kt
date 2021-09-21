@@ -1,13 +1,11 @@
 package com.melonheadstudios.kanjispotter.views
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Card
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Switch
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.melonheadstudios.kanjispotter.models.Kanji
@@ -30,7 +28,12 @@ fun Home(exampleKanji: Set<Kanji>,
                         style = MaterialTheme.typography.subtitle2)
                     //Text(text = "", style = MaterialTheme.typography.caption)
                 }
-                Switch(checked = overlayEnabled, onCheckedChange = onOverlayToggled)
+                Switch(checked = overlayEnabled, onCheckedChange = onOverlayToggled,
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = MaterialTheme.colors.primary,
+                        checkedTrackColor = MaterialTheme.colors.primaryVariant
+                    )
+                )
             }
             if (overlayEnabled) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -39,7 +42,12 @@ fun Home(exampleKanji: Set<Kanji>,
                             style = MaterialTheme.typography.subtitle2)
                         // Text(text = "", style = MaterialTheme.typography.caption)
                     }
-                    Switch(checked = darkThemeEnabled, onCheckedChange = darkThemeToggled)
+                    Switch(checked = darkThemeEnabled, onCheckedChange = darkThemeToggled,
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = MaterialTheme.colors.primary,
+                            checkedTrackColor = MaterialTheme.colors.primaryVariant
+                        )
+                    )
                 }
                 Text(text = "Preview", style = MaterialTheme.typography.h5, modifier = Modifier.padding(top = 15.dp))
             }
@@ -61,11 +69,15 @@ fun Home(exampleKanji: Set<Kanji>,
 @Preview
 @Composable
 fun HomePreviewDark() {
-    Home(exampleKanji = setOf(), overlayEnabled = true, darkThemeEnabled = true, onOverlayToggled = {}, darkThemeToggled = {})
+    MaterialTheme(colors = darkColors()) {
+        Home(exampleKanji = setOf(), overlayEnabled = true, darkThemeEnabled = true, onOverlayToggled = {}, darkThemeToggled = {})
+    }
 }
 
 @Preview
 @Composable
 fun HomePreviewLight() {
-    Home(exampleKanji = setOf(), overlayEnabled = true, darkThemeEnabled = false, onOverlayToggled = {}, darkThemeToggled = {})
+    MaterialTheme(colors = lightColors()) {
+        Home(exampleKanji = setOf(), overlayEnabled = true, darkThemeEnabled = false, onOverlayToggled = {}, darkThemeToggled = {})
+    }
 }

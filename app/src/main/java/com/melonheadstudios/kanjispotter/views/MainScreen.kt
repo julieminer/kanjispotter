@@ -40,7 +40,7 @@ sealed class NavigationItem(var route: String, var icon: Int, var title: String)
 @Composable
 fun BottomNav(navController: NavController) {
     BottomNavigation(
-        backgroundColor = colorResource(id = R.color.colorPrimary),
+        backgroundColor = MaterialTheme.colors.surface,
     ) {
         NavigationItem.allValues.forEach { item ->
             val navBackStackEntry = navController.currentBackStackEntryAsState()
@@ -48,8 +48,8 @@ fun BottomNav(navController: NavController) {
             BottomNavigationItem(
                 icon = { Icon(painterResource(id = item.icon), contentDescription = item.title) },
                 label = { Text(text = item.title) },
-                selectedContentColor = Color.White,
-                unselectedContentColor = Color.White.copy(0.4f),
+                selectedContentColor = MaterialTheme.colors.onSurface,
+                unselectedContentColor = MaterialTheme.colors.onSurface.copy(0.4f),
                 alwaysShowLabel = true,
                 selected = currentDestination?.hierarchy?.any { it.route == item.route } == true,
                 onClick = {
@@ -139,14 +139,21 @@ fun SettingsScreen() {
 }
 
 @Composable
-fun MainScreen() {
+fun MainScreen(dataStore: DataStore = get()) {
     val navController = rememberNavController()
-    Scaffold(bottomBar = { BottomNav(navController) }) { innerPadding ->
-        NavHost(navController, startDestination = NavigationItem.Home.route, modifier = Modifier.padding(innerPadding)) {
-            composable(NavigationItem.Home.route) { HomeScreen() }
-            composable(NavigationItem.Blacklist.route) { BlackListScreen() }
-            composable(NavigationItem.History.route) { HistoryScreen() }
-            composable(NavigationItem.Settings.route) { SettingsScreen() }
+    val darkThemeEnabled = dataStore.darkThemeEnabled.collectAsState(initial = false)
+    MaterialTheme(colors = if (darkThemeEnabled.value == true) darkColors() else lightColors()) {
+        Scaffold(bottomBar = { BottomNav(navController) }) { innerPadding ->
+            NavHost(
+                navController,
+                startDestination = NavigationItem.Home.route,
+                modifier = Modifier.padding(innerPadding)
+            ) {
+                composable(NavigationItem.Home.route) { HomeScreen() }
+                composable(NavigationItem.Blacklist.route) { BlackListScreen() }
+                composable(NavigationItem.History.route) { HistoryScreen() }
+                composable(NavigationItem.Settings.route) { SettingsScreen() }
+            }
         }
     }
 }

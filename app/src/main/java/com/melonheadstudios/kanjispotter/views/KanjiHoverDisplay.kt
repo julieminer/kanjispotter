@@ -10,15 +10,12 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.melonheadstudios.kanjispotter.extensions.horizontalFadingEdge
 import com.melonheadstudios.kanjispotter.extensions.verticalFadingEdge
 import com.melonheadstudios.kanjispotter.models.Kanji
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.util.*
 
@@ -49,10 +46,10 @@ fun KanjiEntry(kanji: Kanji) {
     }
     Column {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text(text = kanji.baseForm, style = MaterialTheme.typography.h6)
-            Text(text = kanji.reading, style = MaterialTheme.typography.body2)
+            Text(text = kanji.baseForm, style = MaterialTheme.typography.h6, color = MaterialTheme.colors.onSurface)
+            Text(text = kanji.reading, style = MaterialTheme.typography.body2, color = MaterialTheme.colors.onSurface)
         }
-        Text(text = englishReading.value, style = MaterialTheme.typography.body2)
+        Text(text = englishReading.value, style = MaterialTheme.typography.body2, color = MaterialTheme.colors.onSurface)
     }
 }
 
@@ -66,12 +63,13 @@ fun KanjiHoverDisplay(
     showAllClicked: () -> Unit,
     onFilterToggled: (kanji: Kanji) -> Unit) {
     Box(modifier = modifier
-            .background(color = Color.White, shape = RoundedCornerShape(32.dp))
-            .padding(24.dp)) {
+            .background(color = MaterialTheme.colors.surface, )
+            .padding(vertical = 24.dp, horizontal = 12.dp)) {
         val scrollState = rememberScrollState()
         Column(modifier = Modifier.fillMaxWidth()) {
             KanjiSelection(parsedKanji, filteredKanji, showAllClicked, onFilterToggled)
             Column(Modifier
+                    .padding(horizontal = 8.dp)
                     .verticalFadingEdge(scrollState, length = 50.dp)
                     .verticalScroll(scrollState)
                     .fillMaxWidth()) {

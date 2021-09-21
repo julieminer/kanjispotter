@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Switch
+import androidx.compose.material.SwitchDefaults.colors
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -54,7 +55,12 @@ fun Blacklist(
                         Text(text = app.name, style = MaterialTheme.typography.subtitle2)
                         Text(text = app.packageName, style = MaterialTheme.typography.caption)
                     }
-                    Switch(checked = blacklistedPackages.contains(app.packageName), onCheckedChange = { checked ->
+                    Switch(
+                        colors = colors(
+                            checkedThumbColor = MaterialTheme.colors.primary,
+                            checkedTrackColor = MaterialTheme.colors.primaryVariant
+                        ),
+                        checked = blacklistedPackages.contains(app.packageName), onCheckedChange = { checked ->
                         blackListValueToggled(app.packageName, checked)
                     })
                 }

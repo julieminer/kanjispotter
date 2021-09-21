@@ -18,7 +18,7 @@ import com.melonheadstudios.kanjispotter.models.Kanji
 
 @Composable
 fun Clip(text: String, isSelected: Boolean, onClicked: () -> Unit) {
-    val color = if (isSelected) Color.Black else Color.Black.copy(alpha = 0.2f)
+    val color = if (isSelected) MaterialTheme.colors.onBackground else MaterialTheme.colors.onBackground.copy(alpha = 0.2f)
     val shape = RoundedCornerShape(18.dp)
     Surface(shape = shape,
             modifier = Modifier
