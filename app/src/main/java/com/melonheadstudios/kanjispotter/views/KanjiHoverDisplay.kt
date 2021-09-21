@@ -43,12 +43,9 @@ fun KanjiSelection(kanjiList: Set<Kanji>, filteredKanji: Set<Kanji>, selectAll: 
 
 @Composable
 fun KanjiEntry(kanji: Kanji) {
-    val coroutineScope = rememberCoroutineScope()
     val englishReading = remember { mutableStateOf("") }
-    SideEffect {
-        coroutineScope.launch(Dispatchers.Main) {
-            englishReading.value = kanji.englishReading.await() ?: ""
-        }
+    LaunchedEffect(true) {
+        englishReading.value = kanji.englishReading.await() ?: ""
     }
     Column {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
