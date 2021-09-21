@@ -2,8 +2,9 @@ package com.melonheadstudios.kanjispotter.views
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Switch
 import androidx.compose.material.Text
@@ -26,16 +27,20 @@ fun Blacklist(
         blacklistApps: Set<BlacklistApp>,
         blacklistedPackages: Set<String>,
         blackListValueToggled: (packageName: String, isBlackListed: Boolean) -> Unit) {
-    Column(Modifier.padding(24.dp).fillMaxSize()) {
+    Column(
+        Modifier
+            .padding(24.dp)
+            .fillMaxSize()) {
         Text(text = "Blacklist Apps", style = MaterialTheme.typography.h5)
         Text(text = "Prevent Kanji Spotter from triggering from certain apps", style = MaterialTheme.typography.body2)
-        val scrollState = rememberScrollState()
-        Column(verticalArrangement = Arrangement.spacedBy(15.dp),
-               modifier = Modifier
-                   .padding(vertical = 15.dp)
-                   .verticalFadingEdge(scrollState, length = 50.dp)
-                   .verticalScroll(scrollState)) {
-            blacklistApps.forEach { app ->
+        val state = rememberLazyListState()
+        val arrangement = Arrangement.spacedBy(15.dp)
+        LazyColumn(state = state,
+            verticalArrangement = arrangement,
+            modifier = Modifier
+                .padding(vertical = 15.dp)
+                .verticalFadingEdge(state, length = 50.dp, verticalArrangement = arrangement)) {
+            items(blacklistApps.toList()) { app ->
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Image(
                             bitmap = app.icon.toBitmap().asImageBitmap(),
@@ -43,7 +48,9 @@ fun Blacklist(
                             modifier = Modifier
                                     .size(50.dp)
                     )
-                    Column(modifier = Modifier.padding(horizontal = 15.dp).weight(1f)) {
+                    Column(modifier = Modifier
+                        .padding(horizontal = 15.dp)
+                        .weight(1f)) {
                         Text(text = app.name, style = MaterialTheme.typography.subtitle2)
                         Text(text = app.packageName, style = MaterialTheme.typography.caption)
                     }
