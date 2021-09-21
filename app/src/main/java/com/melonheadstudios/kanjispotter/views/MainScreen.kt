@@ -22,7 +22,6 @@ import com.melonheadstudios.kanjispotter.models.BlacklistApp
 import com.melonheadstudios.kanjispotter.models.Kanji
 import com.melonheadstudios.kanjispotter.repos.KanjiRepo
 import com.melonheadstudios.kanjispotter.utils.DataStore
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.get
 
