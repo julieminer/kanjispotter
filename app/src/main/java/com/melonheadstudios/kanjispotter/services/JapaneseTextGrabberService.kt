@@ -24,8 +24,8 @@ class JapaneseTextGrabberService : AccessibilityService() {
             event.text ?: return
             if (!event.shouldParse()) return
             runBlocking {
-                val blackList = app.dataStore.blackListedApps.firstOrNull() ?: setOf()
-                if (app.dataStore.overlayEnabled.firstOrNull() != true) return@runBlocking
+                val blackList = app.preferencesService.blackListedApps.firstOrNull() ?: setOf()
+                if (app.preferencesService.overlayEnabled.firstOrNull() != true) return@runBlocking
                 if (blackList.contains(event.packageName)) return@runBlocking
                     app.kanjiRepo.parse(AccessibilityEventHolder(event.packageName.toString(), event.text.toString()))
             }

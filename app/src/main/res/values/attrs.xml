@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <attr name="themeCloseDrawable" format="reference" />
-    <attr name="themeTextColor" format="color" />
-    <attr name="themeSubTextColor" format="color" />
-    <attr name="themeBackgroundColor" format="color" />
-    <attr name="themeSubBackgroundColor" format="color" />
-</resources>

@@ -10,19 +10,19 @@ import androidx.compose.material.lightColors
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import com.melonheadstudios.kanjispotter.repos.KanjiRepo
-import com.melonheadstudios.kanjispotter.utils.DataStore
+import com.melonheadstudios.kanjispotter.services.PreferencesService
 import com.melonheadstudios.kanjispotter.views.KanjiHoverDisplay
 import org.koin.android.ext.android.inject
 
 class KanjiBubbleActivity: AppCompatActivity() {
     private val kanjiRepo: KanjiRepo by inject()
-    private val dataStore: DataStore by inject()
+    private val preferencesService: PreferencesService by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         supportActionBar?.hide()
         setContent {
-            val darkThemeEnabled = dataStore.darkThemeEnabled.collectAsState(initial = false)
+            val darkThemeEnabled = preferencesService.darkThemeEnabled.collectAsState(initial = false)
             MaterialTheme(colors = if (darkThemeEnabled.value == true) darkColors() else lightColors()) {
                 val parsedKanji = kanjiRepo.parsedKanji.collectAsState(initial = setOf())
                 val filteredKanji = kanjiRepo.filteredKanji.collectAsState(initial = setOf())

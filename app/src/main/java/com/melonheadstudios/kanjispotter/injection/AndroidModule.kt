@@ -5,7 +5,7 @@ import com.melonheadstudios.kanjispotter.utils.NotificationManager
 import com.melonheadstudios.kanjispotter.repos.KanjiRepo
 import com.melonheadstudios.kanjispotter.repos.OnboardingRepo
 import com.melonheadstudios.kanjispotter.services.JishoService
-import com.melonheadstudios.kanjispotter.utils.DataStore
+import com.melonheadstudios.kanjispotter.services.PreferencesService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -23,7 +23,7 @@ val appModule = module {
     single { Tokenizer() }
     single { KanjiRepo(get(), get(), get(), get(), get()) }
     single { JishoService() }
-    single { DataStore(get()) }
+    single { PreferencesService(get()) }
     single { NotificationManager(get()) }
     single { OnboardingRepo(get(), get(), get()) }
 }

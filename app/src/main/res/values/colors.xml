@@ -19,13 +19,4 @@
     <color name="colorPrimary">#202930</color>
     <color name="colorPrimaryDark">#12171b</color>
     <color name="colorAccent">#48d1ff</color>
-    <color name="colorAccentClean">#FFFFFF</color>
-
-    <color name="backgroundColorDark">#415667</color>
-    <color name="textColorDark">#FFFFFF</color>
-    <color name="subTextColorDark">#C0C0C0</color>
-
-    <color name="backgroundColorLight">@android:color/white</color>
-    <color name="textColorLight">@android:color/black</color>
-    <color name="subTextColorLight">@android:color/darker_gray</color>
 </resources>

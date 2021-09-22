@@ -21,7 +21,7 @@ import com.melonheadstudios.kanjispotter.models.Kanji
 import com.melonheadstudios.kanjispotter.models.OnboardingScreen
 import com.melonheadstudios.kanjispotter.repos.KanjiRepo
 import com.melonheadstudios.kanjispotter.repos.OnboardingRepo
-import com.melonheadstudios.kanjispotter.utils.DataStore
+import com.melonheadstudios.kanjispotter.utils.PreferencesService
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.get
 
@@ -74,9 +74,9 @@ fun BottomNav(navController: NavController) {
 }
 
 @Composable
-fun HomeScreen(dataStore: DataStore = get(), kanjiRepo: KanjiRepo = get()) {
-    val enabled = dataStore.overlayEnabled.collectAsState(initial = false)
-    val darkTheme = dataStore.darkThemeEnabled.collectAsState(initial = false)
+fun HomeScreen(preferencesService: PreferencesService = get(), kanjiRepo: KanjiRepo = get()) {
+    val enabled = preferencesService.overlayEnabled.collectAsState(initial = false)
+    val darkTheme = preferencesService.darkThemeEnabled.collectAsState(initial = false)
     val coroutineScope = rememberCoroutineScope()
     val exampleKanji = remember { mutableStateOf(setOf<Kanji>()) }
 
@@ -88,14 +88,14 @@ fun HomeScreen(dataStore: DataStore = get(), kanjiRepo: KanjiRepo = get()) {
         exampleKanji = exampleKanji.value,
         overlayEnabled = enabled.value == true,
         darkThemeEnabled = darkTheme.value == true,
-        onOverlayToggled = { coroutineScope.launch { dataStore.setOverlayEnabled(it) } },
-        darkThemeToggled = { coroutineScope.launch { dataStore.setDarkThemeEnabled(it) } },
+        onOverlayToggled = { coroutineScope.launch { preferencesService.setOverlayEnabled(it) } },
+        darkThemeToggled = { coroutineScope.launch { preferencesService.setDarkThemeEnabled(it) } },
     )
 }
 
 @Composable
-fun BlackListScreen(dataStore: DataStore = get()) {
-    val blackListedPackages = dataStore.blackListedApps.collectAsState(initial = setOf())
+fun BlackListScreen(preferencesService: PreferencesService = get()) {
+    val blackListedPackages = preferencesService.blackListedApps.collectAsState(initial = setOf())
     val scope = rememberCoroutineScope()
     val blacklistApps = remember { mutableStateOf(setOf<BlacklistApp>()) }
     val context = LocalContext.current
@@ -125,7 +125,7 @@ fun BlackListScreen(dataStore: DataStore = get()) {
                 newList.remove(packageName)
             }
             scope.launch {
-                dataStore.setBlackListApps(newList)
+                preferencesService.setBlackListApps(newList)
             }
     })
 }
@@ -156,9 +156,9 @@ fun OnboardingComposer(onboardingScreen: OnboardingScreen, onboardingRepo: Onboa
 }
 
 @Composable
-fun MainScreen(dataStore: DataStore = get(), onboardingRepo: OnboardingRepo = get()) {
+fun MainScreen(preferencesService: PreferencesService = get(), onboardingRepo: OnboardingRepo = get()) {
     val navController = rememberNavController()
-    val darkThemeEnabled = dataStore.darkThemeEnabled.collectAsState(initial = false)
+    val darkThemeEnabled = preferencesService.darkThemeEnabled.collectAsState(initial = false)
     val canBubble = onboardingRepo.canBubble.collectAsState(initial = false)
     val accessibilityRunning = onboardingRepo.accessibilityServiceRunning.collectAsState(initial = false)
 

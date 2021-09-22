@@ -1,15 +1,16 @@
-package com.melonheadstudios.kanjispotter.utils
+package com.melonheadstudios.kanjispotter.services
 
 import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.melonheadstudios.kanjispotter.utils.Constants
 import kotlinx.coroutines.flow.map
 
 val Context.dataStore by preferencesDataStore(name = Constants.PREFERENCES_KEY)
 
-class DataStore(private val appContext: Context) {
+class PreferencesService(private val appContext: Context) {
     private val darkThemeKey = booleanPreferencesKey(Constants.DARK_THEME_FLAG)
     val darkThemeEnabled = appContext.dataStore.data.map { preferences -> preferences[darkThemeKey]  }
 

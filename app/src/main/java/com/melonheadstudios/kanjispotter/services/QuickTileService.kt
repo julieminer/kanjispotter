@@ -26,7 +26,7 @@ class QuickTileService: TileService() {
     override fun onStartListening() {
         super.onStartListening()
         app.scope.launch {
-            app.dataStore.overlayEnabled.collect {
+            app.preferencesService.overlayEnabled.collect {
                 updateTile(isActive = it == true)
             }
         }
@@ -34,8 +34,8 @@ class QuickTileService: TileService() {
 
     override fun onClick() {
         runBlocking {
-            val isActive = app.dataStore.overlayEnabled.firstOrNull() ?: false
-            app.dataStore.setOverlayEnabled(!isActive)
+            val isActive = app.preferencesService.overlayEnabled.firstOrNull() ?: false
+            app.preferencesService.setOverlayEnabled(!isActive)
         }
     }
 

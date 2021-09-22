@@ -8,10 +8,7 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import com.melonheadstudios.kanjispotter.BuildConfig
-import com.melonheadstudios.kanjispotter.extensions.isServiceRunning
 import com.melonheadstudios.kanjispotter.repos.OnboardingRepo
-import com.melonheadstudios.kanjispotter.services.JapaneseTextGrabberService
-import com.melonheadstudios.kanjispotter.utils.NotificationManager
 import com.melonheadstudios.kanjispotter.views.MainScreen
 import org.koin.android.ext.android.inject
 
