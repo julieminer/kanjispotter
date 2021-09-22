@@ -5,9 +5,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
@@ -20,20 +18,24 @@ import androidx.navigation.compose.rememberNavController
 import com.melonheadstudios.kanjispotter.R
 import com.melonheadstudios.kanjispotter.models.BlacklistApp
 import com.melonheadstudios.kanjispotter.models.Kanji
+import com.melonheadstudios.kanjispotter.models.OnboardingScreen
 import com.melonheadstudios.kanjispotter.repos.KanjiRepo
+import com.melonheadstudios.kanjispotter.repos.OnboardingRepo
 import com.melonheadstudios.kanjispotter.utils.DataStore
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.get
 
-sealed class NavigationItem(var route: String, var icon: Int, var title: String) {
-    object Home : NavigationItem("home", R.drawable.close_button, "Home")
-    object Settings : NavigationItem("setting", R.drawable.close_light, "Settings")
-    object History : NavigationItem("history", R.drawable.close_button, "History")
-    object Blacklist : NavigationItem("blacklist", R.drawable.close_button, "Blacklist")
+sealed class NavigationItem(var route: String, var icon: Int?, var title: String) {
+    object Home : NavigationItem("home", R.drawable.ic_baseline_home_24, "Home")
+    object Settings : NavigationItem("setting", R.drawable.ic_baseline_settings_24, "Settings")
+    object History : NavigationItem("history", R.drawable.ic_baseline_history_24, "History")
+    object Blacklist : NavigationItem("blacklist", R.drawable.ic_baseline_filter_list_24, "Blacklist")
+    object OnboardingAccessibility : NavigationItem("onboarding-accessibility}", null, "Accessibility Onboarding")
+    object OnboardingBubbles : NavigationItem("onboarding-bubbles}", null, "Bubbles Onboarding")
 
     companion object {
         private const val devMode = false
-        val allValues = if (devMode) listOf(Home, History, Blacklist, Settings) else listOf(Home, Blacklist)
+        val bottomNavItems = if (devMode) listOf(Home, History, Blacklist, Settings) else listOf(Home, Blacklist)
     }
 }
 
@@ -42,11 +44,11 @@ fun BottomNav(navController: NavController) {
     BottomNavigation(
         backgroundColor = MaterialTheme.colors.surface,
     ) {
-        NavigationItem.allValues.forEach { item ->
+        NavigationItem.bottomNavItems.forEach { item ->
             val navBackStackEntry = navController.currentBackStackEntryAsState()
             val currentDestination = navBackStackEntry.value?.destination
             BottomNavigationItem(
-                icon = { Icon(painterResource(id = item.icon), contentDescription = item.title) },
+                icon = { Icon(painterResource(id = item.icon!!), contentDescription = item.title) },
                 label = { Text(text = item.title) },
                 selectedContentColor = MaterialTheme.colors.onSurface,
                 unselectedContentColor = MaterialTheme.colors.onSurface.copy(0.4f),
@@ -139,20 +141,51 @@ fun SettingsScreen() {
 }
 
 @Composable
-fun MainScreen(dataStore: DataStore = get()) {
+fun OnboardingComposer(onboardingScreen: OnboardingScreen, onboardingRepo: OnboardingRepo = get()) {
+    val context = LocalContext.current
+    Onboarding(
+        title = onboardingScreen.title,
+        imageId = onboardingScreen.imageId,
+        imageContentDescription = onboardingScreen.imageContentDescription,
+        description = onboardingScreen.description,
+        actionTitle = onboardingScreen.actionTitle,
+        onContinueTapped = {
+            onboardingRepo.startAction(context, OnboardingScreen.Accessibility)
+        }
+    )
+}
+
+@Composable
+fun MainScreen(dataStore: DataStore = get(), onboardingRepo: OnboardingRepo = get()) {
     val navController = rememberNavController()
     val darkThemeEnabled = dataStore.darkThemeEnabled.collectAsState(initial = false)
+    val canBubble = onboardingRepo.canBubble.collectAsState(initial = false)
+    val accessibilityRunning = onboardingRepo.accessibilityServiceRunning.collectAsState(initial = false)
+
+    val startDest = when {
+        !accessibilityRunning.value -> NavigationItem.OnboardingAccessibility
+        !canBubble.value -> NavigationItem.OnboardingBubbles
+        else -> NavigationItem.Home
+    }
+
     MaterialTheme(colors = if (darkThemeEnabled.value == true) darkColors() else lightColors()) {
-        Scaffold(bottomBar = { BottomNav(navController) }) { innerPadding ->
+        Scaffold(bottomBar = {
+            if (canBubble.value && accessibilityRunning.value) {
+                BottomNav(navController)
+            }
+        }) { innerPadding ->
             NavHost(
                 navController,
-                startDestination = NavigationItem.Home.route,
+                startDestination = startDest.route,
                 modifier = Modifier.padding(innerPadding)
             ) {
                 composable(NavigationItem.Home.route) { HomeScreen() }
                 composable(NavigationItem.Blacklist.route) { BlackListScreen() }
                 composable(NavigationItem.History.route) { HistoryScreen() }
                 composable(NavigationItem.Settings.route) { SettingsScreen() }
+                composable(NavigationItem.Settings.route) { SettingsScreen() }
+                composable(NavigationItem.OnboardingAccessibility.route) { OnboardingComposer(OnboardingScreen.Accessibility) }
+                composable(NavigationItem.OnboardingBubbles.route) { OnboardingComposer(OnboardingScreen.Bubbles) }
             }
         }
     }

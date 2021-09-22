@@ -5,7 +5,6 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import com.melonheadstudios.kanjispotter.utils.Constants
 import kotlinx.coroutines.flow.map
 
 val Context.dataStore by preferencesDataStore(name = Constants.PREFERENCES_KEY)

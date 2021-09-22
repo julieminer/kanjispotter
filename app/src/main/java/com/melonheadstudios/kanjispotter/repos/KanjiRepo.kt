@@ -37,7 +37,7 @@ class KanjiRepo(private val appContext: Context,
     }
 
     private fun allKanji(): Set<Kanji> {
-        return kanjiAppDictionary.values.flatMap { it }.sortedByDescending { it.dateSearched.time }.toSet()
+        return kanjiAppDictionary.values.flatten().sortedByDescending { it.dateSearched.time }.toSet()
     }
 
     private fun add(kanji: Kanji, forApp: String) {

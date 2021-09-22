@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
@@ -20,7 +19,7 @@ import kotlinx.coroutines.runBlocking
 import java.util.*
 
 @Composable
-fun KanjiSelection(kanjiList: Set<Kanji>, filteredKanji: Set<Kanji>, selectAll: () -> Unit, onFilterToggled: (kanji: Kanji) -> Unit, ) {
+fun KanjiSelection(kanjiList: Set<Kanji>, filteredKanji: Set<Kanji>, selectAll: () -> Unit, onFilterToggled: (kanji: Kanji) -> Unit) {
     val scrollState = rememberScrollState()
     Row(horizontalArrangement = Arrangement.spacedBy(10.dp),
             modifier = Modifier
@@ -63,7 +62,7 @@ fun KanjiHoverDisplay(
     showAllClicked: () -> Unit,
     onFilterToggled: (kanji: Kanji) -> Unit) {
     Box(modifier = modifier
-            .background(color = MaterialTheme.colors.surface, )
+            .background(color = MaterialTheme.colors.surface)
             .padding(vertical = 24.dp, horizontal = 12.dp)) {
         val scrollState = rememberScrollState()
         Column(modifier = Modifier.fillMaxWidth()) {

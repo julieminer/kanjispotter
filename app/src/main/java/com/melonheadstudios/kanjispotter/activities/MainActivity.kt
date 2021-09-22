@@ -7,16 +7,16 @@ import android.os.Build
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.material.MaterialTheme
 import com.melonheadstudios.kanjispotter.BuildConfig
 import com.melonheadstudios.kanjispotter.extensions.isServiceRunning
+import com.melonheadstudios.kanjispotter.repos.OnboardingRepo
 import com.melonheadstudios.kanjispotter.services.JapaneseTextGrabberService
 import com.melonheadstudios.kanjispotter.utils.NotificationManager
 import com.melonheadstudios.kanjispotter.views.MainScreen
 import org.koin.android.ext.android.inject
 
 class MainActivity : AppCompatActivity() {
-    private val manager: NotificationManager by inject()
+    private val onboardingRepo: OnboardingRepo by inject()
 
     @SuppressLint("RestrictedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,21 +25,15 @@ class MainActivity : AppCompatActivity() {
         setContent {
             MainScreen()
         }
-
-        if (shouldLaunchOnboarding()) {
-            startActivity(Intent(this, KanjiOnboardingActivity::class.java))
-        }
 //
 //        report_issue_button.setOnClickListener {
 //            reportIssue()
 //        }
-
     }
 
-    @SuppressLint("NewApi")
-    private fun shouldLaunchOnboarding(): Boolean {
-        val serviceIsRunning = isServiceRunning(JapaneseTextGrabberService::class.java)
-        return !(manager.canBubble() && serviceIsRunning)
+    override fun onResume() {
+        super.onResume()
+        onboardingRepo.checkPermissions()
     }
 
     private fun reportIssue() {

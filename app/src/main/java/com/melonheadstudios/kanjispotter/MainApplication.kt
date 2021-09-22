@@ -1,6 +1,7 @@
 package com.melonheadstudios.kanjispotter
 
 import android.app.Application
+import com.google.firebase.FirebaseApp
 import com.melonheadstudios.kanjispotter.utils.NotificationManager
 import com.melonheadstudios.kanjispotter.injection.appModule
 import com.melonheadstudios.kanjispotter.repos.KanjiRepo
@@ -22,6 +23,8 @@ class MainApplication: Application() {
 
     override fun onCreate() {
         super.onCreate()
+        FirebaseApp.initializeApp(this)
+
         startKoin {
             androidContext(this@MainApplication)
             modules(appModule)

@@ -64,8 +64,6 @@
                 android:name="android.app.shortcuts"
                 android:resource="@xml/shortcuts" />
         </activity>
-        <activity android:name=".activities.KanjiOnboardingActivity"
-            android:theme="@style/AppTheme" />
         <activity android:name=".activities.KanjiBubbleActivity"
             android:theme="@style/AppTheme"
             android:allowEmbedded="true"

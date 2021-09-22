@@ -8,9 +8,7 @@ class Constants {
     companion object {
         val SERVICE_STATUS_FLAG = "serviceStatus"
         val DARK_THEME_FLAG = "darkTheme"
-        val BLACKLIST_STATUS_FLAG = "blacklistEnabled"
         val BLACKLIST_SELECTION_STATUS_FLAG = "blacklistAllChecked"
-        val APP_BLACKLISTED = "appBlacklisted:"
         val PREFERENCES_KEY = "com.melonhead.android_quick_settings"
 
         val EVENT_USED = "parsed_kanji"
