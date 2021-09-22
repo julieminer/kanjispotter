@@ -8,8 +8,6 @@ import com.melonheadstudios.kanjispotter.views.MainScreen
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent {
-            MainScreen()
-        }
+        setContent { MainScreen() }
     }
 }
