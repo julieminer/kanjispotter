@@ -60,7 +60,6 @@ class NotificationManager(private val context: Context) {
     fun updateShortcuts() {
         var shortcuts = listOf(1).map {
             val icon = Icon.createWithResource(context, R.drawable.app_icon)
-            // Create a dynamic shortcut for each of the contacts.
             // The same shortcut ID will be used when we show a bubble notification.
             ShortcutInfo.Builder(context, SHORTCUT)
                 .setLocusId(LocusId(SHORTCUT))
