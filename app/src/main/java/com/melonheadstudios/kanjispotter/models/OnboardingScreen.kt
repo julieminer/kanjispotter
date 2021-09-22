@@ -26,8 +26,8 @@ sealed class OnboardingScreen {
 
     val description: String
         get() = when (this) {
-            Accessibility -> ""
-            Bubbles -> ""
+            Accessibility -> "In order to read text in other apps, you'll need to enable Kanji Spotter as an Accessibility Service"
+            Bubbles -> "In order to display over other apps, you'll need to enable Bubbling for all Notifications from Kanji Spotter"
         }
 
     val actionTitle: String
