@@ -1,5 +1,6 @@
 package com.melonheadstudios.kanjispotter.views
 
+import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -9,25 +10,43 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Switch
 import androidx.compose.material.SwitchDefaults.colors
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
-import com.melonheadstudios.kanjispotter.R
 import com.melonheadstudios.kanjispotter.extensions.verticalFadingEdge
 import com.melonheadstudios.kanjispotter.models.BlacklistApp
+import com.melonheadstudios.kanjispotter.services.PreferencesService
+import kotlinx.coroutines.launch
+import org.koin.androidx.compose.get
 
 // TODO: 2021-09-17 add sorting options + ui
 @Composable
-fun Blacklist(
-        blacklistApps: Set<BlacklistApp>,
-        blacklistedPackages: Set<String>,
-        blackListValueToggled: (packageName: String, isBlackListed: Boolean) -> Unit) {
+fun Blacklist(preferencesService: PreferencesService = get()) {
+    val blackListedPackages = preferencesService.blackListedApps.collectAsState(initial = setOf())
+    val scope = rememberCoroutineScope()
+    val blacklistApps = remember { mutableStateOf(setOf<BlacklistApp>()) }
+    val context = LocalContext.current
+
+    if (blacklistApps.value.isEmpty()) {
+        LaunchedEffect(true) {
+            val mainIntent = Intent(Intent.ACTION_MAIN, null)
+            mainIntent.addCategory(Intent.CATEGORY_LAUNCHER)
+            val packageManager = context.packageManager
+            val pkgAppsList = packageManager.queryIntentActivities(mainIntent, 0)
+            blacklistApps.value = pkgAppsList.mapNotNull {
+                val appLabel = it.loadLabel(packageManager).toString()
+                val packageName = it.activityInfo.taskAffinity ?: return@mapNotNull null
+                val packageIcon = it.loadIcon(packageManager)
+                BlacklistApp(name = appLabel, packageName = packageName, icon = packageIcon)
+            }.toSet()
+        }
+    }
+
     Column(
         Modifier
             .padding(24.dp)
@@ -41,7 +60,7 @@ fun Blacklist(
             modifier = Modifier
                 .padding(vertical = 15.dp)
                 .verticalFadingEdge(state, length = 50.dp, verticalArrangement = arrangement)) {
-            items(blacklistApps.toList()) { app ->
+            items(blacklistApps.value.toList()) { app ->
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Image(
                             bitmap = app.icon.toBitmap().asImageBitmap(),
@@ -60,9 +79,19 @@ fun Blacklist(
                             checkedThumbColor = MaterialTheme.colors.primary,
                             checkedTrackColor = MaterialTheme.colors.primaryVariant
                         ),
-                        checked = blacklistedPackages.contains(app.packageName), onCheckedChange = { checked ->
-                        blackListValueToggled(app.packageName, checked)
-                    })
+                        checked = blackListedPackages.value?.contains(app.packageName) == true,
+                        onCheckedChange = { checked ->
+                            val newList = blackListedPackages.value?.toMutableSet() ?: mutableSetOf()
+                            if (checked) {
+                                newList.add(app.packageName)
+                            } else {
+                                newList.remove(app.packageName)
+                            }
+                            scope.launch {
+                                preferencesService.setBlackListApps(newList)
+                            }
+                        }
+                    )
                 }
             }
         }
@@ -73,13 +102,6 @@ fun Blacklist(
 @Composable
 fun PreviewBlackList() {
     MaterialTheme {
-        val resources = LocalContext.current.resources
-        val icon = ResourcesCompat.getDrawable(resources, R.mipmap.ic_launcher, null)!!
-        Blacklist(setOf(
-            BlacklistApp("Test 1", "com.test.test1", icon),
-            BlacklistApp("Test 2", "com.test.test2", icon),
-            BlacklistApp("Test3", "com.test.test3", icon),
-        ), blacklistedPackages = setOf("com.test.test3"), blackListValueToggled = { _, _ ->
-        })
+        Blacklist()
     }
 }
