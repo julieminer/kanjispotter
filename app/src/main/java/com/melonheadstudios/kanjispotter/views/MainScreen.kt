@@ -150,7 +150,7 @@ fun OnboardingComposer(onboardingScreen: OnboardingScreen, onboardingRepo: Onboa
         description = onboardingScreen.description,
         actionTitle = onboardingScreen.actionTitle,
         onContinueTapped = {
-            onboardingRepo.startAction(context, OnboardingScreen.Accessibility)
+            onboardingRepo.startAction(context, onboardingScreen)
         }
     )
 }
