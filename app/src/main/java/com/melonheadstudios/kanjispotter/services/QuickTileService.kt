@@ -1,32 +1,30 @@
 package com.melonheadstudios.kanjispotter.services
 
-import android.annotation.SuppressLint
-import android.annotation.TargetApi
 import android.graphics.drawable.Icon
-import android.os.Build
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
-import com.melonheadstudios.kanjispotter.MainApplication
 import com.melonheadstudios.kanjispotter.R
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import java.util.*
 
 /**
  * kanjispotter
  * Created by jake on 2017-04-16, 12:22 AM
  */
-@SuppressLint("Override")
-@TargetApi(Build.VERSION_CODES.N)
-class QuickTileService: TileService() {
-    private val app: MainApplication by lazy { MainApplication.instance }
+class QuickTileService: TileService(), KoinComponent {
+    private val appScope: CoroutineScope by inject()
+    private val preferencesService: PreferencesService by inject()
 
     override fun onStartListening() {
         super.onStartListening()
-        app.scope.launch {
-            app.preferencesService.overlayEnabled.collect {
+        appScope.launch {
+            preferencesService.overlayEnabled.collect {
                 updateTile(isActive = it == true)
             }
         }
@@ -34,8 +32,8 @@ class QuickTileService: TileService() {
 
     override fun onClick() {
         runBlocking {
-            val isActive = app.preferencesService.overlayEnabled.firstOrNull() ?: false
-            app.preferencesService.setOverlayEnabled(!isActive)
+            val isActive = preferencesService.overlayEnabled.firstOrNull() ?: false
+            preferencesService.setOverlayEnabled(!isActive)
         }
     }
 

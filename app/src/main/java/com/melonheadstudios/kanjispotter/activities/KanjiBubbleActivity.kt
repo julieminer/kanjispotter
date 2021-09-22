@@ -20,7 +20,6 @@ class KanjiBubbleActivity: AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        supportActionBar?.hide()
         setContent {
             val darkThemeEnabled = preferencesService.darkThemeEnabled.collectAsState(initial = false)
             MaterialTheme(colors = if (darkThemeEnabled.value == true) darkColors() else lightColors()) {

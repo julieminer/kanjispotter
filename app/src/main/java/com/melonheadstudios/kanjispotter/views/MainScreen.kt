@@ -21,7 +21,7 @@ import com.melonheadstudios.kanjispotter.models.Kanji
 import com.melonheadstudios.kanjispotter.models.OnboardingScreen
 import com.melonheadstudios.kanjispotter.repos.KanjiRepo
 import com.melonheadstudios.kanjispotter.repos.OnboardingRepo
-import com.melonheadstudios.kanjispotter.utils.PreferencesService
+import com.melonheadstudios.kanjispotter.services.PreferencesService
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.get
 

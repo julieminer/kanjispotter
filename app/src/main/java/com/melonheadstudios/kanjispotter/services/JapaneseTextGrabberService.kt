@@ -6,12 +6,16 @@ import android.view.accessibility.AccessibilityEvent
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.melonheadstudios.kanjispotter.MainApplication
 import com.melonheadstudios.kanjispotter.extensions.shouldParse
+import com.melonheadstudios.kanjispotter.repos.KanjiRepo
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-class JapaneseTextGrabberService : AccessibilityService() {
+class JapaneseTextGrabberService : AccessibilityService(), KoinComponent {
     private val tag = "JapaneseTextGrabber"
-    private val app: MainApplication by lazy { MainApplication.instance }
+    private val kanjiRepo: KanjiRepo by inject()
+    private val preferencesService: PreferencesService by inject()
 
     override fun onServiceConnected() {
         super.onServiceConnected()
@@ -24,10 +28,10 @@ class JapaneseTextGrabberService : AccessibilityService() {
             event.text ?: return
             if (!event.shouldParse()) return
             runBlocking {
-                val blackList = app.preferencesService.blackListedApps.firstOrNull() ?: setOf()
-                if (app.preferencesService.overlayEnabled.firstOrNull() != true) return@runBlocking
+                val blackList = preferencesService.blackListedApps.firstOrNull() ?: setOf()
+                if (preferencesService.overlayEnabled.firstOrNull() != true) return@runBlocking
                 if (blackList.contains(event.packageName)) return@runBlocking
-                    app.kanjiRepo.parse(AccessibilityEventHolder(event.packageName.toString(), event.text.toString()))
+                    kanjiRepo.parse(AccessibilityEventHolder(event.packageName.toString(), event.text.toString()))
             }
         } catch (e: Exception) {
             FirebaseCrashlytics.getInstance().recordException(e)

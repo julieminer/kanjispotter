@@ -4,13 +4,13 @@ import android.content.Context
 import android.os.Bundle
 import com.atilika.kuromoji.ipadic.Tokenizer
 import com.google.firebase.analytics.FirebaseAnalytics
-import com.melonheadstudios.kanjispotter.extensions.toKanji
 import com.melonheadstudios.kanjispotter.models.Kanji
 import com.melonheadstudios.kanjispotter.services.AccessibilityEventHolder
 import com.melonheadstudios.kanjispotter.services.JishoService
 import com.melonheadstudios.kanjispotter.utils.Constants
 import com.melonheadstudios.kanjispotter.utils.NotificationManager
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.*
@@ -71,7 +71,9 @@ class KanjiRepo(private val appContext: Context,
 
     fun kanjiForText(text: String): Set<Kanji> {
         val tokens = tokenizer.tokenize(text) ?: return setOf()
-        return tokens.filter { it.isKnown }.map { it.toKanji(appScope, jishoService) }.toSet()
+        return tokens.filter { it.isKnown }.map {
+            Kanji(it.baseForm.trim(), it.reading.trim(), Date(), appScope.async { jishoService.get(it.baseForm) })
+        }.toSet()
     }
 
     fun parse(event: AccessibilityEventHolder) = appScope.launch {
