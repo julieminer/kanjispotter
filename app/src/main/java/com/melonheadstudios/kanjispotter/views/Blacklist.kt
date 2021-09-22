@@ -32,19 +32,17 @@ fun Blacklist(preferencesService: PreferencesService = get()) {
     val blacklistApps = remember { mutableStateOf(setOf<BlacklistApp>()) }
     val context = LocalContext.current
 
-    if (blacklistApps.value.isEmpty()) {
-        LaunchedEffect(true) {
-            val mainIntent = Intent(Intent.ACTION_MAIN, null)
-            mainIntent.addCategory(Intent.CATEGORY_LAUNCHER)
-            val packageManager = context.packageManager
-            val pkgAppsList = packageManager.queryIntentActivities(mainIntent, 0)
-            blacklistApps.value = pkgAppsList.mapNotNull {
-                val appLabel = it.loadLabel(packageManager).toString()
-                val packageName = it.activityInfo.taskAffinity ?: return@mapNotNull null
-                val packageIcon = it.loadIcon(packageManager)
-                BlacklistApp(name = appLabel, packageName = packageName, icon = packageIcon)
-            }.toSet()
-        }
+    LaunchedEffect(true) {
+        val mainIntent = Intent(Intent.ACTION_MAIN, null)
+        mainIntent.addCategory(Intent.CATEGORY_LAUNCHER)
+        val packageManager = context.packageManager
+        val pkgAppsList = packageManager.queryIntentActivities(mainIntent, 0)
+        blacklistApps.value = pkgAppsList.mapNotNull {
+            val appLabel = it.loadLabel(packageManager).toString()
+            val packageName = it.activityInfo.taskAffinity ?: return@mapNotNull null
+            val packageIcon = it.loadIcon(packageManager)
+            BlacklistApp(name = appLabel, packageName = packageName, icon = packageIcon)
+        }.toSet()
     }
 
     Column(
